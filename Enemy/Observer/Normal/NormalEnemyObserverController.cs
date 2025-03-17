@@ -6,14 +6,14 @@ public class NormalEnemyObserverController : MonoBehaviour, INormalEnemyObserver
 {
     private NormalEnemySubject normalEnemySubject;
     private EnemyBulletPooler enemyBulletPooler;
-    private EnemyStateController enemyStats;
+    private EnemyShooterStateController enemyStats;
 
     [SerializeField] private Transform bulletRightSpawn;
     [SerializeField] private Transform bulletLeftSpawn;
     private void Awake()
     {
-        normalEnemySubject = GetComponent<NormalEnemySubject>();
-        enemyStats = GetComponent<EnemyStateController>();
+        normalEnemySubject = GetComponent<EnemyShooterStateController>();
+        enemyStats = GetComponent<EnemyShooterStateController>();
     }
     private void Start()
     {
@@ -43,7 +43,7 @@ public class NormalEnemyObserverController : MonoBehaviour, INormalEnemyObserver
                 }
                 return;
             case(EnemyAction.Shoot):
-                if(normalEnemySubject.GetComponent<EnemyStateController>().enemySpriteRenderer.flipX == true)
+                if(normalEnemySubject.GetComponent<EnemyShooterStateController>().enemySpriteRenderer.flipX == true)
                 {
                     EnemyShoot(bulletRightSpawn,Vector2.right, false);
                 }

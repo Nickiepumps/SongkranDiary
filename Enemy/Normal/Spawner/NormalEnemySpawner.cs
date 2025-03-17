@@ -39,24 +39,24 @@ public class NormalEnemySpawner : MonoBehaviour
                 if (spawnElement > 2)
                 {
                     shooterEnemy = Instantiate(enemyPrefab, shooterSpawnerlist[0].position, Quaternion.identity, spawnedEnemyGroup);
-                    shooterEnemy.GetComponent<EnemyStateController>().destination = shooterSpawnerlist[1];
-                    shooterEnemy.GetComponent<EnemyStateController>().startPoint = shooterSpawnerlist[0];
-                    shooterEnemy.GetComponent<EnemyStateController>().enemySpriteRenderer.flipX = true;
+                    shooterEnemy.GetComponent<EnemyShooterStateController>().destination = shooterSpawnerlist[1];
+                    shooterEnemy.GetComponent<EnemyShooterStateController>().startPoint = shooterSpawnerlist[0];
+                    shooterEnemy.GetComponent<EnemyShooterStateController>().enemySpriteRenderer.flipX = true;
                 }
                 else
                 {
                     shooterEnemy = Instantiate(enemyPrefab, shooterSpawnerlist[1].position, Quaternion.identity, spawnedEnemyGroup);
-                    shooterEnemy.GetComponent<EnemyStateController>().destination = shooterSpawnerlist[0];
-                    shooterEnemy.GetComponent<EnemyStateController>().startPoint = shooterSpawnerlist[1];
-                    shooterEnemy.GetComponent<EnemyStateController>().enemySpriteRenderer.flipX = false;
+                    shooterEnemy.GetComponent<EnemyShooterStateController>().destination = shooterSpawnerlist[0];
+                    shooterEnemy.GetComponent<EnemyShooterStateController>().startPoint = shooterSpawnerlist[1];
+                    shooterEnemy.GetComponent<EnemyShooterStateController>().enemySpriteRenderer.flipX = false;
                 }
                 spawnedShooterLists.Add(shooterEnemy);
-                shooterEnemy.GetComponent<EnemyStateController>().normalEnemyType = shooterSO.NormalEnemyType;
-                shooterEnemy.GetComponent<EnemyStateController>().enemyHP = shooterSO.hp;
-                shooterEnemy.GetComponent<EnemyStateController>().enemyASPD = shooterSO.aspd;
-                shooterEnemy.GetComponent<EnemyStateController>().walkSpeed = shooterSO.movementSpeed;
-                shooterEnemy.GetComponent<EnemyStateController>().damage = shooterSO.damage;
-                shooterEnemy.GetComponent<EnemyStateController>().enemySpriteRenderer.sprite = shooterSO.normalSprite;
+                shooterEnemy.GetComponent<EnemyShooterStateController>().normalEnemyType = shooterSO.NormalEnemyType;
+                shooterEnemy.GetComponent<EnemyShooterStateController>().enemyHP = shooterSO.hp;
+                shooterEnemy.GetComponent<EnemyShooterStateController>().enemyASPD = shooterSO.aspd;
+                shooterEnemy.GetComponent<EnemyShooterStateController>().walkSpeed = shooterSO.movementSpeed;
+                shooterEnemy.GetComponent<EnemyShooterStateController>().damage = shooterSO.damage;
+                shooterEnemy.GetComponent<EnemyShooterStateController>().enemySpriteRenderer.sprite = shooterSO.normalSprite;
                 shooterEnemy.SetActive(false);
             }
         }
