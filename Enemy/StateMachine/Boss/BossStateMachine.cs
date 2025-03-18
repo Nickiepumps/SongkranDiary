@@ -3,9 +3,14 @@ using UnityEngine;
 public abstract class BossStateMachine
 {
     protected FatKid_BossStateController fatKidBoss;
+    protected BucketKid_BossStateController bucketKidBoss;
     public BossStateMachine(FatKid_BossStateController fatKidBoss)
     {
         this.fatKidBoss = fatKidBoss;
+    }
+    public BossStateMachine(BucketKid_BossStateController bucketKidBoss)
+    {
+        this.bucketKidBoss = bucketKidBoss;
     }
     public abstract void Start();
     public abstract void Update();
