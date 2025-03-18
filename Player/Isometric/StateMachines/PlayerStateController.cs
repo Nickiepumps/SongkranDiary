@@ -9,6 +9,8 @@ public class PlayerStateController : PlayerSubject
     public float walkSpeed = 5;
     public bool playerTalking = false;
     public Collider2D currentColHit;
+    public Animator ISOAnimator;
+    public SpriteRenderer ISOPlayerSpriteRenderer;
     private void Start()
     {
         PlayerStateTransition(new PlayerIdleState(this));

@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class BossStateController : BossSubject
+public class FatKid_BossStateController : BossSubject
 {
     private BossStateMachine currentBossState;
     [Header("Boss Scriptable Object")]
     public BossScriptableObject bossScriptableObject;
 
     [Header("Boss Properties")]
+    public BossHealth bossHP;
     public SpriteRenderer bossSpriteRenderer;
     public Rigidbody2D bossRB;
     public Transform destination; // For Boss 1
@@ -20,8 +21,6 @@ public class BossStateController : BossSubject
     public BoxCollider2D normalHitBox;
 
     // Hide in inspector
-    public int bossMaxHP;
-    public int currentBossHP;
     public bool startInitIdle = false;
     public bool bossShooting = false;
     public bool bossUlt = false;
@@ -30,9 +29,7 @@ public class BossStateController : BossSubject
     public bool isDead = false;
     private void Start()
     {
-        bossMaxHP = bossScriptableObject.HP;
-        currentBossHP = bossMaxHP;
-        BossStateTransition(new BossIdleState(this));
+        BossStateTransition(new FatKid_BossIdleState(this));
     }
     private void Update()
     {

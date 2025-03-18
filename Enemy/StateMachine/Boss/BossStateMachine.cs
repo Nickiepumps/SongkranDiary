@@ -2,10 +2,10 @@ using UnityEngine;
 
 public abstract class BossStateMachine
 {
-    protected BossStateController boss;
-    public BossStateMachine(BossStateController boss)
+    protected FatKid_BossStateController fatKidBoss;
+    public BossStateMachine(FatKid_BossStateController fatKidBoss)
     {
-        this.boss = boss;
+        this.fatKidBoss = fatKidBoss;
     }
     public abstract void Start();
     public abstract void Update();

@@ -1,9 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
-public class BossObserverController : MonoBehaviour, IBossObserver, IGameObserver
+public class FatKid_BossObserverController : MonoBehaviour, IBossObserver, IGameObserver
 {
     [Header("Observer References")]
     private BossSubject bossSubject;
@@ -18,7 +17,8 @@ public class BossObserverController : MonoBehaviour, IBossObserver, IGameObserve
 
     private void Awake()
     {
-        bossSubject = GetComponent<BossStateController>();
+        bossSubject = GetComponent<FatKid_BossStateController>();
+        
     }
     private void OnEnable()
     {
@@ -39,7 +39,7 @@ public class BossObserverController : MonoBehaviour, IBossObserver, IGameObserve
             case(BossAction.Idle):
                 return;
             case (BossAction.Shoot):
-                bossSubject.GetComponent<BossStateController>().bossShooting = true;
+                bossSubject.GetComponent<FatKid_BossStateController>().bossShooting = true;
                 if (RandomPattern() <= 5)
                 {
                     StartCoroutine(ShootPattern(1));
@@ -51,14 +51,12 @@ public class BossObserverController : MonoBehaviour, IBossObserver, IGameObserve
                 return;
             case (BossAction.Jump):
                 Debug.Log("Boss Jumped");
-                bossSubject.GetComponent<BossStateController>().bossRB.AddForce(Vector2.up * 25, ForceMode2D.Impulse);
+                bossSubject.GetComponent<FatKid_BossStateController>().bossRB.AddForce(Vector2.up * 25, ForceMode2D.Impulse);
                 return;
             case (BossAction.Ult):
                 Debug.Log("Boss Ult Observer");
                 return;
             case (BossAction.Damaged):
-                Debug.Log("Boss Damaged");
-                bossSubject.GetComponent<BossStateController>().currentBossHP--;
                 return;
             case (BossAction.Die):
                 gameSubject.NotifySideScrollGameObserver(SideScrollGameState.Win);
@@ -93,7 +91,7 @@ public class BossObserverController : MonoBehaviour, IBossObserver, IGameObserve
             BossShoot(bulletMiddleSpawn, Vector2.left);
         }
         yield return null;
-        bossSubject.GetComponent<BossStateController>().bossShooting = false;
+        bossSubject.GetComponent<FatKid_BossStateController>().bossShooting = false;
     }
     private void BossShoot(Transform spawnPos, Vector2 bulletDirection)
     {

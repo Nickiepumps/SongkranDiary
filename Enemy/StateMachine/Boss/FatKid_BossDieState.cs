@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using UnityEngine;
 
-public class BossDieState : BossStateMachine
+public class FatKid_BossDieState : BossStateMachine
 {
-    public BossDieState(BossStateController boss) : base(boss) { }
+    public FatKid_BossDieState(FatKid_BossStateController fatKidBoss) : base(fatKidBoss) { }
 
     public override void Start()
     {
-        boss.isDead = true;
-        boss.NotifyBoss(BossAction.Die);
-        boss.gameObject.SetActive(false);
+        fatKidBoss.isDead = true;
+        fatKidBoss.NotifyBoss(BossAction.Die);
+        fatKidBoss.gameObject.SetActive(false);
     }
     public override void Update()
     {

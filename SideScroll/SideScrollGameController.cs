@@ -9,14 +9,19 @@ public class SideScrollGameController : MonoBehaviour
     [SerializeField] private PlayerSideScrollStateController sidescrollPlayer;
 
     [Header("Side Scroll Game Properties")]
+    // Run n Gun mode
     [SerializeField] Transform startPos;
     [SerializeField] Transform goalPos;
-    [SerializeField] BossStateController boss;
+    // Boss mode
+    [SerializeField] BossList bossName;
+    [SerializeField] BossHealth bossHP;
+
+    private GameObject bossController;
     private float timer;
-    public int minute;
-    public int second;
+    private int minute;
+    private int second;
     public string currentTime;
-    public int coinCounter;
+    private int coinCounter;
     private void Update()
     {
         if(sidescrollPlayer.isDead == false && sidescrollPlayer.isWin == false)
@@ -48,8 +53,8 @@ public class SideScrollGameController : MonoBehaviour
     {
         float result;
         // Find percentage of boss hp and convert it into a progress bar result
-        float bossCurrentHealth = boss.currentBossHP;
-        float healthPercentage = (bossCurrentHealth / boss.bossMaxHP) * 100;
+        float bossCurrentHealth = bossHP.currentBossHP;
+        float healthPercentage = (bossCurrentHealth / bossHP.bossMaxHP) * 100;
         result = (healthPercentage / 100) * distanceUI.rectTransform.sizeDelta.x;
         return distanceUI.rectTransform.sizeDelta.x - result;
     }

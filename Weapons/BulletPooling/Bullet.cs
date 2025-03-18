@@ -80,7 +80,7 @@ public class Bullet : MonoBehaviour
                 }
                 else
                 {
-                    raycastHit.transform.GetComponent<BossObserverController>().OnBossNotify(BossAction.Damaged);
+                    raycastHit.transform.GetComponent<BossHealthObserver>().OnBossNotify(BossAction.Damaged);
                 }
                 
             }
@@ -106,7 +106,7 @@ public class Bullet : MonoBehaviour
             }
             else
             {
-                collision.gameObject.GetComponent<BossObserverController>().OnBossNotify(BossAction.Damaged);
+                collision.gameObject.GetComponent<BossHealthObserver>().OnBossNotify(BossAction.Damaged);
             }
             // Play destroyed bullet anim
             gameObject.SetActive(false);

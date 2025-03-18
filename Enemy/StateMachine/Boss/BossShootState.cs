@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BossShootState : BossStateMachine
 {
-    public BossShootState(BossStateController boss): base(boss) { }
+    public BossShootState(FatKid_BossStateController boss): base(boss) { }
     public override void Start()
     {
 

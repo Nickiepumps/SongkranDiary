@@ -2,5 +2,6 @@ public enum NormalEnemyType
 {
     Shooter,
     Bomber,
-    Stationary
+    Stationary,
+    Drone
 }

@@ -7,7 +7,7 @@ using UnityEngine;
 public class BossScriptableObject : ScriptableObject
 {
     [Header("Boss Properties")]
-    public BossType bossType; // To Do: Change to something else that can make any boss have unique attack without making another state machine
+    public BossList bossName; // To Do: Change to something else that can make any boss have unique attack without making another state machine
     public int HP;
     public int damage;
     public float ultCooldown;
@@ -23,10 +23,4 @@ public class BossScriptableObject : ScriptableObject
     public AnimationClip normalAtkAnimation; // Use this when have normal attack anim
     public AnimationClip idleAnimation; // Use this when have idle anim
     public AnimationClip loseAnimation; // Use this when have lose anim
-}
-public enum BossType
-{
-    FatKid,
-    BucketKid,
-    ElephantRider
 }
