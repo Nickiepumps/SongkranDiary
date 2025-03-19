@@ -26,7 +26,7 @@ public class Ultimate : MonoBehaviour
             }
             else
             {
-                collision.gameObject.GetComponent<BossObserverController>().OnBossNotify(BossAction.Damaged);
+                collision.gameObject.GetComponent<BossHealthObserver>().OnBossNotify(BossAction.Damaged);
             }
             gameObject.SetActive(false);
         }

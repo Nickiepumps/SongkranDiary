@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.Animations;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
@@ -12,7 +13,10 @@ public class Bullet : MonoBehaviour
     public Transform laserBoundary;
     private BulletPooler bulletPooler;
     private BoxCollider2D bulletCollider;
+    private bool isHit = false;
 
+    [Header("Bullet Animator")]
+    public Animator bulletAnimator;
     private void OnEnable()
     {
         if(bulletCollider == null && bulletPooler == null)
@@ -27,7 +31,8 @@ public class Bullet : MonoBehaviour
     }
     private void OnDisable()
     {
-        if(bulletPooler == null)
+        isHit = false;
+        if (bulletPooler == null)
         {
             bulletPooler = GameObject.Find("BulletPooler").GetComponent<BulletPooler>();
         }
@@ -54,14 +59,20 @@ public class Bullet : MonoBehaviour
     {
         bulletCollider.enabled = true;
         Vector2 bulletPosition = transform.position;
-        bulletPosition += bulletDirection * travelSpeed * Time.deltaTime;
+        if(isHit == false)
+        {
+            bulletPosition += bulletDirection * travelSpeed * Time.deltaTime;
+        }
         transform.position = bulletPosition;
     }
     private void SpreadBullet()
     {
         bulletCollider.enabled = true;
         Vector2 bulletPosition = transform.position;
-        bulletPosition += bulletDirection * travelSpeed * Time.deltaTime;
+        if(isHit == false)
+        {
+            bulletPosition += bulletDirection * travelSpeed * Time.deltaTime;
+        }
         transform.position = bulletPosition;
     }
     private IEnumerator LaserBullet()
@@ -80,14 +91,13 @@ public class Bullet : MonoBehaviour
                 }
                 else
                 {
-                    raycastHit.transform.GetComponent<BossObserverController>().OnBossNotify(BossAction.Damaged);
+                    raycastHit.transform.GetComponent<BossHealthObserver>().OnBossNotify(BossAction.Damaged);
                 }
-                
             }
         }
         Vector2 bulletPosition = transform.position;
         Debug.DrawLine(transform.position, laserBoundary.position, Color.red, 10);
-        yield return new WaitForSeconds(0.1f); // Appear only for 0.1 secs
+        yield return new WaitForSeconds(0.15f); // Appear only for 0.1 secs
         laserHit = null; // Clear all the hit object
         gameObject.SetActive(false); // Disable bullet
         yield return null;
@@ -100,21 +110,35 @@ public class Bullet : MonoBehaviour
         }
         else if(collision.gameObject.tag == "Enemy")
         {
+            isHit = true;
             if(collision.gameObject.GetComponent<NormalEnemyObserverController>() != null)
             {
                 collision.gameObject.GetComponent<NormalEnemyObserverController>().OnNormalEnemyNotify(EnemyAction.Damaged);
             }
             else
             {
-                collision.gameObject.GetComponent<BossObserverController>().OnBossNotify(BossAction.Damaged);
+                collision.gameObject.GetComponent<BossHealthObserver>().OnBossNotify(BossAction.Damaged);
             }
-            // Play destroyed bullet anim
-            gameObject.SetActive(false);
+            StartCoroutine(DeactivateBullet());
         }
         else if(collision.gameObject.tag == "EnemyBullet")
         {
-            // Play destroyed bullet anim
-            gameObject.SetActive(false);
+            StartCoroutine(DeactivateBullet());
         }
+    }
+    // Play splash animation and deactivate bullet
+    private IEnumerator DeactivateBullet()
+    {
+        if(bulletType == BulletType.normalBullet)
+        {
+            bulletAnimator.SetBool("isHit", true);
+            yield return new WaitForSeconds(0.15f);
+        }
+        else if(bulletType == BulletType.spreadBullet)
+        {
+            bulletAnimator.SetBool("isHit", true);
+            yield return new WaitForSeconds(0.15f);
+        }
+        gameObject.SetActive(false);
     }
 }

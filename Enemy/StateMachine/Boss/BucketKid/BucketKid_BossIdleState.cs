@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BossShootState : BossStateMachine
+public class BucketKid_BossIIdleState : BossStateMachine
 {
-    public BossShootState(FatKid_BossStateController boss): base(boss) { }
+    public BucketKid_BossIIdleState(BucketKid_BossStateController bucketKidBoss) : base(bucketKidBoss) { }
     public override void Start()
     {
 

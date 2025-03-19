@@ -105,8 +105,10 @@ public class GameUIController : MonoBehaviour, IGameObserver
                 timerText.text = sidescrollGameController.currentTime;
                 hpText.text = sidescrollGameController.UpdatePlayerHPCount().ToString();
                 gradeText.text = sidescrollGameController.Result();
-                enemySpawnController.enabled = false;
-
+                if(levelType == LevelType.RunNGunLevel)
+                {
+                    enemySpawnController.enabled = false;
+                }
                 return;
             case (SideScrollGameState.Lose):
                 // show lose scoreboard

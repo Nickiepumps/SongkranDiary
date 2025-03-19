@@ -31,6 +31,56 @@ public class PlayerWalkState : PlayerState
         {
             player.PlayerStateTransition(new PlayerInteractState(player));
         }
+        #region Walk Animation Blend tree
+        if (Input.GetAxisRaw("Horizontal") == 0 && Input.GetAxisRaw("Vertical") == 1) // Up
+        {
+            player.ISOPlayerSpriteRenderer.flipX = false;
+            player.ISOAnimator.SetFloat("PosX", 0f);
+            player.ISOAnimator.SetFloat("PosY", 1f);
+        }
+        else if (Input.GetAxisRaw("Horizontal") == 1 && Input.GetAxisRaw("Vertical") == 1) // Up Right
+        {
+            player.ISOPlayerSpriteRenderer.flipX = false;
+            player.ISOAnimator.SetFloat("PosX", 1f);
+            player.ISOAnimator.SetFloat("PosY", 11f);
+        }
+        else if (Input.GetAxisRaw("Horizontal") == -1 && Input.GetAxisRaw("Vertical") == 1) // Up Left
+        {
+            player.ISOPlayerSpriteRenderer.flipX = true;
+            player.ISOAnimator.SetFloat("PosX", 1f);
+            player.ISOAnimator.SetFloat("PosY", 11f);
+        }
+        else if(Input.GetAxisRaw("Horizontal") == 0 && Input.GetAxisRaw("Vertical") == -1) // Down
+        {
+            player.ISOPlayerSpriteRenderer.flipX = false;
+            player.ISOAnimator.SetFloat("PosX", 0f);
+            player.ISOAnimator.SetFloat("PosY", -1f);
+        }
+        else if (Input.GetAxisRaw("Horizontal") == 1 && Input.GetAxisRaw("Vertical") == -1) // Down Right
+        {
+            player.ISOPlayerSpriteRenderer.flipX = false;
+            player.ISOAnimator.SetFloat("PosX", 1f);
+            player.ISOAnimator.SetFloat("PosY", -1f);
+        }
+        else if (Input.GetAxisRaw("Horizontal") == -1 && Input.GetAxisRaw("Vertical") == -1) // Down Left
+        {
+            player.ISOPlayerSpriteRenderer.flipX = true;
+            player.ISOAnimator.SetFloat("PosX", 1f);
+            player.ISOAnimator.SetFloat("PosY", -1f);
+        }
+        else if (Input.GetAxisRaw("Horizontal") == 1 && Input.GetAxisRaw("Vertical") == 0) // Right
+        {
+            player.ISOPlayerSpriteRenderer.flipX = false;
+            player.ISOAnimator.SetFloat("PosX", 1f);
+            player.ISOAnimator.SetFloat("PosY", 0f);
+        }
+        else if (Input.GetAxisRaw("Horizontal") == -1 && Input.GetAxisRaw("Vertical") == 0) // Left
+        {
+            player.ISOPlayerSpriteRenderer.flipX = true;
+            player.ISOAnimator.SetFloat("PosX", 1f);
+            player.ISOAnimator.SetFloat("PosY", 0f);
+        }
+        #endregion
     }
     public override void Exit()
     {

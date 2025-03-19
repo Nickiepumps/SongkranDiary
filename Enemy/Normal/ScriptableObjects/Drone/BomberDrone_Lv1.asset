@@ -9,14 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f94e85909a60406429229c649a3e7e87, type: 3}
-  m_Name: Normal_TSPD1
+  m_Script: {fileID: 11500000, guid: 3e09193d56a2b5a4ca0d5e88cb4cf77a, type: 3}
+  m_Name: BomberDrone_Lv1
   m_EditorClassIdentifier: 
-  upgradeType: 1
-  bulletType: 0
-  level: 1
-  aspd: 1
-  travelSpeed: 15
-  spreadCount: 1
-  ulteCount: 0
-  ultChargingSpeed: 0
+  NormalEnemyType: 0
+  hp: 0
+  damage: 0
+  aspd: 0
+  movementSpeed: 0
+  normalSprite: {fileID: 0}
+  damagedSprite: {fileID: 0}
+  deadSprite: {fileID: 0}

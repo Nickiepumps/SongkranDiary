@@ -2,16 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BossShootState : BossStateMachine
+public class BucketKid_BossIdleState : BossStateMachine
 {
-    public BossShootState(FatKid_BossStateController boss): base(boss) { }
+    public BucketKid_BossIdleState(BucketKid_BossStateController bucketKidBoss) : base(bucketKidBoss) { }
     public override void Start()
     {
 
     }
     public override void Update()
     {
-        
+        if(bucketKidBoss.bossHP.currentBossHP <= 0)
+        {
+            bucketKidBoss.BossStateTransition(new BucketKid_BossDieState(bucketKidBoss));
+        }
     }
     public override void FixedUpdate()
     {

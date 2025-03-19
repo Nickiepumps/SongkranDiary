@@ -9,13 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d48ebd5f1a42d084c856dbab719857be, type: 3}
+  m_Script: {fileID: 11500000, guid: 3e09193d56a2b5a4ca0d5e88cb4cf77a, type: 3}
   m_Name: Stationary_Lv1
   m_EditorClassIdentifier: 
   NormalEnemyType: 2
-  hp: 8
-  aspd: 2
+  hp: 5
   damage: 1
-  stationarySprite: {fileID: 0}
-  stationaryDamagedSprite: {fileID: 0}
-  stationaryDeadSprite: {fileID: 0}
+  aspd: 1
+  movementSpeed: 0
+  normalSprite: {fileID: 0}
+  damagedSprite: {fileID: 0}
+  deadSprite: {fileID: 0}

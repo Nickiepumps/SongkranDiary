@@ -2,10 +2,25 @@ using UnityEngine;
 
 public abstract class EnemyStateMachine
 {
-    protected EnemyStateController enemy;
-    public EnemyStateMachine(EnemyStateController enemy)
+    protected EnemyShooterStateController shooterEnemy;
+    protected EnemyBomberStateController bomberEnemy;
+    protected EnemyStationaryStateController stationaryEnemy;
+    protected EnemyDroneStateController droneEnemy;
+    public EnemyStateMachine(EnemyShooterStateController shooterEnemy)
     {
-        this.enemy = enemy;
+        this.shooterEnemy = shooterEnemy;
+    }
+    public EnemyStateMachine(EnemyBomberStateController bomberEnemy)
+    {
+        this.bomberEnemy = bomberEnemy;
+    }
+    public EnemyStateMachine(EnemyStationaryStateController stationaryEnemy)
+    {
+        this.stationaryEnemy = stationaryEnemy; 
+    }
+    public EnemyStateMachine(EnemyDroneStateController droneEnemy)
+    {
+        this.droneEnemy = droneEnemy;
     }
     public abstract void Start();
     public abstract void Update();

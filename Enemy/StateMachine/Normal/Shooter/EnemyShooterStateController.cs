@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyStateController : NormalEnemySubject
+public class EnemyShooterStateController : NormalEnemySubject
 {
     [Header("Player Reference")]
     public PlayerSideScrollStateController player;
@@ -32,7 +32,7 @@ public class EnemyStateController : NormalEnemySubject
     private void Start()
     {
         player = GameObject.Find("Player_SideScroll").GetComponent<PlayerSideScrollStateController>();
-        EnemyStateTransition(new EnemyRunState(this));
+        EnemyStateTransition(new EnemyShooterRunState(this));
     }
     private void Update()
     {

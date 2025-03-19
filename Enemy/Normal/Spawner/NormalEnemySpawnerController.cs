@@ -31,14 +31,14 @@ public class NormalEnemySpawnerController : MonoBehaviour
                 currentTimeToSpawn -= Time.deltaTime;
                 if(currentTimeToSpawn < 0)
                 {
-                    NewSpawnAndDestination(normalEnemySpawner.spawnedShooterLists[i].GetComponent<EnemyStateController>());
+                    NewSpawnAndDestination(normalEnemySpawner.spawnedShooterLists[i].GetComponent<EnemyShooterStateController>());
                     spawnRate = Random.Range(minSpawnRate, maxSpawnRate);
                     currentTimeToSpawn = spawnRate;
                 }
             }
         }
     }
-    private void NewSpawnAndDestination(EnemyStateController enemy)
+    private void NewSpawnAndDestination(EnemyShooterStateController enemy)
     {
         int spawnValue = Random.Range(1, 10);
         Transform previousStart = enemy.startPoint;
