@@ -15,8 +15,8 @@ MonoBehaviour:
   upgradeType: 2
   bulletType: 1
   level: 3
-  aspd: 0.5
-  travelSpeed: 10
+  aspd: 0.1
+  travelSpeed: 15
   spreadCount: 1
   ulteCount: 0
   ultChargingSpeed: 0

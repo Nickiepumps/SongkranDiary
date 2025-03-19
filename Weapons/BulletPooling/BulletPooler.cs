@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Animations;
 using UnityEngine;
 
 public class BulletPooler : MonoBehaviour
@@ -13,6 +14,11 @@ public class BulletPooler : MonoBehaviour
     public List<GameObject> pooledbullets = new List<GameObject>(); // List for storing spawned bullet gameObjects
     public List<Sprite> bulletTypeSpritesList;
     public List<GameObject> pooledUltLists = new List<GameObject>(); // List for storing spawned ultimate gameObjects
+
+    [Header("Bullet Animator Controller")]
+    [SerializeField] private AnimatorController normalBulletAnimatorController;
+    [SerializeField] private AnimatorController spreadBulletAnimatorController;
+    [SerializeField] private AnimatorController laserBulletAnimatorController;
 
     [HideInInspector]
     public Sprite currentBulletSprite;
@@ -82,9 +88,18 @@ public class BulletPooler : MonoBehaviour
                 pooledbullets[i].GetComponent<Bullet>().bulletSprite.drawMode = SpriteDrawMode.Simple;
                 pooledbullets[i].GetComponent<Bullet>().transform.GetChild(0).transform.localScale = Vector2.one;
             }
-            if(pooledbullets[i].GetComponent<Bullet>().bulletType == BulletType.laser)
+            if (pooledbullets[i].GetComponent<Bullet>().bulletType == BulletType.normalBullet)
             {
-                pooledbullets[i].GetComponent<Bullet>().bulletSprite.drawMode = SpriteDrawMode.Tiled;
+                pooledbullets[i].GetComponent<Bullet>().bulletAnimator.runtimeAnimatorController = normalBulletAnimatorController;
+            }
+            else if(pooledbullets[i].GetComponent<Bullet>().bulletType == BulletType.spreadBullet)
+            {
+                pooledbullets[i].GetComponent<Bullet>().bulletAnimator.runtimeAnimatorController = spreadBulletAnimatorController;
+            }
+            else if(pooledbullets[i].GetComponent<Bullet>().bulletType == BulletType.laser)
+            {
+                pooledbullets[i].GetComponent<Bullet>().bulletAnimator.runtimeAnimatorController = laserBulletAnimatorController;
+                //pooledbullets[i].GetComponent<Bullet>().bulletSprite.drawMode = SpriteDrawMode.Tiled;
                 pooledbullets[i].GetComponent<Bullet>().transform.GetChild(0).transform.localScale = Vector2.one;
             }
         }

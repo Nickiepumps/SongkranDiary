@@ -16,6 +16,7 @@ MonoBehaviour:
   bulletType: 0
   level: 1
   aspd: 1
-  travelSpeed: 5
+  travelSpeed: 15
   spreadCount: 1
-  bulletSprite: {fileID: 21300000, guid: a7ede12c01d9bca4e8c868bceb157560, type: 3}
+  ulteCount: 0
+  ultChargingSpeed: 0

@@ -48,7 +48,7 @@ public class PlayerGun : MonoBehaviour
                     bullet.GetComponent<Bullet>().laserBoundary = laserBoundary;
                 }
             }
-            bullet.transform.position = transform.position;
+            bullet.transform.position = new Vector2(transform.position.x, Random.Range(transform.position.y - 0.2f, transform.position.y + 0.2f));
             bullet.transform.rotation = transform.rotation;
             bullet.SetActive(true);
         }
