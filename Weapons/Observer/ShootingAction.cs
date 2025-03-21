@@ -12,6 +12,7 @@ public enum ShootingAction
     switchtonormal,
     switchtospread,
     switchtolaser,
+    cooldownSwitch,
     chargeult,
     useult
 }

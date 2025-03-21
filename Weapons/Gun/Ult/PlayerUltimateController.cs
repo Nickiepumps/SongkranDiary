@@ -1,18 +1,31 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class PlayerUltimateController : MonoBehaviour
 {
     private bool ultReady = false;
-    [SerializeField] private int ultAmount = 3; // To Do: Change to WeaponSO later
-    [SerializeField] private float ultChargeTime = 5f; // To Do: Change to WeaponSO later
+    private PlayerStats playerStats;
+    private int ultAmount;
+    private float ultChargeTime;
     [SerializeField] private Transform spawnDirection_Right;
     private float currentTime;
     private int currentUltReady = 0;
+
+    [Header("Player HUD")]
+    [SerializeField] private Image ultChargeIcon;
+    [SerializeField] private TMP_Text ultAmountText;
+    private void Awake()
+    {
+        playerStats = GetComponent<PlayerStats>();
+    }
     private void Start()
     {
+        ultChargeTime = playerStats.maxPlayerUltCharge.ultChargeTime;
         currentTime = ultChargeTime;
+        ultAmount = playerStats.maxPlayerUltAmount.ultCount;
     }
     private void Update()
     {
@@ -28,7 +41,8 @@ public class PlayerUltimateController : MonoBehaviour
             }
             if (currentUltReady == 3)
             {
-                currentUltReady = 3;
+                currentUltReady = Mathf.Clamp(currentUltReady, 0, 3);
+                ultAmountText.text = currentUltReady.ToString();
                 Debug.Log("Ult Max");
             }
         }
@@ -43,9 +57,18 @@ public class PlayerUltimateController : MonoBehaviour
             Debug.Log(currentUltReady + " Ult Left");
             ThrowProjectile();
         }
+        UpdateUltDisplay();
     }
     private void ThrowProjectile()
     {
         spawnDirection_Right.gameObject.GetComponent<PlayerGun>().ShootUltimate();
+    }
+    private void UpdateUltDisplay()
+    {
+        if(currentUltReady < 3)
+        {
+            ultChargeIcon.fillAmount = 1 - (currentTime / ultChargeTime);
+        }
+        ultAmountText.text = currentUltReady.ToString();
     }
 }

@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f94e85909a60406429229c649a3e7e87, type: 3}
-  m_Name: Ultimate1
+  m_Name: Ultimate3
   m_EditorClassIdentifier: 
   upgradeType: 6
   bulletType: 3
@@ -18,5 +18,5 @@ MonoBehaviour:
   aspd: 0
   travelSpeed: 10
   spreadCount: 0
-  ultCount: 3
+  ultCount: 5
   ultChargingSpeed: 5
