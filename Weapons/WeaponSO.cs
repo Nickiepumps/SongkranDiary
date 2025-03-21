@@ -11,8 +11,8 @@ public class WeaponSO : ScriptableObject
     public float aspd; // Player's atack speed
     public float travelSpeed; // Bullet travel speed
     public int spreadCount; // Bullet spawn count
-    public int ulteCount;
-    public float ultChargingSpeed;
+    public int ultCount; // Ultimate amount
+    public float ultChargingSpeed; // Ultimate charging speed
 }
 public enum WeaponUpgradeType
 {
