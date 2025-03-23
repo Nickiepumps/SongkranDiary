@@ -7,13 +7,16 @@ public class EnemyBullet : MonoBehaviour
     public float travelSpeed;
     public Vector2 bulletDirection;
     private Rigidbody2D enemyBulletRB;
+
+    [Header("Bullet Animator")]
+    public Animator bulletAnimator;
     private void OnEnable()
     {
         
     }
     private void OnDisable()
     {
-        
+        bulletAnimator.SetBool("isHit", false);   
     }
     private void Start()
     {
@@ -27,19 +30,20 @@ public class EnemyBullet : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.tag == "Player")
+        if(collision.tag == "Player" || collision.tag == "PlayerBullet")
         {
-            // Play bullet splash anim
-            gameObject.SetActive(false);
+            StartCoroutine(DeactivateBullet()); // Play bullet splash anim
         }
         else if(collision.tag == "B_Boundary")
         {
             gameObject.SetActive(false);
         }
-        else if(collision.tag == "PlayerBullet")
-        {
-            // Play destroyed bullet anim
-            gameObject.SetActive(false);
-        }
+    }
+    // Play splash animation and deactivate bullet
+    private IEnumerator DeactivateBullet()
+    {
+        bulletAnimator.SetBool("isHit", true);
+        yield return new WaitForSeconds(0.15f);
+        gameObject.SetActive(false);
     }
 }

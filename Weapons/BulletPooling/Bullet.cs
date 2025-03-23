@@ -39,7 +39,6 @@ public class Bullet : MonoBehaviour
         }
         bulletSprite.sprite = bulletPooler.currentBulletSprite; // Set the bullet sprite to match the current bullet type 
         bulletType = bulletPooler.currentBulletType; // Set the bullet behavior to match the current bullet type
-        //transform.localScale = bulletPooler.currentLocalTransform; // Reset bullet localScale (Laser to other bullet type)
     }
     private void Start()
     {
