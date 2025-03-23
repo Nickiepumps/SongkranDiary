@@ -41,10 +41,12 @@ public class SideScroll_IdleState : PlayerSideScrollStateMachine
     }
     public override void OntriggerEnter(Collider2D pCollider)
     {
-        if (pCollider.gameObject.tag == "EnemyHitBox")
+        if (pCollider.gameObject.tag == "EnemyHitBox" || pCollider.gameObject.tag == "EnemyBullet")
         {
-            playerSideScroll.NotifyPlayerObserver(PlayerAction.Damaged);
-            playerSideScroll.isDamaged = true;
+            if (playerSideScroll.isDamaged == false)
+            {
+                playerSideScroll.NotifyPlayerObserver(PlayerAction.Damaged);
+            }
         }
     }
     public override void OntriggerExit(Collider2D pCollider)
@@ -55,8 +57,8 @@ public class SideScroll_IdleState : PlayerSideScrollStateMachine
     {
         if(pCollider.gameObject.tag == "Side_Floor")
         {
-            playerSideScroll.currentCollidername = pCollider;
             playerSideScroll.isPlayerOnGround = true;
+            playerSideScroll.currentCollidername = pCollider;
         }
     }
 
@@ -65,7 +67,6 @@ public class SideScroll_IdleState : PlayerSideScrollStateMachine
         if(pCollider.gameObject.tag == "Side_Floor")
         {
             playerSideScroll.currentCollidername = null;
-            playerSideScroll.isPlayerOnGround = false;
         }
     }
     public override void Exit()

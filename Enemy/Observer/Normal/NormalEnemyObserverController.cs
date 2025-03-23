@@ -8,8 +8,13 @@ public class NormalEnemyObserverController : MonoBehaviour, INormalEnemyObserver
     private EnemyBulletPooler enemyBulletPooler;
     private EnemyShooterStateController enemyStats;
 
+    [Header("Bullet Spawner")]
     [SerializeField] private Transform bulletRightSpawn;
     [SerializeField] private Transform bulletLeftSpawn;
+
+    [Header("Enemy Sprite")]
+    [SerializeField] private SpriteRenderer enemySpriteRenderer;
+    [SerializeField] private Color enemyDamagedColor;
     private void Awake()
     {
         normalEnemySubject = GetComponent<EnemyShooterStateController>();
@@ -36,10 +41,7 @@ public class NormalEnemyObserverController : MonoBehaviour, INormalEnemyObserver
                 if(enemyStats.currentEnemyHP > 0)
                 {
                     enemyStats.currentEnemyHP--;
-                }
-                else
-                {
-                    
+                    StartCoroutine(DamageIndicator());
                 }
                 return;
             case(EnemyAction.Shoot):
@@ -83,5 +85,11 @@ public class NormalEnemyObserverController : MonoBehaviour, INormalEnemyObserver
     private void EnemyExplode()
     {
 
+    }
+    private IEnumerator DamageIndicator()
+    {
+        enemySpriteRenderer.color = enemyDamagedColor;
+        yield return new WaitForSeconds(0.1f);
+        enemySpriteRenderer.color = Color.white;
     }
 }

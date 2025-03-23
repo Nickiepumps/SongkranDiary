@@ -22,6 +22,9 @@ public class BulletShooting : ShootingSubject
     [Header("Bullet Pooler Reference")]
     [SerializeField] private BulletPooler bulletPooler;
 
+    [Header("AimPivot")]
+    [SerializeField] private Transform aimPivot;
+
     [Header("Normal Bullet Spawner")]
     [SerializeField] private Transform spawnDirection_Right;
     [SerializeField] private Transform spawnDirection_Left;
@@ -133,6 +136,14 @@ public class BulletShooting : ShootingSubject
                 }
                 aspd = currentASPD;
             }
+        }
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            aimPivot.localPosition = new Vector3(aimPivot.localPosition.x, aimPivot.localPosition.y - 0.2f, 0);
+        }
+        else if (Input.GetKeyUp(KeyCode.S))
+        {
+            aimPivot.localPosition = Vector3.zero;
         }
     }
     private void ShootingNormalBullet()

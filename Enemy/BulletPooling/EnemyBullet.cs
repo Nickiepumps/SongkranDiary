@@ -29,7 +29,7 @@ public class EnemyBullet : MonoBehaviour
     {
         if(collision.tag == "Player")
         {
-            collision.gameObject.GetComponent<PlayerSideScrollStateController>().NotifyPlayerObserver(PlayerAction.Damaged);
+            // Play bullet splash anim
             gameObject.SetActive(false);
         }
         else if(collision.tag == "B_Boundary")

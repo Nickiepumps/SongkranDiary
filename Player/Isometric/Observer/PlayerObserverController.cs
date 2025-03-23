@@ -94,7 +94,7 @@ public class PlayerObserverController : MonoBehaviour, IGameObserver, IPlayerObs
             {
                 case (PlayerAction.Damaged):
                     Debug.Log("Player Damaged");
-                    if(playerSideScrollStateController.playerCurrentHP > 0 && playerSideScrollStateController.isDamaged == false)
+                    if (playerSideScrollStateController.playerCurrentHP > 0)
                     {
                         healthDisplay.DecreaseHealth(playerSideScrollStateController.playerCurrentHP);
                         playerSideScrollStateController.playerCurrentHP--;

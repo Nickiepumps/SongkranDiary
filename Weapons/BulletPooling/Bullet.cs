@@ -32,6 +32,7 @@ public class Bullet : MonoBehaviour
     private void OnDisable()
     {
         isHit = false;
+        bulletAnimator.SetBool("isHit", false);
         if (bulletPooler == null)
         {
             bulletPooler = GameObject.Find("BulletPooler").GetComponent<BulletPooler>();

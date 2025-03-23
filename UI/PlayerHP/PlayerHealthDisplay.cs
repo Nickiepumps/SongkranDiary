@@ -5,9 +5,14 @@ using UnityEngine.UI;
 
 public class PlayerHealthDisplay : MonoBehaviour, IPlayerObserver
 {
+    [Header("Observer References")]
     [SerializeField] private PlayerSubject sideScrollPlayerObserver;
+    [Header("Player Health Stat")]
     [SerializeField] private PlayerStats playerHealthStat;
-    [SerializeField] private Sprite healthIcon;
+    [Header("Player Health UI")]
+    [SerializeField] private GameObject playerHealthHUDGroup;
+    [SerializeField] private Sprite healthActiveIcon; // Actived health icon, Changed from depleated icon when player is healed
+    [SerializeField] private Sprite healthDepletedIcon; // Depleated health icon, Changed from actived icon when player is damaged
     [SerializeField] private Image healthUI;
     [SerializeField] private Transform playerHealthGroup;
     [SerializeField] private Image playerEmotionDisplay;
@@ -29,7 +34,7 @@ public class PlayerHealthDisplay : MonoBehaviour, IPlayerObserver
         {
             Image hp = Instantiate(healthUI, playerHealthGroup);
             healthUI.rectTransform.sizeDelta = new Vector2(48f, 48f);
-            healthUI.sprite = healthIcon;
+            healthUI.sprite = healthActiveIcon;
             healthIconList.Add(hp);
         }
     }
@@ -40,16 +45,17 @@ public class PlayerHealthDisplay : MonoBehaviour, IPlayerObserver
             case (PlayerAction.Damaged):
                 UpdateEmotionIcon(sideScrollPlayerObserver.GetComponent<PlayerSideScrollStateController>().playerMaxHP,
                     sideScrollPlayerObserver.GetComponent<PlayerSideScrollStateController>().playerCurrentHP);
+                playerHealthHUDGroup.GetComponent<Animation>().Play();
                 return;
         }
     }
     public void IncreaseHealth(int currentHP)
     {
-        healthIconList[currentHP - 1].gameObject.SetActive(true);
+        healthIconList[currentHP - 1].sprite = healthActiveIcon;
     }
     public void DecreaseHealth(int currentHP)
     {
-        healthIconList[currentHP - 1].gameObject.SetActive(false);
+        healthIconList[currentHP - 1].sprite = healthDepletedIcon;
     }
     public void UpdateEmotionIcon(float maxHP, float currentHP)
     {
