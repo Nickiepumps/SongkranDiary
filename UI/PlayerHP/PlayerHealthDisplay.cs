@@ -18,6 +18,7 @@ public class PlayerHealthDisplay : MonoBehaviour, IPlayerObserver
     [SerializeField] private Image playerEmotionDisplay;
     [SerializeField] private List<Sprite> playerEmotionIconLists;
     private List<Image> healthIconList = new List<Image>();
+    [HideInInspector] public Sprite currentPlayerEmotionIcon;
     private void OnEnable()
     {
         sideScrollPlayerObserver.AddPlayerObserver(this);   
@@ -64,14 +65,17 @@ public class PlayerHealthDisplay : MonoBehaviour, IPlayerObserver
         if (healthPercentage <= 34)
         {
             playerEmotionDisplay.sprite = playerEmotionIconLists[2]; // Angry
+            currentPlayerEmotionIcon = playerEmotionIconLists[2];
         }
         else if(healthPercentage <= 67)
         {
             playerEmotionDisplay.sprite = playerEmotionIconLists[1]; // Nervous
+            currentPlayerEmotionIcon = playerEmotionIconLists[1];
         }
         else
         {
             playerEmotionDisplay.sprite = playerEmotionIconLists[0]; // Happy
+            currentPlayerEmotionIcon = playerEmotionIconLists[0];
         }
     }
 }

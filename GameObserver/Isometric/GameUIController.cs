@@ -10,6 +10,7 @@ public class GameUIController : MonoBehaviour, IGameObserver
     [SerializeField] private LevelType levelType;
 
     [Header("Observer References")]
+    [SerializeField] private GameSubject gameControllerSubject; // Game controller subject
     [SerializeField] private GameSubject gameSubject; // Game subject
     [SerializeField] private GameSubject goalSubject; // Game subject
 
@@ -18,10 +19,9 @@ public class GameUIController : MonoBehaviour, IGameObserver
 
     [Header("Enemy Spawn Controller Reference")]
     [SerializeField] private NormalEnemySpawnerController enemySpawnController;
-
+    [Space]
+    [Space]
     [Header("Windows UI References")]
-    [Space]
-    [Space]
     [Header("Upgrade Window")]
     [SerializeField] private GameObject upgradeWindow; // Player upgrade window
     [Header("Scoreboard Window")]
@@ -33,10 +33,12 @@ public class GameUIController : MonoBehaviour, IGameObserver
     [SerializeField] private TMP_Text timerText;
     [SerializeField] private TMP_Text hpText;
     [SerializeField] private TMP_Text gradeText;
-
+    [Space]
+    [Header("Pause Window")]
+    [SerializeField] private GameObject pauseWindow; // Pause window
     private void OnEnable()
     {
-        if(levelType == LevelType.IsoLevel)
+        if (levelType == LevelType.IsoLevel)
         {
             gameSubject.AddGameObserver(this);
         }
@@ -44,11 +46,15 @@ public class GameUIController : MonoBehaviour, IGameObserver
         {
             gameSubject.AddGameObserver(this);
             gameSubject.AddSideScrollGameObserver(this);
+            gameControllerSubject.AddGameObserver(this);
+            gameControllerSubject.AddSideScrollGameObserver(this);
             goalSubject.AddSideScrollGameObserver(this);
         }
         else
         {
             gameSubject.AddGameObserver(this);
+            gameControllerSubject.AddGameObserver(this);
+            gameControllerSubject.AddSideScrollGameObserver(this);
             gameSubject.AddSideScrollGameObserver(this);
         }
     }
@@ -57,17 +63,20 @@ public class GameUIController : MonoBehaviour, IGameObserver
         if (levelType == LevelType.IsoLevel)
         {
             gameSubject.RemoveGameObserver(this);
+            gameControllerSubject.RemoveGameObserver(this);
         }
         else if (levelType == LevelType.RunNGunLevel)
         {
             gameSubject.RemoveGameObserver(this);
             gameSubject.RemoveSideScrollGameObserver(this);
+            gameControllerSubject.RemoveSideScrollGameObserver(this);
             goalSubject.RemoveSideScrollGameObserver(this);
         }
         else
         {
             gameSubject.RemoveGameObserver(this);
             gameSubject.RemoveSideScrollGameObserver(this);
+            gameControllerSubject.RemoveSideScrollGameObserver(this);
         }
     }
     public void OnGameNotify(IsometricGameState isoGameState)
@@ -91,11 +100,13 @@ public class GameUIController : MonoBehaviour, IGameObserver
         switch (sidescrollGameState)
         {
             case(SideScrollGameState.Play):
-                // Time scale 1
+                pauseWindow.SetActive(false);
+                Time.timeScale = 1;
                 return;
             case (SideScrollGameState.Paused):
-                // Show Pause screen
-                // Time scale 0
+                pauseWindow.SetActive(true);
+                pauseWindow.GetComponent<PauseWindow>().DisplayCurrentStatus(levelType);
+                Time.timeScale = 0;
                 return;
             case (SideScrollGameState.Win):
                 // Show win scoreboard
@@ -126,7 +137,6 @@ public class GameUIController : MonoBehaviour, IGameObserver
                         currentProgreesionIcon.rectTransform.anchoredPosition.y);
                 }
                 loseScoreBoard.SetActive(true);
-                
                 return;
         }
     }

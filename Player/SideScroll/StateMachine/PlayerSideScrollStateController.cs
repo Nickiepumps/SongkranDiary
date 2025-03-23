@@ -80,8 +80,6 @@ public class PlayerSideScrollStateController : PlayerSubject
                     spriteFlashingTimer = spriteFlashingTime;
                     spriteActive = true;
                 }
-                
-
             }
             if(currentImmunityTime <= 0)
             {
