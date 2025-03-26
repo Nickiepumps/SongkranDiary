@@ -8,8 +8,13 @@ public class SideScroll_IdleState : PlayerSideScrollStateMachine
     public override void Start()
     {
         playerSideScroll.isCrouch = false;
+        //playerSideScroll.playerHandAnimator.SetBool("Idle", true);
+        //playerSideScroll.playerHeadAnimator.SetBool("Idle", true);
+        //playerSideScroll.playerHeadAnimator.SetBool("Run", false);
+        //playerSideScroll.playerHandAnimator.SetBool("Run", false);
         playerSideScroll.playerAnimator.SetBool("Idle", true);
         playerSideScroll.playerAnimator.SetBool("Run", false);
+        //playerSideScroll.playerAnimator.SetBool("TestRun", false);
         playerSideScroll.playerAnimator.SetBool("Jump", false);
         playerSideScroll.playerAnimator.SetBool("Crouch", false);
         playerSideScroll.playerCollider.size = new Vector2(playerSideScroll.playerCollider.size.x, playerSideScroll.playerStandColliderSizeY);

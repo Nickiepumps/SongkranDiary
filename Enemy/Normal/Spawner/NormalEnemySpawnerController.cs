@@ -7,6 +7,9 @@ public class NormalEnemySpawnerController : MonoBehaviour
     [Header("Spawner Reference")]
     [SerializeField] private NormalEnemySpawner normalEnemySpawner;
 
+    [Header("Spawn Setting")]
+    [SerializeField] private bool startSpawnOnStart;
+
     [Header("All Shooter and Bomber Enemies")]
     private List<GameObject> shooterLists = new List<GameObject>();
     private List<GameObject> bomberLists = new List<GameObject>();
@@ -24,16 +27,17 @@ public class NormalEnemySpawnerController : MonoBehaviour
     }
     private void Update()
     {
-        for (int i = 0; i < normalEnemySpawner.spawnedShooterLists.Count; i++)
+        currentTimeToSpawn -= Time.deltaTime;
+        if (startSpawnOnStart == true && currentTimeToSpawn <= 0)
         {
-            if (normalEnemySpawner.spawnedShooterLists[i].activeSelf == false)
+            for (int i = 0; i < normalEnemySpawner.spawnedShooterLists.Count; i++)
             {
-                currentTimeToSpawn -= Time.deltaTime;
-                if(currentTimeToSpawn < 0)
+                if (normalEnemySpawner.spawnedShooterLists[i].activeSelf == false)
                 {
                     NewSpawnAndDestination(normalEnemySpawner.spawnedShooterLists[i].GetComponent<EnemyShooterStateController>());
                     spawnRate = Random.Range(minSpawnRate, maxSpawnRate);
                     currentTimeToSpawn = spawnRate;
+                    return;
                 }
             }
         }
@@ -65,5 +69,4 @@ public class NormalEnemySpawnerController : MonoBehaviour
         enemy.transform.position = enemy.startPoint.position;
         enemy.gameObject.SetActive(true);
     }
-
 }

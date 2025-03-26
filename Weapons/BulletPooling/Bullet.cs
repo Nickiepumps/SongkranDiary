@@ -111,14 +111,10 @@ public class Bullet : MonoBehaviour
         else if(collision.gameObject.tag == "Enemy")
         {
             isHit = true;
-            if(collision.gameObject.GetComponent<NormalEnemyObserverController>() != null)
+            /*if(collision.gameObject.GetComponent<NormalEnemyObserverController>() != null)
             {
                 collision.gameObject.GetComponent<NormalEnemyObserverController>().OnNormalEnemyNotify(EnemyAction.Damaged);
-            }
-            else
-            {
-                collision.gameObject.GetComponent<BossHealthObserver>().OnBossNotify(BossAction.Damaged);
-            }
+            }*/
             StartCoroutine(DeactivateBullet());
         }
         else if(collision.gameObject.tag == "EnemyBullet")

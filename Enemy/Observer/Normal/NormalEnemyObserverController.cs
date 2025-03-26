@@ -40,8 +40,8 @@ public class NormalEnemyObserverController : MonoBehaviour, INormalEnemyObserver
                 Debug.Log("Notify Hit");
                 if(enemyStats.currentEnemyHP > 0)
                 {
+                    StartCoroutine(DamageIndicator()); // Enable damage flickering effect
                     enemyStats.currentEnemyHP--;
-                    StartCoroutine(DamageIndicator());
                 }
                 return;
             case(EnemyAction.Shoot):
@@ -59,7 +59,7 @@ public class NormalEnemyObserverController : MonoBehaviour, INormalEnemyObserver
                 EnemyExplode();
                 return;
             case (EnemyAction.Dead):
-                Debug.Log("Enemy Dead");
+                enemySpriteRenderer.color = Color.white;
                 return;
         }
     }

@@ -2,16 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BucketKid_BossIIdleState : BossStateMachine
+public class BucketKid_BossIdleState : BossStateMachine
 {
-    public BucketKid_BossIIdleState(BucketKid_BossStateController bucketKidBoss) : base(bucketKidBoss) { }
+    public BucketKid_BossIdleState(BucketKid_BossStateController bucketKidBoss) : base(bucketKidBoss) { }
     public override void Start()
     {
 
     }
     public override void Update()
     {
-        
+        if(bucketKidBoss.bossHP.currentBossHP <= 0)
+        {
+            bucketKidBoss.BossStateTransition(new BucketKid_BossDieState(bucketKidBoss));
+        }
     }
     public override void FixedUpdate()
     {
@@ -19,7 +22,6 @@ public class BucketKid_BossIIdleState : BossStateMachine
     }
     public override void OnTriggerEnter(Collider2D eCollider)
     {
-
     }
     public override void OnTriggerExit(Collider2D eCollider)
     {

@@ -41,6 +41,12 @@ public class FatKid_BossStateController : BossSubject
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        switch (collision.tag)
+        {
+            case ("PlayerBullet"):
+                NotifyBoss(BossAction.Damaged);
+                break;
+        }
         currentBossState.OnTriggerEnter(collision);
     }
     private void OnTriggerExit2D(Collider2D collision)

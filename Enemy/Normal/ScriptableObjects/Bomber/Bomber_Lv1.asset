@@ -9,12 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: def32195ed611454088c2876190512ec, type: 3}
+  m_Script: {fileID: 11500000, guid: 3e09193d56a2b5a4ca0d5e88cb4cf77a, type: 3}
   m_Name: Bomber_Lv1
   m_EditorClassIdentifier: 
   NormalEnemyType: 1
   hp: 2
-  movementSpeed: 5
-  damage: 2
-  bomberSprite: {fileID: 21300000, guid: ba1d2c4b3c3ac204ebcca03e96607839, type: 3}
-  bomberExplodedSprite: {fileID: 0}
+  damage: 1
+  aspd: 0
+  movementSpeed: 4
+  normalSprite: {fileID: 1334717516, guid: 48c208e1eeed3194bbebaf49546adf52, type: 3}
+  damagedSprite: {fileID: 0}
+  deadSprite: {fileID: 0}

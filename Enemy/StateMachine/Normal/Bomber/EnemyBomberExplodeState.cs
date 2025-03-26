@@ -7,7 +7,9 @@ public class EnemyBomberExplodeState : EnemyStateMachine
     public EnemyBomberExplodeState(EnemyBomberStateController bomberEnemy) : base(bomberEnemy) { }
     public override void Start()
     {
-
+        // Play explode animation
+        bomberEnemy.NotifyNormalEnemy(EnemyAction.Explode);
+        bomberEnemy.gameObject.SetActive(false);
     }
 
     public override void Update()

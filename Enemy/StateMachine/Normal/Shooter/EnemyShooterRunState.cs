@@ -7,10 +7,9 @@ public class EnemyShooterRunState : EnemyStateMachine
     public EnemyShooterRunState(EnemyShooterStateController shooterEnemy) : base(shooterEnemy) { }
     private Vector2 moveDir;
     private float currentASPD;
-    private Transform newStart, newDestination;
     public override void Start()
     {
-        shooterEnemy.currentEnemyHP = shooterEnemy.enemyHP;
+        //shooterEnemy.currentEnemyHP = shooterEnemy.enemyHP;
         currentASPD = shooterEnemy.enemyASPD;
         shooterEnemy.transform.position = new Vector2(shooterEnemy.startPoint.position.x, shooterEnemy.transform.position.y);
     }
@@ -30,10 +29,6 @@ public class EnemyShooterRunState : EnemyStateMachine
                 shooterEnemy.NotifyNormalEnemy(EnemyAction.Shoot);
                 currentASPD = shooterEnemy.enemyASPD;
             }
-        }
-        else if(shooterEnemy.normalEnemyType == NormalEnemyType.Bomber)
-        {
-            moveDir = Vector2.MoveTowards(shooterEnemy.transform.position, shooterEnemy.destination.position, shooterEnemy.walkSpeed * Time.fixedDeltaTime);
         }
 
         if(Vector2.Distance(shooterEnemy.transform.position, shooterEnemy.destination.position) < 0.5f)

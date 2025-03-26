@@ -7,8 +7,14 @@ public class SideScroll_RunState : PlayerSideScrollStateMachine
     public SideScroll_RunState(PlayerSideScrollStateController playerSideScroll) : base(playerSideScroll) { }
     public override void Start()
     {
+
+        //playerSideScroll.playerHandAnimator.SetBool("Idle", false);
+        //playerSideScroll.playerHeadAnimator.SetBool("Idle", false);
+        //playerSideScroll.playerHeadAnimator.SetBool("Run", true);
+        //playerSideScroll.playerHandAnimator.SetBool("Run", true);
         playerSideScroll.playerAnimator.SetBool("Idle", false);
         playerSideScroll.playerAnimator.SetBool("Run", true);
+        //playerSideScroll.playerAnimator.SetBool("TestRun", true);
         playerSideScroll.playerAnimator.SetBool("Crouch", false);
         if (playerSideScroll.isPlayerOnGround == false)
         {

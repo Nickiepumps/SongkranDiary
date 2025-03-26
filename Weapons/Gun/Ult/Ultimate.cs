@@ -20,14 +20,14 @@ public class Ultimate : MonoBehaviour
         }
         else if (collision.gameObject.tag == "Enemy")
         {
-            if(collision.gameObject.GetComponent<NormalEnemyObserverController>() != null)
+            /*if (collision.gameObject.GetComponent<NormalEnemyObserverController>())
             {
                 collision.gameObject.GetComponent<NormalEnemyObserverController>().OnNormalEnemyNotify(EnemyAction.Damaged);
             }
             else
             {
                 collision.gameObject.GetComponent<BossHealthObserver>().OnBossNotify(BossAction.Damaged);
-            }
+            }*/
             gameObject.SetActive(false);
         }
     }

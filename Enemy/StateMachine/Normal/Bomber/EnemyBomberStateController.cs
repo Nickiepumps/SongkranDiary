@@ -33,6 +33,7 @@ public class EnemyBomberStateController : NormalEnemySubject
     {
         player = GameObject.Find("Player_SideScroll").GetComponent<PlayerSideScrollStateController>();
         EnemyStateTransition(new EnemyBomberRunState(this));
+        
     }
     private void Update()
     {

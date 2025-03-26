@@ -4,13 +4,27 @@ using UnityEngine;
 
 public class BossHealthObserver : MonoBehaviour, IBossObserver
 {
-    private BossHealth bossHP;
+    [Header("Boss Observer References")]
+    [SerializeField] private BossSubject bossSubject;
+    [Header("Boss Health Properties")]
+    [SerializeField] private BossScriptableObject bossStats;
+    public int currentBossHP;
+    [SerializeField] public int bossMaxHP; // Used for game controller to check boss progression
     [Header("Boss Sprite")]
     [SerializeField] private SpriteRenderer bossSpriteRenderer;
     [SerializeField] private Color bossDamagedColor;
-    private void Awake()
+    private void OnEnable()
     {
-        bossHP = GetComponent<BossHealth>();
+        bossSubject.AddBossObserver(this);
+    }
+    private void OnDisable()
+    {
+        bossSubject.RemoveBossObserver(this);
+    }
+    private void Start()
+    {
+        bossMaxHP = bossStats.HP;
+        currentBossHP = bossStats.HP;
     }
     public void OnBossNotify(BossAction action)
     {
@@ -18,7 +32,7 @@ public class BossHealthObserver : MonoBehaviour, IBossObserver
         {
             case (BossAction.Damaged):
                 Debug.Log("Boss Damaged");
-                bossHP.currentBossHP--;
+                currentBossHP--;
                 StartCoroutine(DamageIndicator());
                 return;
         }

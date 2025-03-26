@@ -13,6 +13,8 @@ public class PlayerSideScrollStateController : PlayerSubject
     
     [Header("Player Animator Reference")]
     public Animator playerAnimator;
+    public Animator playerHeadAnimator;
+    public Animator playerHandAnimator;
 
     [Header("Player Stats")]
     [SerializeField] private PlayerStats currentPlayerStats;

@@ -7,7 +7,7 @@ public class BucketKid_BossStateController : BossSubject
 {
     private BossStateMachine currentBossState;
     [Header("Boss Properties")]
-    public BossHealth bossHP;
+    public BossHealthObserver bossHP;
     public SpriteRenderer bossSpriteRenderer;
     public Rigidbody2D bossRB;
     public CircleCollider2D ultCollider;
@@ -31,6 +31,10 @@ public class BucketKid_BossStateController : BossSubject
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (collision.tag == "PlayerBullet")
+        {
+            NotifyBoss(BossAction.Damaged);
+        }
         currentBossState.OnTriggerEnter(collision);
     }
     private void OnTriggerExit2D(Collider2D collision)

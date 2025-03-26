@@ -44,12 +44,16 @@ public class BulletShooting : ShootingSubject
     [SerializeField] private Image laserBulletKeyIconBG;
 
     [SerializeField] private SpriteRenderer playerSpriteDirection; // Player's sprite facing direction
+
+    [SerializeField] private Animator animator;
     
     [HideInInspector] public float switchCoolDown = 2f;
     [HideInInspector] public float currentBulletSwitchCoolDownTimer;
     [HideInInspector] public bool coolDownStatus = false;
     private void Start()
     {
+        InvokeRepeating("CheckAimAngle", 0, 0.15f); // Aiming angle check
+
         currentASPD = weaponData.currentNormalASPD.aspd;
         currentTravelSpeed = weaponData.currentWeaponTravelSpeed.aspd;
         currentBulletSwitchCoolDownTimer = switchCoolDown;
@@ -59,8 +63,6 @@ public class BulletShooting : ShootingSubject
     private void Update()
     {
         #region Shooting
-        // Aiming
-        CheckAimAngle();
         // Shooting
         ShootingControl();
         UpdateBulletDisplay();

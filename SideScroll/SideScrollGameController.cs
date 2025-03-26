@@ -9,15 +9,14 @@ public class SideScrollGameController : GameSubject
     [SerializeField] private PlayerSideScrollStateController sidescrollPlayer;
 
     [Header("Side Scroll Game Properties")]
-    // Run n Gun mode
+    [Header("Run n Gun Mode Properties")]
+    [Header("Start and Goal Position")]
     [SerializeField] Transform startPos; // Start pos in the world
     [SerializeField] Transform goalPos; // Goal pos in the world
-    // Boss mode
-    [SerializeField] BossList bossName;
-    [SerializeField] BossHealth bossHP;
+    [Header("Boss Mode Properties")]
+    [SerializeField] BossHealthObserver bossHP;
 
     [HideInInspector] public bool isPaused = false;
-    private GameObject bossController;
     private float timer;
     private int minute;
     private int second;
