@@ -28,7 +28,6 @@ public class EnemyShooterStateController : NormalEnemySubject
     //public int enemyHP;
     private void OnEnable()
     {
-        //currentEnemyHP = enemyHP;
         enemySpriteRenderer.sprite = enemyStats.normalSprite;
         normalEnemyType = enemyStats.NormalEnemyType;
         currentEnemyHP = enemyStats.hp;

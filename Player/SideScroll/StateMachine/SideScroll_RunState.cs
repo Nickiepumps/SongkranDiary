@@ -59,13 +59,7 @@ public class SideScroll_RunState : PlayerSideScrollStateMachine
     }
     public override void OntriggerEnter(Collider2D pCollider)
     {
-        if (pCollider.gameObject.tag == "EnemyHitBox" || pCollider.gameObject.tag == "EnemyBullet")
-        {
-            if(playerSideScroll.isDamaged == false)
-            {
-                playerSideScroll.NotifyPlayerObserver(PlayerAction.Damaged);
-            }
-        }
+        
     }
     public override void OntriggerExit(Collider2D pCollider)
     {

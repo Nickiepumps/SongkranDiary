@@ -19,19 +19,15 @@ public class EnemyShooterRunState : EnemyStateMachine
         {
             shooterEnemy.EnemyStateTransition(new EnemyShooterDeadState(shooterEnemy));
         }
-        if(shooterEnemy.normalEnemyType == NormalEnemyType.Shooter)
+        moveDir = Vector2.MoveTowards(shooterEnemy.transform.position, shooterEnemy.destination.position, shooterEnemy.walkSpeed * Time.fixedDeltaTime);
+        currentASPD -= Time.deltaTime;
+        if (currentASPD <= 0)
         {
-            moveDir = Vector2.MoveTowards(shooterEnemy.transform.position, shooterEnemy.destination.position, shooterEnemy.walkSpeed * Time.fixedDeltaTime);
-
-            currentASPD -= Time.deltaTime;
-            if (currentASPD <= 0)
-            {
-                shooterEnemy.NotifyNormalEnemy(EnemyAction.Shoot);
-                currentASPD = shooterEnemy.enemyASPD;
-            }
+            shooterEnemy.NotifyNormalEnemy(EnemyAction.Shoot);
+            currentASPD = shooterEnemy.enemyASPD;
         }
 
-        if(Vector2.Distance(shooterEnemy.transform.position, shooterEnemy.destination.position) < 0.5f)
+        if (Vector2.Distance(shooterEnemy.transform.position, shooterEnemy.destination.position) < 0.5f)
         {
             Debug.Log("Reached Destination");
             shooterEnemy.gameObject.SetActive(false);

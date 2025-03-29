@@ -1,12 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 
 public class SideScrollGameController : GameSubject
 {
     [Header("Side Scroll Player Properties")]
     [SerializeField] private PlayerSideScrollStateController sidescrollPlayer;
+    [Header("Observer References")]
+    [SerializeField] private PlayerSubject sidescrollPlayerSubject;
 
     [Header("Side Scroll Game Properties")]
     [Header("Run n Gun Mode Properties")]

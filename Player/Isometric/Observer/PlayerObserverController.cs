@@ -93,15 +93,22 @@ public class PlayerObserverController : MonoBehaviour, IGameObserver, IPlayerObs
             switch (playerAction)
             {
                 case (PlayerAction.Damaged):
-                    Debug.Log("Player Damaged");
                     if (playerSideScrollStateController.playerCurrentHP > 0)
                     {
-                        healthDisplay.DecreaseHealth(playerSideScrollStateController.playerCurrentHP);
                         playerSideScrollStateController.playerCurrentHP--;
+                        healthDisplay.DecreaseHealth(playerSideScrollStateController.playerCurrentHP);
                         playerSideScrollStateController.isDamaged = true;
                     }
                     return;
-                case(PlayerAction.Dead):
+                case (PlayerAction.Blind):
+                    if (playerSideScrollStateController.playerCurrentHP > 0)
+                    {
+                        playerSideScrollStateController.playerCurrentHP--;
+                        healthDisplay.DecreaseHealth(playerSideScrollStateController.playerCurrentHP);
+                        playerSideScrollStateController.isDamaged = true;
+                    }
+                    return;
+                case (PlayerAction.Dead):
                     gameSubject.NotifySideScrollGameObserver(SideScrollGameState.Lose);
                     return;
                 case (PlayerAction.win):

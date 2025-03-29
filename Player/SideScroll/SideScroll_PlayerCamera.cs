@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public class SideScroll_PlayerCamera : MonoBehaviour, IPlayerObserver
 {
@@ -17,6 +19,11 @@ public class SideScroll_PlayerCamera : MonoBehaviour, IPlayerObserver
     [SerializeField] private float minShake;
     [SerializeField] private float maxShake;
     private Camera playerCam;
+
+    [Header("Post Processing")]
+    [SerializeField] private Volume blurVolumeObject;
+    [SerializeField] private VolumeProfile blurProfile;
+    private DepthOfField depthOfField;
     private void OnEnable()
     {
         playerSubject.AddPlayerObserver(this);   
@@ -28,6 +35,7 @@ public class SideScroll_PlayerCamera : MonoBehaviour, IPlayerObserver
     private void Start()
     {
         playerCam = Camera.main;
+        blurVolumeObject.profile.TryGet<DepthOfField>(out depthOfField);
     }
     private void FixedUpdate()
     {
@@ -46,6 +54,11 @@ public class SideScroll_PlayerCamera : MonoBehaviour, IPlayerObserver
                 StopAllCoroutines();
                 StartCoroutine(CameraShake(1f, minShake, maxShake));
                 return;
+            case(PlayerAction.Blind):
+                StopAllCoroutines();
+                StartCoroutine(CameraShake(1f, minShake, maxShake));
+                StartCoroutine(Blur());
+                return;
         }
     }
     private IEnumerator CameraShake(float shakeDuration, float minShake, float maxShake)
@@ -62,5 +75,15 @@ public class SideScroll_PlayerCamera : MonoBehaviour, IPlayerObserver
             yield return null;
         }
         cameraParent.localPosition = new Vector3(0,0,cameraParent.localPosition.z);
+    }
+    private IEnumerator Blur()
+    {
+        depthOfField.focalLength.value = 300;
+        while (depthOfField.focalLength.value > 10)
+        {
+            depthOfField.focalLength.value = Mathf.Lerp(depthOfField.focalLength.value, 10, 0.5f * Time.deltaTime);
+            yield return null;
+        }
+        yield return null;
     }
 }

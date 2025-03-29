@@ -8,7 +8,7 @@ public class EnemyBomberRunState : EnemyStateMachine
     private Vector2 moveDir;
     public override void Start()
     {
-        bomberEnemy.currentEnemyHP = bomberEnemy.enemyHP;
+        Debug.Log("RunState");
         bomberEnemy.transform.position = new Vector2(bomberEnemy.startPoint.position.x, bomberEnemy.transform.position.y);
     }
     public override void Update()
@@ -18,6 +18,11 @@ public class EnemyBomberRunState : EnemyStateMachine
             bomberEnemy.EnemyStateTransition(new EnemyBomberExplodeState(bomberEnemy));
         }
         moveDir = Vector2.MoveTowards(bomberEnemy.transform.position, bomberEnemy.destination.position, bomberEnemy.walkSpeed * Time.fixedDeltaTime);
+        if (Vector2.Distance(bomberEnemy.transform.position, bomberEnemy.destination.position) < 0.5f)
+        {
+            Debug.Log("Reached Destination");
+            bomberEnemy.gameObject.SetActive(false);
+        }
     }
     public override void FixedUpdate()
     {
@@ -33,7 +38,11 @@ public class EnemyBomberRunState : EnemyStateMachine
     }
     public override void OnTriggerEnter(Collider2D eCollider)
     {
-
+        if(eCollider.tag == "Player")
+        {
+            bomberEnemy.currentEnemyHP = 0;   
+            bomberEnemy.player.NotifyPlayerObserver(PlayerAction.Blind);
+        }
     }
     public override void OnTriggerExit(Collider2D eCollider)
     {

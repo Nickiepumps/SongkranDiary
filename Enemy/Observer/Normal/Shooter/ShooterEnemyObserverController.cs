@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NormalEnemyObserverController : MonoBehaviour, INormalEnemyObserver
+public class ShooterEnemyObserverController : MonoBehaviour, INormalEnemyObserver
 {
     private NormalEnemySubject normalEnemySubject;
     private EnemyBulletPooler enemyBulletPooler;
@@ -54,10 +54,6 @@ public class NormalEnemyObserverController : MonoBehaviour, INormalEnemyObserver
                     EnemyShoot(bulletLeftSpawn, Vector2.left, true);
                 }
                 return;
-            case (EnemyAction.Explode):
-                Debug.Log("Enemy Exploded");
-                EnemyExplode();
-                return;
             case (EnemyAction.Dead):
                 enemySpriteRenderer.color = Color.white;
                 return;
@@ -81,10 +77,6 @@ public class NormalEnemyObserverController : MonoBehaviour, INormalEnemyObserver
             }
             enemyBullet.SetActive(true);
         }
-    }
-    private void EnemyExplode()
-    {
-
     }
     private IEnumerator DamageIndicator()
     {

@@ -1,7 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
-using UnityEditor.Animations;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
@@ -13,6 +11,7 @@ public class Bullet : MonoBehaviour
     public Transform laserBoundary;
     private BulletPooler bulletPooler;
     private BoxCollider2D bulletCollider;
+    private EdgeCollider2D bulletEdgeCollider;
     private bool isHit = false;
 
     [Header("Bullet Animator")]
@@ -22,6 +21,7 @@ public class Bullet : MonoBehaviour
         if(bulletCollider == null && bulletPooler == null)
         {
             bulletCollider = GetComponent<BoxCollider2D>();
+            bulletEdgeCollider = GetComponent<EdgeCollider2D>();
             bulletPooler = GameObject.Find("BulletPooler").GetComponent<BulletPooler>();
         }
         if (bulletType == BulletType.laser)
@@ -78,9 +78,12 @@ public class Bullet : MonoBehaviour
     private IEnumerator LaserBullet()
     {
         bulletCollider.enabled = false; // Disable bullet collider
+        bulletEdgeCollider.enabled = true;
         float laserDist = Vector2.Distance(transform.position, laserBoundary.position); // Check distance from laser boundary to bullet spawn
-        RaycastHit2D[] laserHit = Physics2D.RaycastAll(transform.position, laserBoundary.position);
+        bulletEdgeCollider.SetPoints(new List<Vector2> { Vector2.zero, new Vector2(0, laserBoundary.position.x) }); // Get the points of the edge collider
         bulletSprite.size = new Vector2(laserDist, 1); // Scale the object in local space to match the laser distance
+        Vector2 bulletPosition = transform.position;
+        /*RaycastHit2D[] laserHit = Physics2D.RaycastAll(transform.position, laserBoundary.position);
         foreach(RaycastHit2D raycastHit in laserHit)
         {
             if (raycastHit == true && raycastHit.collider.gameObject.tag == "Enemy")
@@ -94,30 +97,25 @@ public class Bullet : MonoBehaviour
                     raycastHit.transform.GetComponent<BossHealthObserver>().OnBossNotify(BossAction.Damaged);
                 }
             }
-        }
-        Vector2 bulletPosition = transform.position;
-        Debug.DrawLine(transform.position, laserBoundary.position, Color.red, 10);
-        yield return new WaitForSeconds(0.15f); // Appear only for 0.1 secs
-        laserHit = null; // Clear all the hit object
+        }*/
+        yield return new WaitForSeconds(0.1f); // Appear only for 0.15 secs
+        //laserHit = null; // Clear all the hit object
+        bulletEdgeCollider.enabled = false;
         gameObject.SetActive(false); // Disable bullet
         yield return null;
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "B_Boundary")
+        if (collision.gameObject.tag == "B_Boundary" && bulletType != BulletType.laser)
         {
             gameObject.SetActive(false);
         }
-        else if(collision.gameObject.tag == "Enemy")
+        else if(collision.gameObject.tag == "Enemy" && bulletType != BulletType.laser)
         {
             isHit = true;
-            /*if(collision.gameObject.GetComponent<NormalEnemyObserverController>() != null)
-            {
-                collision.gameObject.GetComponent<NormalEnemyObserverController>().OnNormalEnemyNotify(EnemyAction.Damaged);
-            }*/
             StartCoroutine(DeactivateBullet());
         }
-        else if(collision.gameObject.tag == "EnemyBullet")
+        else if(collision.gameObject.tag == "EnemyBullet" && bulletType != BulletType.laser)
         {
             StartCoroutine(DeactivateBullet());
         }

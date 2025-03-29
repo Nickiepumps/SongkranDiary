@@ -49,7 +49,6 @@ public class PlayerSideScrollStateController : PlayerSubject
     private bool spriteActive = false;
     private void Start()
     {
-        PlayerSideScrollStateTransition(new SideScroll_IdleState(this));
         playerRB = GetComponent<Rigidbody2D>();
         currentASPD = currentPlayerStats.currentNormalASPD.aspd;
         aspd = currentASPD;
@@ -58,6 +57,7 @@ public class PlayerSideScrollStateController : PlayerSubject
         playerMaxUltChargeTime = currentPlayerStats.currentPlayerUltCharge.ultChargeTime;
         currentImmunityTime = damageImmunityTime;
         spriteFlashingTimer = 0;
+        PlayerSideScrollStateTransition(new SideScroll_IdleState(this));
     }
     private void Update()
     {
@@ -97,6 +97,21 @@ public class PlayerSideScrollStateController : PlayerSubject
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (isDamaged == false)
+        {
+            switch (collision.tag)
+            {
+                case ("EnemyHitBox"):
+                    NotifyPlayerObserver(PlayerAction.Damaged);
+                    return;
+                case ("EnemyBullet"):
+                    NotifyPlayerObserver(PlayerAction.Damaged);
+                    return;
+                case ("BlindHitBox"):
+                    NotifyPlayerObserver(PlayerAction.Blind);
+                    return;
+            }
+        }
         currentState.OntriggerEnter(collision);
     }
     private void OnTriggerExit2D(Collider2D collision)

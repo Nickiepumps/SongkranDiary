@@ -7,8 +7,8 @@ public class PlayerHealthDisplay : MonoBehaviour, IPlayerObserver
 {
     [Header("Observer References")]
     [SerializeField] private PlayerSubject sideScrollPlayerObserver;
-    [Header("Player Health Stat")]
-    [SerializeField] private PlayerStats playerHealthStat;
+    [Header("Player Stats")]
+    [SerializeField] private PlayerStats playerStats;
     [Header("Player Health UI")]
     [SerializeField] private GameObject playerHealthHUDGroup;
     [SerializeField] private Sprite healthActiveIcon; // Actived health icon, Changed from depleated icon when player is healed
@@ -18,7 +18,10 @@ public class PlayerHealthDisplay : MonoBehaviour, IPlayerObserver
     [SerializeField] private Image playerEmotionDisplay;
     [SerializeField] private List<Sprite> playerEmotionIconLists;
     private List<Image> healthIconList = new List<Image>();
+    private int currentHealthPoint;
+    private int maxHealthPoint;
     [HideInInspector] public Sprite currentPlayerEmotionIcon;
+
     private void OnEnable()
     {
         sideScrollPlayerObserver.AddPlayerObserver(this);   
@@ -29,9 +32,10 @@ public class PlayerHealthDisplay : MonoBehaviour, IPlayerObserver
     }
     private void Start()
     {
-        int healthPoint = playerHealthStat.currentPlayerHP.hpPoint;
-        UpdateEmotionIcon(healthPoint, healthPoint);
-        for(int i = 0; i < healthPoint; i++)
+        maxHealthPoint = playerStats.currentPlayerHP.hpPoint;
+        currentHealthPoint = maxHealthPoint;
+        UpdateEmotionIcon(maxHealthPoint, currentHealthPoint);
+        for(int i = 0; i < maxHealthPoint; i++)
         {
             Image hp = Instantiate(healthUI, playerHealthGroup);
             healthUI.rectTransform.sizeDelta = new Vector2(48f, 48f);
@@ -44,19 +48,25 @@ public class PlayerHealthDisplay : MonoBehaviour, IPlayerObserver
         switch (playerAction)
         {
             case (PlayerAction.Damaged):
-                UpdateEmotionIcon(sideScrollPlayerObserver.GetComponent<PlayerSideScrollStateController>().playerMaxHP,
-                    sideScrollPlayerObserver.GetComponent<PlayerSideScrollStateController>().playerCurrentHP);
+                currentHealthPoint--;
+                //UpdateEmotionIcon(maxHealthPoint, sideScrollPlayerObserver.GetComponent<PlayerSideScrollStateController>().playerCurrentHP); // This doesn't work except boss2. Don't know why
+                UpdateEmotionIcon(maxHealthPoint, currentHealthPoint);
+                playerHealthHUDGroup.GetComponent<Animation>().Play();
+                return;
+            case (PlayerAction.Blind):
+                currentHealthPoint--;
+                UpdateEmotionIcon(maxHealthPoint, currentHealthPoint);
                 playerHealthHUDGroup.GetComponent<Animation>().Play();
                 return;
         }
     }
     public void IncreaseHealth(int currentHP)
     {
-        healthIconList[currentHP - 1].sprite = healthActiveIcon;
+        healthIconList[currentHP].sprite = healthActiveIcon;
     }
     public void DecreaseHealth(int currentHP)
     {
-        healthIconList[currentHP - 1].sprite = healthDepletedIcon;
+        healthIconList[currentHP].sprite = healthDepletedIcon;
     }
     public void UpdateEmotionIcon(float maxHP, float currentHP)
     {
