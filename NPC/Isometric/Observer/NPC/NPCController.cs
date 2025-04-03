@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class NPCController : NPCSubject
 {
-    [SerializeField] private GameObject dialogBox;
-    [SerializeField] private GameObject interactNotif;
     private void Start()
     {
         

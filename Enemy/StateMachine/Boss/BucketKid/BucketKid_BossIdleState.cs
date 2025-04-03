@@ -11,9 +11,12 @@ public class BucketKid_BossIdleState : BossStateMachine
     }
     public override void Update()
     {
-        if(bucketKidBoss.bossHP.currentBossHP <= 0)
+        if(bucketKidBoss.isGameStart == true)
         {
-            bucketKidBoss.BossStateTransition(new BucketKid_BossDieState(bucketKidBoss));
+            if (bucketKidBoss.bossHP.currentBossHP <= 0)
+            {
+                bucketKidBoss.BossStateTransition(new BucketKid_BossDieState(bucketKidBoss));
+            }
         }
     }
     public override void FixedUpdate()

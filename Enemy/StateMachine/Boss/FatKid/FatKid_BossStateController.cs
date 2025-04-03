@@ -21,6 +21,7 @@ public class FatKid_BossStateController : BossSubject
     public BoxCollider2D normalHitBox;
 
     // Hide in inspector
+    public bool isGameStart = false;
     public bool startInitIdle = false;
     public bool bossShooting = false;
     public bool bossUlt = false;

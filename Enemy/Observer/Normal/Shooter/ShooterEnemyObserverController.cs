@@ -62,11 +62,21 @@ public class ShooterEnemyObserverController : MonoBehaviour, INormalEnemyObserve
     private void EnemyShoot(Transform spawnPos, Vector2 bulletDirection, bool isLeft)
     {
         GameObject enemyBullet = enemyBulletPooler.EnableEnemyBullet();
-        if(enemyBullet != null)
+        int changeToHealPlayer = Random.Range(1, 10);
+        EnemyBullet component = enemyBullet.GetComponent<EnemyBullet>();
+        if (changeToHealPlayer >= 8) // Switch to heal bullet
+        {
+            component.isHealBullet = true;
+        }
+        else // Switch to normal bullet
+        {
+            component.isHealBullet = false;
+        }
+        if (enemyBullet != null)
         {
             enemyBullet.transform.position = spawnPos.position;
             enemyBullet.transform.rotation = spawnPos.rotation;
-            enemyBullet.GetComponent<EnemyBullet>().bulletDirection = bulletDirection;
+            component.bulletDirection = bulletDirection;
             if(isLeft == true)
             {
                 enemyBullet.GetComponentInChildren<SpriteRenderer>().flipY = true;

@@ -12,9 +12,9 @@ public class SideScroll_RunState : PlayerSideScrollStateMachine
         //playerSideScroll.playerHeadAnimator.SetBool("Idle", false);
         //playerSideScroll.playerHeadAnimator.SetBool("Run", true);
         //playerSideScroll.playerHandAnimator.SetBool("Run", true);
+        //playerSideScroll.playerAnimator.SetBool("TestRun", true);
         playerSideScroll.playerAnimator.SetBool("Idle", false);
         playerSideScroll.playerAnimator.SetBool("Run", true);
-        //playerSideScroll.playerAnimator.SetBool("TestRun", true);
         playerSideScroll.playerAnimator.SetBool("Crouch", false);
         if (playerSideScroll.isPlayerOnGround == false)
         {

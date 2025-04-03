@@ -43,6 +43,7 @@ public class PlayerSideScrollStateController : PlayerSubject
     private float currentImmunityTime;
     public float xDir;
     public float currentASPD;
+    public bool isGameStart = false;
     private float aspd;
     private float spriteFlashingTime = 0.2f;
     private float spriteFlashingTimer;
@@ -106,6 +107,9 @@ public class PlayerSideScrollStateController : PlayerSubject
                     return;
                 case ("EnemyBullet"):
                     NotifyPlayerObserver(PlayerAction.Damaged);
+                    return;
+                case ("HealBullet"):
+                    NotifyPlayerObserver(PlayerAction.Heal);
                     return;
                 case ("BlindHitBox"):
                     NotifyPlayerObserver(PlayerAction.Blind);

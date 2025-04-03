@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,7 +10,8 @@ public class UpgradeWindow : MonoBehaviour, IGameObserver
     [SerializeField] private TempPlayerDataSave tempDataSO;
 
     [Header("Observer Reference")]
-    [SerializeField] private GameSubject gameSubject;
+    [SerializeField] private GameSubject gameUIControllerSubject;
+    private GameUIController gameUIController;
 
     [Header("Player's Stat Reference")]
     [SerializeField] private PlayerStats playerStats;
@@ -22,7 +24,6 @@ public class UpgradeWindow : MonoBehaviour, IGameObserver
     [SerializeField] private Image bl_Sprd_SprdCount_UpgradeBar;
     [SerializeField] private Image bl_Sprd_ASPD_UpgradeBar;
     [SerializeField] private Image bl_Lsr_ASPD_UpgradeBar;
-
 
     [Header("UpgradeBar Sprites Variants")]
     [SerializeField] private List<Sprite> p_HP_UpgradeBarLevel = new List<Sprite>();
@@ -50,16 +51,14 @@ public class UpgradeWindow : MonoBehaviour, IGameObserver
     [SerializeField] private List<PlayerStatSO> playerHPLists = new List<PlayerStatSO>();
     [SerializeField] private List<PlayerStatSO> playerUltChargeLists = new List<PlayerStatSO>();
 
-    [Header("Weapon Stats Scriptable Objects")]
     [Space]
+    [Header("Weapon Stats Scriptable Objects")]
     [Header("Normal Bullet Stats")]
     [SerializeField] private List<WeaponSO> normalBulletASPDLists = new List<WeaponSO>();
     [SerializeField] private List<WeaponSO> normalBulletTASPDLists = new List<WeaponSO>();
-    [Space]
     [Header("Spread Bullet Stats")]
     [SerializeField] private List<WeaponSO> spreadBulletASPDLists = new List<WeaponSO>();
     [SerializeField] private List<WeaponSO> spreadBulletCountLists = new List<WeaponSO>();
-    [Space]
     [Header("Laser Bullet Stats")]
     [SerializeField] private List<WeaponSO> laserBulletASPDLists = new List<WeaponSO>();
 
@@ -74,13 +73,17 @@ public class UpgradeWindow : MonoBehaviour, IGameObserver
 
     }
 
+    private void Awake()
+    {
+        gameUIController = gameUIControllerSubject.GetComponent<GameUIController>();
+    }
     private void OnEnable()
     {
-        gameSubject.AddGameObserver(this);   
+        gameUIControllerSubject.AddGameObserver(this);
     }
     private void OnDisable()
     {
-        gameSubject.RemoveGameObserver(this);
+        gameUIControllerSubject.RemoveGameObserver(this);
     }
     private void Update()
     {
@@ -96,7 +99,7 @@ public class UpgradeWindow : MonoBehaviour, IGameObserver
                 p_Ult_UpgradeBarBtn.SetActive(true);
             }
             gameObject.SetActive(false);
-            gameSubject.NotifyGameObserver(IsometricGameState.Play);
+            gameUIControllerSubject.NotifyGameObserver(IsometricGameState.Play);
         }
     }
     public void AddPlayerAbility(PlayerStatSO playerStatType)
@@ -217,6 +220,7 @@ public class UpgradeWindow : MonoBehaviour, IGameObserver
                 tempDataSO.currentLsrBulletASPD = weaponConfirmStats;
             }
         }
+        gameUIController.currentNPC.isPlayerUpgrade = true;
         confirmUpgradeBtn.SetActive(false);
     }
 }

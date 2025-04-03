@@ -6,17 +6,41 @@ public class EnemyBullet : MonoBehaviour
 {
     public float travelSpeed;
     public Vector2 bulletDirection;
+    [SerializeField] private Collider2D damageCollider;
+    [SerializeField] private Collider2D healCollider;
+    public bool isHealBullet = false;
     private Rigidbody2D enemyBulletRB;
+
+    [Header("Bullet Sprites")]
+    [SerializeField] private Sprite bulletSprite;
+    [SerializeField] private Sprite healSprite;
 
     [Header("Bullet Animator")]
     public Animator bulletAnimator;
     private void OnEnable()
     {
-        
+        if(isHealBullet == false)
+        {
+            damageCollider.enabled = true;
+            healCollider.enabled = false;
+            bulletAnimator.SetBool("isHit", false);
+            bulletAnimator.SetBool("isHeal", false);
+        }
+        else
+        {
+            damageCollider.enabled = false;
+            healCollider.enabled = true;
+            bulletAnimator.SetBool("isHit", false);
+            bulletAnimator.SetBool("isHeal", true);
+        }
     }
     private void OnDisable()
     {
+        isHealBullet = false;
+        damageCollider.enabled = true;
+        healCollider.enabled = false;
         bulletAnimator.SetBool("isHit", false);   
+        bulletAnimator.SetBool("isHeal", false);   
     }
     private void Start()
     {
@@ -42,7 +66,16 @@ public class EnemyBullet : MonoBehaviour
     // Play splash animation and deactivate bullet
     private IEnumerator DeactivateBullet()
     {
-        bulletAnimator.SetBool("isHit", true);
+        if(bulletAnimator.GetBool("isHeal") == true)
+        {
+            bulletAnimator.SetBool("isHit", true);
+            bulletAnimator.SetBool("isHeal", true);
+        }
+        else
+        {
+            bulletAnimator.SetBool("isHit", true);
+            bulletAnimator.SetBool("isHeal", false);
+        }
         yield return new WaitForSeconds(0.15f);
         gameObject.SetActive(false);
     }

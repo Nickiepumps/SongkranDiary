@@ -48,10 +48,17 @@ public class PlayerHealthDisplay : MonoBehaviour, IPlayerObserver
         switch (playerAction)
         {
             case (PlayerAction.Damaged):
-                currentHealthPoint--;
                 //UpdateEmotionIcon(maxHealthPoint, sideScrollPlayerObserver.GetComponent<PlayerSideScrollStateController>().playerCurrentHP); // This doesn't work except boss2. Don't know why
+                currentHealthPoint--;
                 UpdateEmotionIcon(maxHealthPoint, currentHealthPoint);
                 playerHealthHUDGroup.GetComponent<Animation>().Play();
+                return;
+            case (PlayerAction.Heal):
+                if(currentHealthPoint < maxHealthPoint)
+                {
+                    currentHealthPoint++;
+                }
+                UpdateEmotionIcon(maxHealthPoint, currentHealthPoint);
                 return;
             case (PlayerAction.Blind):
                 currentHealthPoint--;
@@ -62,7 +69,7 @@ public class PlayerHealthDisplay : MonoBehaviour, IPlayerObserver
     }
     public void IncreaseHealth(int currentHP)
     {
-        healthIconList[currentHP].sprite = healthActiveIcon;
+        healthIconList[currentHP - 1].sprite = healthActiveIcon;
     }
     public void DecreaseHealth(int currentHP)
     {

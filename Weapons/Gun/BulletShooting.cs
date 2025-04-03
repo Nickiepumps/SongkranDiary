@@ -50,6 +50,11 @@ public class BulletShooting : ShootingSubject
     [HideInInspector] public float switchCoolDown = 2f;
     [HideInInspector] public float currentBulletSwitchCoolDownTimer;
     [HideInInspector] public bool coolDownStatus = false;
+    private PlayerSideScrollStateController sidescrollPlayer;
+    private void Awake()
+    {
+        sidescrollPlayer = GetComponent<PlayerSideScrollStateController>();
+    }
     private void Start()
     {
         InvokeRepeating("CheckAimAngle", 0, 0.15f); // Aiming angle check
@@ -57,15 +62,17 @@ public class BulletShooting : ShootingSubject
         currentASPD = weaponData.currentNormalASPD.aspd;
         currentTravelSpeed = weaponData.currentWeaponTravelSpeed.aspd;
         currentBulletSwitchCoolDownTimer = switchCoolDown;
-        //currentBulletType = currentWeaponStats.currentNormalASPD.bulletType;
         aspd = currentASPD;
     }
     private void Update()
     {
         #region Shooting
         // Shooting
-        ShootingControl();
-        UpdateBulletDisplay();
+        if(sidescrollPlayer.isGameStart == true)
+        {
+            ShootingControl();
+            UpdateBulletDisplay();
+        }
         #endregion
     }
     private void ShootingControl()
@@ -121,6 +128,7 @@ public class BulletShooting : ShootingSubject
         }
         if (Input.GetMouseButton(0))
         {
+            //animator.SetBool("Shoot", true);
             aspd -= Time.deltaTime;
             if (aspd <= 0)
             {
@@ -138,6 +146,10 @@ public class BulletShooting : ShootingSubject
                 }
                 aspd = currentASPD;
             }
+        }
+        else
+        {
+            //animator.SetBool("Shoot", false);
         }
         if (Input.GetKeyDown(KeyCode.S))
         {

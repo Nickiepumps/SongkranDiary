@@ -7,6 +7,8 @@ using UnityEngine.UI;
 
 public class SideScrollGameController : GameSubject
 {
+    [Header("Side Scroll Game Mode")]
+    [SerializeField] private GameType gameMode;
     [Header("Side Scroll Player Properties")]
     [SerializeField] private PlayerSideScrollStateController sidescrollPlayer;
     [Header("Observer References")]
@@ -28,7 +30,7 @@ public class SideScrollGameController : GameSubject
     private int coinCounter;
     private void Update()
     {
-        if(sidescrollPlayer.isDead == false && sidescrollPlayer.isWin == false)
+        if (sidescrollPlayer.isDead == false && sidescrollPlayer.isWin == false)
         {
             CountTime();
         }

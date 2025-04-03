@@ -17,6 +17,7 @@ public class BucketKid_BossStateController : BossSubject
 
     // Hide in inspector
     public bool isDead = false;
+    public bool isGameStart = false;
     private void Start()
     {
         BossStateTransition(new BucketKid_BossIdleState(this));
