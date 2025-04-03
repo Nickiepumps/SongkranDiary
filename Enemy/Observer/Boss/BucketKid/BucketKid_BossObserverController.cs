@@ -5,10 +5,12 @@ public class BucketKid_BossObserverController : MonoBehaviour, IBossObserver, IG
 {
     [Header("Observer References")]
     private BossSubject bossSubject;
+    private BucketKid_BossStateController bucketKidStateController;
     [SerializeField] private GameSubject gameUISubject;
     private void Awake()
     {
         bossSubject = GetComponent<BucketKid_BossStateController>();
+        bucketKidStateController = GetComponent<BucketKid_BossStateController>();
     }
     private void OnEnable()
     {
@@ -34,21 +36,27 @@ public class BucketKid_BossObserverController : MonoBehaviour, IBossObserver, IG
                 return;
             case (BossAction.Ult):
                 return;
-            case (BossAction.Damaged):
+            case(BossAction.Damaged):
                 return;
             case (BossAction.Die):
-                gameUISubject.NotifySideScrollGameObserver(SideScrollGameState.Win);
+                gameUISubject.NotifySideScrollGameObserver(SideScrollGameState.Win); // Why double notify?
                 return;
         }
     }
-
     public void OnGameNotify(IsometricGameState isoGameState)
     {
         
     }
-
     public void OnSideScrollGameNotify(SideScrollGameState sidescrollGameState)
     {
-        
+        switch (sidescrollGameState)
+        {
+            case(SideScrollGameState.Play):
+                bucketKidStateController.isGameStart = true;
+                return;
+            case (SideScrollGameState.Paused):
+                bucketKidStateController.isGameStart = false;
+                return;
+        }
     }
 }

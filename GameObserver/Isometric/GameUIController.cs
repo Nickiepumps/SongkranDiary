@@ -10,18 +10,18 @@ public class GameUIController : MonoBehaviour, IGameObserver
     [SerializeField] private LevelType levelType;
 
     [Header("Observer References")]
-    [SerializeField] private GameSubject gameSubject; // Game subject
-    [SerializeField] private GameSubject goalSubject; // Game subject
+    [SerializeField] private GameSubject gameControllerSubject; // Game controller subject
+    [SerializeField] private GameSubject gameUIControllerSubject; // Game UI Controller subject
+    [SerializeField] private GameSubject goalSubject; // Run n Gun destination subject
 
     [Header("Game Controller Reference")]
     [SerializeField] private SideScrollGameController sidescrollGameController;
 
     [Header("Enemy Spawn Controller Reference")]
     [SerializeField] private NormalEnemySpawnerController enemySpawnController;
-
+    [Space]
+    [Space]
     [Header("Windows UI References")]
-    [Space]
-    [Space]
     [Header("Upgrade Window")]
     [SerializeField] private GameObject upgradeWindow; // Player upgrade window
     [Header("Scoreboard Window")]
@@ -33,41 +33,56 @@ public class GameUIController : MonoBehaviour, IGameObserver
     [SerializeField] private TMP_Text timerText;
     [SerializeField] private TMP_Text hpText;
     [SerializeField] private TMP_Text gradeText;
+    [Space]
+    [Header("Pause Window")]
+    [SerializeField] private GameObject pauseWindow; // Pause window
+    [Space]
+    [Header("Side Scroll Outro Window")]
+    [SerializeField] private SideScrollIntro sideScrollIntroWindow;
 
+    public NPCDialogController currentNPC; // Current NPC the player is talking to, Upgrade Window need to ref this variable to update player upgrade status
     private void OnEnable()
     {
-        if(levelType == LevelType.IsoLevel)
+        if (levelType == LevelType.IsoLevel)
         {
-            gameSubject.AddGameObserver(this);
+            gameUIControllerSubject.AddGameObserver(this);
+            //gameControllerSubject.AddGameObserver(this);
         }
         else if(levelType == LevelType.RunNGunLevel)
         {
-            gameSubject.AddGameObserver(this);
-            gameSubject.AddSideScrollGameObserver(this);
+            gameUIControllerSubject.AddGameObserver(this);
+            gameUIControllerSubject.AddSideScrollGameObserver(this);
+            gameControllerSubject.AddGameObserver(this);
+            gameControllerSubject.AddSideScrollGameObserver(this);
             goalSubject.AddSideScrollGameObserver(this);
         }
         else
         {
-            gameSubject.AddGameObserver(this);
-            gameSubject.AddSideScrollGameObserver(this);
+            gameUIControllerSubject.AddGameObserver(this);
+            gameControllerSubject.AddGameObserver(this);
+            gameControllerSubject.AddSideScrollGameObserver(this);
+            gameUIControllerSubject.AddSideScrollGameObserver(this);
         }
     }
     private void OnDisable()
     {
         if (levelType == LevelType.IsoLevel)
         {
-            gameSubject.RemoveGameObserver(this);
+            gameUIControllerSubject.RemoveGameObserver(this);
+            //gameControllerSubject.RemoveGameObserver(this);
         }
         else if (levelType == LevelType.RunNGunLevel)
         {
-            gameSubject.RemoveGameObserver(this);
-            gameSubject.RemoveSideScrollGameObserver(this);
+            gameUIControllerSubject.RemoveGameObserver(this);
+            gameUIControllerSubject.RemoveSideScrollGameObserver(this);
+            gameControllerSubject.RemoveSideScrollGameObserver(this);
             goalSubject.RemoveSideScrollGameObserver(this);
         }
         else
         {
-            gameSubject.RemoveGameObserver(this);
-            gameSubject.RemoveSideScrollGameObserver(this);
+            gameUIControllerSubject.RemoveGameObserver(this);
+            gameUIControllerSubject.RemoveSideScrollGameObserver(this);
+            gameControllerSubject.RemoveSideScrollGameObserver(this);
         }
     }
     public void OnGameNotify(IsometricGameState isoGameState)
@@ -75,6 +90,7 @@ public class GameUIController : MonoBehaviour, IGameObserver
         switch (isoGameState)
         {
             case (IsometricGameState.Play):
+                currentNPC = null;
                 upgradeWindow.SetActive(false);
                 return;
             case (IsometricGameState.Paused):
@@ -91,23 +107,22 @@ public class GameUIController : MonoBehaviour, IGameObserver
         switch (sidescrollGameState)
         {
             case(SideScrollGameState.Play):
-                // Time scale 1
+                pauseWindow.SetActive(false);
+                Time.timeScale = 1; // To Do: Find a better way to pause the game
                 return;
             case (SideScrollGameState.Paused):
-                // Show Pause screen
-                // Time scale 0
+                pauseWindow.SetActive(true);
+                pauseWindow.GetComponent<PauseWindow>().DisplayCurrentStatus(levelType);
+                Time.timeScale = 0; // To Do: Find a better way to pause the game
                 return;
             case (SideScrollGameState.Win):
-                // Show win scoreboard
-                scoreBoard.SetActive(true);
-                winScoreBoard.SetActive(true);
-                loseScoreBoard.SetActive(false);
-                timerText.text = sidescrollGameController.currentTime;
-                hpText.text = sidescrollGameController.UpdatePlayerHPCount().ToString();
-                gradeText.text = sidescrollGameController.Result();
-                if(levelType == LevelType.RunNGunLevel)
+                if(levelType == LevelType.BossLevel)
                 {
-                    enemySpawnController.enabled = false;
+                    StartCoroutine(BossKnockOut());
+                }
+                else if (levelType == LevelType.RunNGunLevel)
+                {
+                    StartCoroutine(ReachGoal());
                 }
                 return;
             case (SideScrollGameState.Lose):
@@ -126,8 +141,33 @@ public class GameUIController : MonoBehaviour, IGameObserver
                         currentProgreesionIcon.rectTransform.anchoredPosition.y);
                 }
                 loseScoreBoard.SetActive(true);
-                
                 return;
         }
+    }
+    private IEnumerator ReachGoal()
+    {
+        // Show win scoreboard
+        enemySpawnController.enabled = false;
+        scoreBoard.SetActive(true);
+        winScoreBoard.SetActive(true);
+        loseScoreBoard.SetActive(false);
+        timerText.text = sidescrollGameController.currentTime;
+        hpText.text = sidescrollGameController.UpdatePlayerHPCount().ToString();
+        gradeText.text = sidescrollGameController.Result();
+        yield return null;
+    }
+    private IEnumerator BossKnockOut()
+    {
+        sideScrollIntroWindow.knouckOutGroup.SetActive(true);
+        StartCoroutine(sideScrollIntroWindow.StartKnockOutWipeTransition());
+        yield return new WaitUntil(() => sideScrollIntroWindow.finishCoroutine == true);
+        // Show win scoreboard
+        scoreBoard.SetActive(true);
+        winScoreBoard.SetActive(true);
+        loseScoreBoard.SetActive(false);
+        timerText.text = sidescrollGameController.currentTime;
+        hpText.text = sidescrollGameController.UpdatePlayerHPCount().ToString();
+        gradeText.text = sidescrollGameController.Result();
+        yield return null;
     }
 }

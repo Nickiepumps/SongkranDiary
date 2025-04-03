@@ -15,11 +15,18 @@ public class SceneController : MonoBehaviour
     [SerializeField] private Transform playerPos;
     public void ChangeScene(string targetSceneName)
     {
-        if(levelType == LevelType.IsoLevel)
+        Time.timeScale = 1; // Reset timescale to 1 in case the player paused the game
+        if (levelType == LevelType.IsoLevel)
         {
             SceneHandler.playerPosition = playerPos.position;
         }
         SceneHandler.destinationSceneName = targetSceneName;
+        StartCoroutine(StartLoadingScreen());
+    }
+    public void RestartScene()
+    {
+        Time.timeScale = 1; // Reset timescale to 1 in case the player paused the game
+        SceneHandler.destinationSceneName = SceneHandler.currentSceneName;
         StartCoroutine(StartLoadingScreen());
     }
     private void Awake()
@@ -40,14 +47,6 @@ public class SceneController : MonoBehaviour
         else
         {
             StartCoroutine(TransitionOut());
-        }
-    }
-    private void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.Escape) && levelType == LevelType.BossLevel)
-        {
-            SceneHandler.destinationSceneName = "Level1_ISO";
-            StartCoroutine(StartLoadingScreen());
         }
     }
     private IEnumerator StartLoadingScreen()

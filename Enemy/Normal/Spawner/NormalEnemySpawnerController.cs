@@ -7,63 +7,98 @@ public class NormalEnemySpawnerController : MonoBehaviour
     [Header("Spawner Reference")]
     [SerializeField] private NormalEnemySpawner normalEnemySpawner;
 
+    [Header("Spawn Setting")]
+    public bool startSpawnOnStart;
+
     [Header("All Shooter and Bomber Enemies")]
     private List<GameObject> shooterLists = new List<GameObject>();
     private List<GameObject> bomberLists = new List<GameObject>();
 
-    [Header("Spawn Rate")]
-    [SerializeField] private float minSpawnRate;
-    [SerializeField] private float maxSpawnRate;
+    [Header("Enemy Spawn Rate")]
+    [Header("Shooter")]
+    [SerializeField] private float minShooterSpawnRate;
+    [SerializeField] private float maxShooterSpawnRate;
+    [Header("Bomber")]
+    [SerializeField] private float minBomberSpawnRate;
+    [SerializeField] private float maxBomberSpawnRate;
 
     private float spawnRate;
-    private float currentTimeToSpawn;
+    private float currentTimeToSpawnShooter;
+    private float currentTimeToSpawnBomber;
     private void Start()
     {
-        spawnRate = Random.Range(minSpawnRate, maxSpawnRate);
-        currentTimeToSpawn = spawnRate;
+        currentTimeToSpawnShooter = 5;
+        currentTimeToSpawnBomber = 10;
     }
     private void Update()
     {
-        for (int i = 0; i < normalEnemySpawner.spawnedShooterLists.Count; i++)
+        currentTimeToSpawnShooter -= Time.deltaTime;
+        currentTimeToSpawnBomber -= Time.deltaTime;
+        if (startSpawnOnStart == true && currentTimeToSpawnShooter <= 0)
         {
-            if (normalEnemySpawner.spawnedShooterLists[i].activeSelf == false)
+            for (int i = 0; i < normalEnemySpawner.spawnedShooterLists.Count; i++)
             {
-                currentTimeToSpawn -= Time.deltaTime;
-                if(currentTimeToSpawn < 0)
+                if (normalEnemySpawner.spawnedShooterLists[i].activeSelf == false)
                 {
-                    NewSpawnAndDestination(normalEnemySpawner.spawnedShooterLists[i].GetComponent<EnemyShooterStateController>());
-                    spawnRate = Random.Range(minSpawnRate, maxSpawnRate);
-                    currentTimeToSpawn = spawnRate;
+                    GameObject enemyGO = normalEnemySpawner.spawnedShooterLists[i];
+                    EnemyShooterStateController enemyStateController = enemyGO.GetComponent<EnemyShooterStateController>();
+                    SpriteRenderer spriteRenderer = enemyStateController.enemySpriteRenderer;
+                    Transform[] path = NewSpawnAndDestination(enemyGO, enemyStateController.startPoint, enemyStateController.destination, spriteRenderer);
+                    enemyStateController.startPoint = path[0];
+                    enemyStateController.destination = path[1];
+                    enemyGO.SetActive(true);
+                    currentTimeToSpawnShooter = Random.Range(minShooterSpawnRate, maxShooterSpawnRate);
+                    return;
+                }
+            }
+        }
+        if(startSpawnOnStart == true && currentTimeToSpawnBomber <= 0)
+        {
+            for (int i = 0; i < normalEnemySpawner.spawnedBomberLists.Count; i++)
+            {
+                if (normalEnemySpawner.spawnedBomberLists[i].activeSelf == false)
+                {
+                    GameObject enemyGO = normalEnemySpawner.spawnedBomberLists[i];
+                    EnemyBomberStateController enemyBomberStateController = enemyGO.GetComponent<EnemyBomberStateController>();
+                    SpriteRenderer spriteRenderer = enemyBomberStateController.enemySpriteRenderer;
+                    Transform[] path = NewSpawnAndDestination(enemyGO, enemyBomberStateController.startPoint, enemyBomberStateController.destination, spriteRenderer);
+                    enemyBomberStateController.startPoint = path[0];
+                    enemyBomberStateController.destination = path[1];
+                    enemyGO.SetActive(true);
+                    currentTimeToSpawnBomber = Random.Range(minBomberSpawnRate, maxBomberSpawnRate);
+                    return;
                 }
             }
         }
     }
-    private void NewSpawnAndDestination(EnemyShooterStateController enemy)
+    private Transform[] NewSpawnAndDestination(GameObject enemyGO, Transform enemyStartPoint, Transform enemyDestination, SpriteRenderer spriteRenderer)
     {
+        Transform[] newPath = new Transform[2];
         int spawnValue = Random.Range(1, 10);
-        Transform previousStart = enemy.startPoint;
-        Transform previousDestination = enemy.destination;
+        Transform previousStart = enemyStartPoint;
+        Transform previousDestination = enemyDestination;
 
         if(spawnValue > 5)
         {
-            enemy.destination = previousStart;
-            enemy.startPoint = previousDestination;
+            enemyDestination = previousStart;
+            enemyStartPoint = previousDestination;
         }
         else
         {
-            enemy.destination = previousDestination;
-            enemy.startPoint = previousStart;
+            enemyDestination = previousDestination;
+            enemyStartPoint = previousStart;
         }
-        if (enemy.startPoint.transform.eulerAngles == new Vector3(0, 0, 90))
+        if (enemyStartPoint.transform.eulerAngles == new Vector3(0, 0, 90))
         {
-            enemy.enemySpriteRenderer.flipX = false;
+            spriteRenderer.flipX = false;
         }
         else
         {
-            enemy.enemySpriteRenderer.flipX = true;
+            spriteRenderer.flipX = true;
         }
-        enemy.transform.position = enemy.startPoint.position;
-        enemy.gameObject.SetActive(true);
+        newPath[0] = enemyStartPoint;
+        newPath[1] = enemyDestination;
+        enemyGO.transform.position = enemyStartPoint.position;
+        return newPath;
     }
-
 }

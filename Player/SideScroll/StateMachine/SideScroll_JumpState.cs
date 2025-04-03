@@ -7,6 +7,7 @@ public class SideScroll_JumpState : PlayerSideScrollStateMachine
     public SideScroll_JumpState(PlayerSideScrollStateController playerSideScroll) : base(playerSideScroll) { }
     public override void Start()
     {
+        playerSideScroll.isPlayerOnGround = false;
         playerSideScroll.playerAnimator.SetBool("Jump", true);
         playerSideScroll.playerCollider.size = new Vector2(playerSideScroll.playerCollider.size.x, playerSideScroll.playerStandColliderSizeY);
         playerSideScroll.playerRB.AddForce(Vector2.up * playerSideScroll.jumpForce, ForceMode2D.Impulse);

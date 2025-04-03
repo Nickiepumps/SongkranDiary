@@ -13,13 +13,14 @@ public class WeaponDisplay : MonoBehaviour, IShootingObserver
     [SerializeField] private Sprite[] bulletSprites;
     [SerializeField] private Sprite[] bulletKeySprites;
     [SerializeField] private TMP_Text ultAmountText;
+
     private void OnEnable()
     {
         shootingSubject.AddShootingObserver(this);
     }
     private void OnDisable()
     {
-        shootingSubject?.RemoveShootingObserver(this);
+        shootingSubject.RemoveShootingObserver(this);
     }
     public void OnShootingNotify(ShootingAction shootingAction)
     {
@@ -46,6 +47,24 @@ public class WeaponDisplay : MonoBehaviour, IShootingObserver
             case(ShootingAction.useult):
                 ultAmountText.text = shootingSubject.GetComponent<PlayerSideScrollStateController>().playerUltAmount.ToString();
                 return;
+        }
+    }
+    public void UpdateBulletDisplay(bool coolDownStatus, float currentTimer, float cooldownTime)
+    {
+        if (coolDownStatus == true)
+        {
+            currentTimer -= Time.deltaTime;
+            spreadBulletDisplay.fillAmount = 1 - (currentTimer / cooldownTime);
+            laserBulletDisplay.fillAmount = 1 - (currentTimer / cooldownTime);
+            if (currentTimer <= 0)
+            {
+                currentTimer = cooldownTime;
+            }
+        }
+        else
+        {
+            spreadBulletDisplay.fillAmount = 1;
+            laserBulletDisplay.fillAmount = 1;
         }
     }
 }

@@ -11,11 +11,12 @@ public class EnemyBomberStateController : NormalEnemySubject
     private EnemyStateMachine enemyCurrentState;
 
     [Header("Enemy General Properties")]
+    [SerializeField] private NormalEnemySO enemyStats;
     public Rigidbody2D enemyRB;
     public NormalEnemyType normalEnemyType;
+    public Animator enemyAnimator;
     public int currentEnemyHP;
     public float walkSpeed;
-    public float enemyASPD;
     public int damage;
     public SpriteRenderer enemySpriteRenderer;
     public Transform destination;
@@ -24,10 +25,14 @@ public class EnemyBomberStateController : NormalEnemySubject
 
     // Hide from inspector
     public bool isDead = false;
-    public int enemyHP;
     private void OnEnable()
     {
-        currentEnemyHP = enemyHP;
+        isDead = false;
+        normalEnemyType = enemyStats.NormalEnemyType;
+        currentEnemyHP = enemyStats.hp;
+        walkSpeed = enemyStats.movementSpeed;
+        damage = enemyStats.damage;
+        enemySpriteRenderer.sprite = enemyStats.normalSprite;
     }
     private void Start()
     {
@@ -44,6 +49,12 @@ public class EnemyBomberStateController : NormalEnemySubject
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        switch (collision.tag)
+        {
+            case ("PlayerBullet"):
+                NotifyNormalEnemy(EnemyAction.Damaged);
+                break;
+        }
         enemyCurrentState.OnTriggerEnter(collision);
     }
     private void OnTriggerExit2D(Collider2D collision)

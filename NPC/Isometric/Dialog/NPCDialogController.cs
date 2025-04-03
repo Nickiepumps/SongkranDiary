@@ -30,8 +30,9 @@ public class NPCDialogController : MonoBehaviour, INPCObserver, IPlayerObserver,
     [SerializeField] private GameObject correctChoice; // Player's correct choice
     [SerializeField] private List<GameObject> choiceButtonLists = new List<GameObject>(); // Player's choices list
 
-    [Header("Player Answered Status")]
+    [Header("Player Status")]
     [SerializeField] private bool isPlayerAnswered = false;
+    public bool isPlayerUpgrade = false;
 
     private bool finishedDialog = false; // Check status of dialog typewriter effect
     private GameObject currentChoiceToConfirm; // Player's current choices before submit (For keyboard choosing)
@@ -64,52 +65,55 @@ public class NPCDialogController : MonoBehaviour, INPCObserver, IPlayerObserver,
     }
     public void OnPlayerNotify(PlayerAction playerAction)
     {
-        switch (playerAction)
+        if(player != null)
         {
-            case (PlayerAction.Idle):
-                if (player != null)
-                {
+            switch (playerAction)
+            {
+                case (PlayerAction.Idle):
                     interactNotif.SetActive(true);
-                }
-                else
-                {
-                    interactNotif.SetActive(false);
-                }
-                return;
-            case (PlayerAction.Talk):
-                interactNotif.SetActive(false);
-                dialogBox.SetActive(true);
-                if (player != null && dialogType == NPCDialogType.Normal)
-                {   
-                    StartCoroutine(NormalDialogSequence());
-                }
-                else if(player != null && dialogType == NPCDialogType.Choices)
-                {
-                    StartCoroutine(ChoiceDialogSequence());
-                }
-                return;
-            case(PlayerAction.Walk):
-                if (player != null)
-                {
+                    return;
+                case (PlayerAction.Talk):
+
+                    if (dialogType == NPCDialogType.Normal)
+                    {
+                        interactNotif.SetActive(false);
+                        dialogBox.SetActive(true);
+                        StartCoroutine(NormalDialogSequence());
+                    }
+                    else if (isPlayerAnswered == false && dialogType == NPCDialogType.Choices)
+                    {
+                        interactNotif.SetActive(false);
+                        dialogBox.SetActive(true);
+                        StartCoroutine(ChoiceDialogSequence());
+                    }
+                    else if (isPlayerAnswered == true && isPlayerUpgrade == false && dialogType == NPCDialogType.Choices)
+                    {
+                        isometricGameSubject.GetComponent<GameUIController>().currentNPC = this;
+                        isometricGameSubject.NotifyGameObserver(IsometricGameState.Upgrade);
+                    }
+                    else
+                    {
+                        interactNotif.SetActive(false);
+                        dialogBox.SetActive(true);
+                        StartCoroutine(OutroDialogSequence());
+                    }
+                    return;
+                case (PlayerAction.Walk):
                     interactNotif.SetActive(true);
-                }
-                else
-                {
-                    interactNotif.SetActive(false);
-                }
-                return;
+                    return;
+            }
         }
+        else
+        {
+            interactNotif.SetActive(false);
+        }
+        
     }
     public void OnGameNotify(IsometricGameState isoGameState)
     {
         switch (isoGameState)
         {
             case (IsometricGameState.Play): // Not working right now, Fix this later!
-                if(isPlayerAnswered == true)
-                {
-                    dialogText.text = "";
-                    dialogText.text = outroDialog; // To Do: Replace with the typewriter effect
-                }
                 return;
         }
     }
@@ -137,6 +141,18 @@ public class NPCDialogController : MonoBehaviour, INPCObserver, IPlayerObserver,
     private void OnTriggerExit2D(Collider2D collision)
     {
         player = null;
+    }
+    private IEnumerator OutroDialogSequence()
+    {
+        nextDialogNotif.SetActive(false); // Disable interactive ui popup
+        StartCoroutine(TypeWriterAnimation(outroDialog));
+        yield return new WaitUntil(() => finishedDialog == true);
+        nextDialogNotif.SetActive(true);
+        yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.Return));
+        isometricGameSubject.NotifyGameObserver(IsometricGameState.Play);
+        dialogBox.SetActive(false);
+        interactNotif.SetActive(true);
+        yield return null;
     }
     private IEnumerator NormalDialogSequence()
     {
@@ -253,6 +269,7 @@ public class NPCDialogController : MonoBehaviour, INPCObserver, IPlayerObserver,
             if(CheckAnswer(confirmedChoice) == true)
             {
                 Debug.Log("Correct!");
+                isPlayerAnswered = true;
                 StartCoroutine(CorrectResultDialog());
             }
             else

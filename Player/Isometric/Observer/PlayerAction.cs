@@ -11,6 +11,8 @@ public enum PlayerAction
     Crouch,
     Shoot,
     Damaged,
+    Heal,
+    Blind,
     Invulnerable,
     Dead,
     win,

@@ -21,6 +21,7 @@ public class FatKid_BossStateController : BossSubject
     public BoxCollider2D normalHitBox;
 
     // Hide in inspector
+    public bool isGameStart = false;
     public bool startInitIdle = false;
     public bool bossShooting = false;
     public bool bossUlt = false;
@@ -41,6 +42,12 @@ public class FatKid_BossStateController : BossSubject
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        switch (collision.tag)
+        {
+            case ("PlayerBullet"):
+                NotifyBoss(BossAction.Damaged);
+                break;
+        }
         currentBossState.OnTriggerEnter(collision);
     }
     private void OnTriggerExit2D(Collider2D collision)

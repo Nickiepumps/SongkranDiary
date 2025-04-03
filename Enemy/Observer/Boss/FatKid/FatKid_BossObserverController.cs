@@ -6,7 +6,9 @@ public class FatKid_BossObserverController : MonoBehaviour, IBossObserver, IGame
 {
     [Header("Observer References")]
     private BossSubject bossSubject;
-    [SerializeField] private GameSubject gameSubject;
+    private FatKid_BossStateController fatKidStateController;
+    [SerializeField] private GameSubject gameUISubject;
+    [SerializeField] private GameSubject sideScrollGameSubject;
 
     [Header("Boss BulletPooler Reference")]
     [SerializeField] private EnemyBulletPooler enemyBulletPooler;
@@ -18,19 +20,21 @@ public class FatKid_BossObserverController : MonoBehaviour, IBossObserver, IGame
     private void Awake()
     {
         bossSubject = GetComponent<FatKid_BossStateController>();
-        
+        fatKidStateController = GetComponent<FatKid_BossStateController>();
     }
     private void OnEnable()
     {
         bossSubject.AddBossObserver(this);
-        gameSubject.AddGameObserver(this);
-        gameSubject.AddSideScrollGameObserver(this);
+        gameUISubject.AddGameObserver(this);
+        gameUISubject.AddSideScrollGameObserver(this);
+        sideScrollGameSubject.AddSideScrollGameObserver(this);
     }
     private void OnDisable()
     {
         bossSubject.RemoveBossObserver(this);
-        gameSubject.RemoveGameObserver(this);
-        gameSubject.RemoveSideScrollGameObserver(this);
+        gameUISubject.RemoveGameObserver(this);
+        gameUISubject.RemoveSideScrollGameObserver(this);
+        sideScrollGameSubject.RemoveSideScrollGameObserver(this);
     }
     public void OnBossNotify(BossAction action)
     {
@@ -59,7 +63,7 @@ public class FatKid_BossObserverController : MonoBehaviour, IBossObserver, IGame
             case (BossAction.Damaged):
                 return;
             case (BossAction.Die):
-                gameSubject.NotifySideScrollGameObserver(SideScrollGameState.Win);
+                gameUISubject.NotifySideScrollGameObserver(SideScrollGameState.Win);
                 return;
         }
     }
@@ -70,7 +74,15 @@ public class FatKid_BossObserverController : MonoBehaviour, IBossObserver, IGame
 
     public void OnSideScrollGameNotify(SideScrollGameState sidescrollGameState)
     {
-        
+        switch (sidescrollGameState)
+        {
+            case (SideScrollGameState.Play):
+                fatKidStateController.isGameStart = true;
+                return;
+            case (SideScrollGameState.Paused):
+                fatKidStateController.isGameStart = false;
+                return;
+        }
     }
     private int RandomPattern()
     {

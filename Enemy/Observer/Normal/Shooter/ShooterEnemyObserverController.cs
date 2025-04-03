@@ -2,14 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NormalEnemyObserverController : MonoBehaviour, INormalEnemyObserver
+public class ShooterEnemyObserverController : MonoBehaviour, INormalEnemyObserver
 {
     private NormalEnemySubject normalEnemySubject;
     private EnemyBulletPooler enemyBulletPooler;
     private EnemyShooterStateController enemyStats;
 
+    [Header("Bullet Spawner")]
     [SerializeField] private Transform bulletRightSpawn;
     [SerializeField] private Transform bulletLeftSpawn;
+
+    [Header("Enemy Sprite")]
+    [SerializeField] private SpriteRenderer enemySpriteRenderer;
+    [SerializeField] private Color enemyDamagedColor;
     private void Awake()
     {
         normalEnemySubject = GetComponent<EnemyShooterStateController>();
@@ -35,11 +40,8 @@ public class NormalEnemyObserverController : MonoBehaviour, INormalEnemyObserver
                 Debug.Log("Notify Hit");
                 if(enemyStats.currentEnemyHP > 0)
                 {
+                    StartCoroutine(DamageIndicator()); // Enable damage flickering effect
                     enemyStats.currentEnemyHP--;
-                }
-                else
-                {
-                    
                 }
                 return;
             case(EnemyAction.Shoot):
@@ -52,23 +54,29 @@ public class NormalEnemyObserverController : MonoBehaviour, INormalEnemyObserver
                     EnemyShoot(bulletLeftSpawn, Vector2.left, true);
                 }
                 return;
-            case (EnemyAction.Explode):
-                Debug.Log("Enemy Exploded");
-                EnemyExplode();
-                return;
             case (EnemyAction.Dead):
-                Debug.Log("Enemy Dead");
+                enemySpriteRenderer.color = Color.white;
                 return;
         }
     }
     private void EnemyShoot(Transform spawnPos, Vector2 bulletDirection, bool isLeft)
     {
         GameObject enemyBullet = enemyBulletPooler.EnableEnemyBullet();
-        if(enemyBullet != null)
+        int changeToHealPlayer = Random.Range(1, 10);
+        EnemyBullet component = enemyBullet.GetComponent<EnemyBullet>();
+        if (changeToHealPlayer >= 8) // Switch to heal bullet
+        {
+            component.isHealBullet = true;
+        }
+        else // Switch to normal bullet
+        {
+            component.isHealBullet = false;
+        }
+        if (enemyBullet != null)
         {
             enemyBullet.transform.position = spawnPos.position;
             enemyBullet.transform.rotation = spawnPos.rotation;
-            enemyBullet.GetComponent<EnemyBullet>().bulletDirection = bulletDirection;
+            component.bulletDirection = bulletDirection;
             if(isLeft == true)
             {
                 enemyBullet.GetComponentInChildren<SpriteRenderer>().flipY = true;
@@ -80,8 +88,10 @@ public class NormalEnemyObserverController : MonoBehaviour, INormalEnemyObserver
             enemyBullet.SetActive(true);
         }
     }
-    private void EnemyExplode()
+    private IEnumerator DamageIndicator()
     {
-
+        enemySpriteRenderer.color = enemyDamagedColor;
+        yield return new WaitForSeconds(0.1f);
+        enemySpriteRenderer.color = Color.white;
     }
 }

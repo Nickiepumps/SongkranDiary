@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(BossHealthObserver))]
-public class BossHealth : BossSubject
+public class BossHealth : MonoBehaviour
 {
     [SerializeField] private BossScriptableObject bossStats;
     [HideInInspector] public int bossMaxHP;

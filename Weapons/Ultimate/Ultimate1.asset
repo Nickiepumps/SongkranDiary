@@ -18,5 +18,5 @@ MonoBehaviour:
   aspd: 0
   travelSpeed: 10
   spreadCount: 0
-  ulteCount: 3
+  ultCount: 3
   ultChargingSpeed: 5

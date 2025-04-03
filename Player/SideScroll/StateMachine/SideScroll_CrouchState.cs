@@ -33,11 +33,7 @@ public class SideScroll_CrouchState : PlayerSideScrollStateMachine
     }
     public override void OntriggerEnter(Collider2D pCollider)
     {
-        if (pCollider.gameObject.tag == "EnemyHitBox")
-        {
-            playerSideScroll.NotifyPlayerObserver(PlayerAction.Damaged);
-            playerSideScroll.isDamaged = true;
-        }
+        
     }
     public override void OntriggerExit(Collider2D pCollider)
     {

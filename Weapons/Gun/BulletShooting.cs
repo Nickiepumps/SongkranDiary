@@ -1,9 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Rendering.UI;
+using UnityEngine.UI;
 
 public class BulletShooting : ShootingSubject
 {
@@ -23,6 +22,9 @@ public class BulletShooting : ShootingSubject
     [Header("Bullet Pooler Reference")]
     [SerializeField] private BulletPooler bulletPooler;
 
+    [Header("AimPivot")]
+    [SerializeField] private Transform aimPivot;
+
     [Header("Normal Bullet Spawner")]
     [SerializeField] private Transform spawnDirection_Right;
     [SerializeField] private Transform spawnDirection_Left;
@@ -35,27 +37,47 @@ public class BulletShooting : ShootingSubject
     [SerializeField] private Transform laserSpawnDirection_Right;
     [SerializeField] private Transform laserSpawnDirection_Left;
 
+    [Header("Player HUD Bullet Display")]
+    [SerializeField] private Image sprdBulletKeyIcon;
+    [SerializeField] private Image laserBulletKeyIcon;
+    [SerializeField] private Image sprdBulletKeyIconBG;
+    [SerializeField] private Image laserBulletKeyIconBG;
+
     [SerializeField] private SpriteRenderer playerSpriteDirection; // Player's sprite facing direction
-    [SerializeField] private float samekeyPressingInterval = 0.5f;
-    [SerializeField] private float switchCoolDown = 2f;
-    private float currentTimer;
-    private bool coolDownStatus = false;
-    private int sameKeyPressCount;
+
+    [SerializeField] private Animator animator;
+    
+    [HideInInspector] public float switchCoolDown = 2f;
+    [HideInInspector] public float currentBulletSwitchCoolDownTimer;
+    [HideInInspector] public bool coolDownStatus = false;
+    private PlayerSideScrollStateController sidescrollPlayer;
+    private void Awake()
+    {
+        sidescrollPlayer = GetComponent<PlayerSideScrollStateController>();
+    }
     private void Start()
     {
+        InvokeRepeating("CheckAimAngle", 0, 0.15f); // Aiming angle check
+
         currentASPD = weaponData.currentNormalASPD.aspd;
         currentTravelSpeed = weaponData.currentWeaponTravelSpeed.aspd;
-        //currentBulletType = currentWeaponStats.currentNormalASPD.bulletType;
+        currentBulletSwitchCoolDownTimer = switchCoolDown;
         aspd = currentASPD;
-        currentTimer = samekeyPressingInterval;
     }
     private void Update()
     {
         #region Shooting
-        // Aiming
-        CheckAimAngle();
         // Shooting
-        if (Input.GetKeyDown(KeyCode.Q) && coolDownStatus == false)
+        if(sidescrollPlayer.isGameStart == true)
+        {
+            ShootingControl();
+            UpdateBulletDisplay();
+        }
+        #endregion
+    }
+    private void ShootingControl()
+    {
+        if (Input.GetKeyDown(KeyCode.Q) && coolDownStatus == false && sprdBullet == false)
         {
             StartCoroutine(SwitchCoolDown());
             currentASPD = weaponData.currentSprdBulletASPD.aspd;
@@ -67,8 +89,9 @@ public class BulletShooting : ShootingSubject
             sprdBullet = true;
             laserBullet = false;
         }
-        else if(Input.GetKeyDown(KeyCode.Q) && coolDownStatus == true && sprdBullet == true)
+        else if (Input.GetKeyDown(KeyCode.Q) && coolDownStatus == false && sprdBullet == true)
         {
+            StartCoroutine(SwitchCoolDown());
             currentASPD = weaponData.currentNormalASPD.aspd;
             currentTravelSpeed = weaponData.currentWeaponTravelSpeed.aspd;
             aspd = currentASPD;
@@ -79,7 +102,7 @@ public class BulletShooting : ShootingSubject
             sprdBullet = false;
             laserBullet = false;
         }
-        if (Input.GetKeyDown(KeyCode.E) && coolDownStatus == false)
+        if (Input.GetKeyDown(KeyCode.E) && coolDownStatus == false && laserBullet == false)
         {
             StartCoroutine(SwitchCoolDown());
             currentASPD = weaponData.currentLsrBulletASPD.aspd;
@@ -91,8 +114,9 @@ public class BulletShooting : ShootingSubject
             sprdBullet = false;
             laserBullet = true;
         }
-        else if (Input.GetKeyDown(KeyCode.E) && coolDownStatus == true && laserBullet == true)
+        else if (Input.GetKeyDown(KeyCode.E) && coolDownStatus == false && laserBullet == true)
         {
+            StartCoroutine(SwitchCoolDown());
             currentASPD = weaponData.currentNormalASPD.aspd;
             aspd = currentASPD;
             bulletPooler.SwitchBulletType(BulletType.normalBullet);
@@ -104,6 +128,7 @@ public class BulletShooting : ShootingSubject
         }
         if (Input.GetMouseButton(0))
         {
+            //animator.SetBool("Shoot", true);
             aspd -= Time.deltaTime;
             if (aspd <= 0)
             {
@@ -122,7 +147,18 @@ public class BulletShooting : ShootingSubject
                 aspd = currentASPD;
             }
         }
-        #endregion
+        else
+        {
+            //animator.SetBool("Shoot", false);
+        }
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            aimPivot.localPosition = new Vector3(aimPivot.localPosition.x, aimPivot.localPosition.y - 0.2f, 0);
+        }
+        else if (Input.GetKeyUp(KeyCode.S))
+        {
+            aimPivot.localPosition = Vector3.zero;
+        }
     }
     private void ShootingNormalBullet()
     {
@@ -238,5 +274,23 @@ public class BulletShooting : ShootingSubject
         coolDownStatus = true;
         yield return new WaitForSeconds(switchCoolDown);
         coolDownStatus = false;
+    }
+    private void UpdateBulletDisplay()
+    {
+        if(coolDownStatus == true)
+        {
+            currentBulletSwitchCoolDownTimer -= Time.deltaTime;
+            sprdBulletKeyIcon.fillAmount = 1 - (currentBulletSwitchCoolDownTimer / switchCoolDown);
+            laserBulletKeyIcon.fillAmount = 1 - (currentBulletSwitchCoolDownTimer / switchCoolDown);
+            if (currentBulletSwitchCoolDownTimer <= 0)
+            {
+                currentBulletSwitchCoolDownTimer = switchCoolDown;
+            }
+        }
+        else
+        {
+            sprdBulletKeyIcon.fillAmount = 1;
+            laserBulletKeyIcon.fillAmount = 1;
+        }
     }
 }

@@ -31,7 +31,7 @@ public class FatKid_BossIdleState : BossStateMachine
     }
     public override void Update()
     {
-        if(fatKidBoss.bossShooting == false && fatKidBoss.bossUlt == false)
+        if(fatKidBoss.bossShooting == false && fatKidBoss.bossUlt == false && fatKidBoss.isGameStart == true)
         {
             currentIdleTime -= Time.deltaTime;
             currentUltTime -= Time.deltaTime;

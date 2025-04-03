@@ -7,6 +7,12 @@ public class SideScroll_RunState : PlayerSideScrollStateMachine
     public SideScroll_RunState(PlayerSideScrollStateController playerSideScroll) : base(playerSideScroll) { }
     public override void Start()
     {
+
+        //playerSideScroll.playerHandAnimator.SetBool("Idle", false);
+        //playerSideScroll.playerHeadAnimator.SetBool("Idle", false);
+        //playerSideScroll.playerHeadAnimator.SetBool("Run", true);
+        //playerSideScroll.playerHandAnimator.SetBool("Run", true);
+        //playerSideScroll.playerAnimator.SetBool("TestRun", true);
         playerSideScroll.playerAnimator.SetBool("Idle", false);
         playerSideScroll.playerAnimator.SetBool("Run", true);
         playerSideScroll.playerAnimator.SetBool("Crouch", false);
@@ -53,11 +59,7 @@ public class SideScroll_RunState : PlayerSideScrollStateMachine
     }
     public override void OntriggerEnter(Collider2D pCollider)
     {
-        if (pCollider.gameObject.tag == "EnemyHitBox")
-        {
-            playerSideScroll.NotifyPlayerObserver(PlayerAction.Damaged);
-            playerSideScroll.isDamaged = true;
-        }
+        
     }
     public override void OntriggerExit(Collider2D pCollider)
     {
@@ -67,8 +69,8 @@ public class SideScroll_RunState : PlayerSideScrollStateMachine
     {
         if (pCollider.gameObject.tag == "Side_Floor")
         {
-            playerSideScroll.currentCollidername = pCollider;
             playerSideScroll.isPlayerOnGround = true;
+            playerSideScroll.currentCollidername = pCollider;
             playerSideScroll.playerAnimator.SetBool("Jump", false);
         }
     }
@@ -78,7 +80,6 @@ public class SideScroll_RunState : PlayerSideScrollStateMachine
         if (pCollider.gameObject.tag == "Side_Floor")
         {
             playerSideScroll.currentCollidername = null;
-            playerSideScroll.isPlayerOnGround = false;
         }
     }
     public override void Exit()
