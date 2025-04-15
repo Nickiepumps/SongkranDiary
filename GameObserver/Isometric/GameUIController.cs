@@ -13,6 +13,7 @@ public class GameUIController : MonoBehaviour, IGameObserver
     [SerializeField] private GameSubject gameControllerSubject; // Game controller subject
     [SerializeField] private GameSubject gameUIControllerSubject; // Game UI Controller subject
     [SerializeField] private GameSubject goalSubject; // Run n Gun destination subject
+    [SerializeField] private GameSubject sideScrollIntroSubject; // Side scroll intro/outro subject
 
     [Header("Game Controller Reference")]
     [SerializeField] private SideScrollGameController sidescrollGameController;
@@ -55,6 +56,7 @@ public class GameUIController : MonoBehaviour, IGameObserver
             gameControllerSubject.AddGameObserver(this);
             gameControllerSubject.AddSideScrollGameObserver(this);
             goalSubject.AddSideScrollGameObserver(this);
+            sideScrollIntroSubject.AddSideScrollGameObserver(this);
         }
         else
         {
@@ -62,6 +64,7 @@ public class GameUIController : MonoBehaviour, IGameObserver
             gameControllerSubject.AddGameObserver(this);
             gameControllerSubject.AddSideScrollGameObserver(this);
             gameUIControllerSubject.AddSideScrollGameObserver(this);
+            sideScrollIntroSubject.AddSideScrollGameObserver(this);
         }
     }
     private void OnDisable()
@@ -77,12 +80,14 @@ public class GameUIController : MonoBehaviour, IGameObserver
             gameUIControllerSubject.RemoveSideScrollGameObserver(this);
             gameControllerSubject.RemoveSideScrollGameObserver(this);
             goalSubject.RemoveSideScrollGameObserver(this);
+            sideScrollIntroSubject.RemoveSideScrollGameObserver(this);
         }
         else
         {
             gameUIControllerSubject.RemoveGameObserver(this);
             gameUIControllerSubject.RemoveSideScrollGameObserver(this);
             gameControllerSubject.RemoveSideScrollGameObserver(this);
+            sideScrollIntroSubject.RemoveSideScrollGameObserver(this);
         }
     }
     public void OnGameNotify(IsometricGameState isoGameState)
@@ -110,12 +115,17 @@ public class GameUIController : MonoBehaviour, IGameObserver
                 pauseWindow.SetActive(false);
                 Time.timeScale = 1; // To Do: Find a better way to pause the game
                 return;
+            case (SideScrollGameState.StartRound):
+                return;
+            case (SideScrollGameState.EndRound):
+                return;
             case (SideScrollGameState.Paused):
                 pauseWindow.SetActive(true);
                 pauseWindow.GetComponent<PauseWindow>().DisplayCurrentStatus(levelType);
                 Time.timeScale = 0; // To Do: Find a better way to pause the game
                 return;
             case (SideScrollGameState.Win):
+                Debug.Log("Test");
                 if(levelType == LevelType.BossLevel)
                 {
                     StartCoroutine(BossKnockOut());

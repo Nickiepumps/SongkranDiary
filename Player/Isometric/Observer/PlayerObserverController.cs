@@ -20,7 +20,7 @@ public class PlayerObserverController : MonoBehaviour, IGameObserver, IPlayerObs
     [SerializeField] private PlayerSubject playerSubject;
 
     [Header("Game Observer Subject")]
-    [SerializeField] private GameSubject gameSubject;
+    [SerializeField] private GameSubject gameUISubject;
     [SerializeField] private GameSubject sidescrollGameSubject;
     [SerializeField] private GameSubject sidescrollIntroWindowSubject;
 
@@ -42,9 +42,9 @@ public class PlayerObserverController : MonoBehaviour, IGameObserver, IPlayerObs
     [SerializeField] private PlayerHealthDisplay healthDisplay;
     private void OnEnable()
     {
-        gameSubject = GameObject.Find("GameUIController").GetComponent<GameSubject>();
-        gameSubject.AddGameObserver(this);
-        gameSubject.AddSideScrollGameObserver(this);
+        gameUISubject = GameObject.Find("GameUIController").GetComponent<GameSubject>();
+        gameUISubject.AddGameObserver(this);
+        gameUISubject.AddSideScrollGameObserver(this);
         playerSubject.AddPlayerObserver(this);
         if(isSideScroll == true)
         {
@@ -55,8 +55,8 @@ public class PlayerObserverController : MonoBehaviour, IGameObserver, IPlayerObs
     }
     private void OnDisable()
     {
-        gameSubject.RemoveGameObserver(this);
-        gameSubject.RemoveSideScrollGameObserver(this);
+        gameUISubject.RemoveGameObserver(this);
+        gameUISubject.RemoveSideScrollGameObserver(this);
         playerSubject.RemovePlayerObserver(this);
         if (isSideScroll == true)
         {
@@ -84,11 +84,13 @@ public class PlayerObserverController : MonoBehaviour, IGameObserver, IPlayerObs
         switch (sidescrollGameState)
         {
             case (SideScrollGameState.Play):
-                Debug.Log("Test");
+                return;
+            case (SideScrollGameState.StartRound):
                 playerSideScrollStateController.isGameStart = true;
                 return;
+            case(SideScrollGameState.EndRound):
+                return;
             case (SideScrollGameState.Paused):
-                playerSideScrollStateController.isGameStart = false;
                 return;
         }
     }
@@ -130,7 +132,7 @@ public class PlayerObserverController : MonoBehaviour, IGameObserver, IPlayerObs
                     }
                     return;
                 case (PlayerAction.Dead):
-                    gameSubject.NotifySideScrollGameObserver(SideScrollGameState.Lose);
+                    gameUISubject.NotifySideScrollGameObserver(SideScrollGameState.Lose);
                     return;
                 case (PlayerAction.win):
                     return;

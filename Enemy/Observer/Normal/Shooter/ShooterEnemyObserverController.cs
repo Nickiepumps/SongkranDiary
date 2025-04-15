@@ -54,6 +54,8 @@ public class ShooterEnemyObserverController : MonoBehaviour, INormalEnemyObserve
                     EnemyShoot(bulletLeftSpawn, Vector2.left, true);
                 }
                 return;
+            case(EnemyAction.Jump):
+                return;
             case (EnemyAction.Dead):
                 enemySpriteRenderer.color = Color.white;
                 return;

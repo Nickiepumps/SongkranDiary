@@ -7,6 +7,7 @@ public class BucketKid_BossObserverController : MonoBehaviour, IBossObserver, IG
     private BossSubject bossSubject;
     private BucketKid_BossStateController bucketKidStateController;
     [SerializeField] private GameSubject gameUISubject;
+    [SerializeField] private GameSubject sideScrollIntroSubject;
     private void Awake()
     {
         bossSubject = GetComponent<BucketKid_BossStateController>();
@@ -17,12 +18,14 @@ public class BucketKid_BossObserverController : MonoBehaviour, IBossObserver, IG
         bossSubject.AddBossObserver(this);
         gameUISubject.AddGameObserver(this);
         gameUISubject.AddSideScrollGameObserver(this);
+        sideScrollIntroSubject.AddSideScrollGameObserver(this);
     }
     private void OnDisable()
     {
         bossSubject.RemoveBossObserver(this);
         gameUISubject.RemoveGameObserver(this);
         gameUISubject.RemoveSideScrollGameObserver(this);
+        sideScrollIntroSubject.RemoveSideScrollGameObserver(this);
     }
     public void OnBossNotify(BossAction action)
     {
@@ -52,10 +55,13 @@ public class BucketKid_BossObserverController : MonoBehaviour, IBossObserver, IG
         switch (sidescrollGameState)
         {
             case(SideScrollGameState.Play):
+                return;
+            case (SideScrollGameState.StartRound):
                 bucketKidStateController.isGameStart = true;
                 return;
+            case (SideScrollGameState.EndRound):
+                return;
             case (SideScrollGameState.Paused):
-                bucketKidStateController.isGameStart = false;
                 return;
         }
     }

@@ -45,7 +45,7 @@ public class BulletShooting : ShootingSubject
 
     [SerializeField] private SpriteRenderer playerSpriteDirection; // Player's sprite facing direction
 
-    [SerializeField] private Animator animator;
+    [SerializeField] private GameObject muzzleFlash;
     
     [HideInInspector] public float switchCoolDown = 2f;
     [HideInInspector] public float currentBulletSwitchCoolDownTimer;
@@ -128,7 +128,7 @@ public class BulletShooting : ShootingSubject
         }
         if (Input.GetMouseButton(0))
         {
-            //animator.SetBool("Shoot", true);
+            muzzleFlash.SetActive(true);
             aspd -= Time.deltaTime;
             if (aspd <= 0)
             {
@@ -149,11 +149,11 @@ public class BulletShooting : ShootingSubject
         }
         else
         {
-            //animator.SetBool("Shoot", false);
+            muzzleFlash.SetActive(false);
         }
         if (Input.GetKeyDown(KeyCode.S))
         {
-            aimPivot.localPosition = new Vector3(aimPivot.localPosition.x, aimPivot.localPosition.y - 0.2f, 0);
+            aimPivot.localPosition = new Vector3(aimPivot.localPosition.x, aimPivot.localPosition.y - 0.497f, 0);
         }
         else if (Input.GetKeyUp(KeyCode.S))
         {
@@ -187,10 +187,6 @@ public class BulletShooting : ShootingSubject
             {
                 sprdSpawnDirection_Right[i].gameObject.SetActive(false);
             }
-            for (int i = 0; i < weaponData.currentWeaponSprdCount.spreadCount; i++)
-            {
-                sprdSpawnDirection_Left[i].gameObject.SetActive(false);
-            }
         }
         else if(newBulletSpawnerType == BulletType.spreadBullet)
         {
@@ -202,10 +198,6 @@ public class BulletShooting : ShootingSubject
             {
                 sprdSpawnDirection_Right[i].gameObject.SetActive(true);
             }
-            for (int i = 0; i < weaponData.currentWeaponSprdCount.spreadCount; i++)
-            {
-                sprdSpawnDirection_Left[i].gameObject.SetActive(true);
-            }
         }
         else
         {
@@ -216,10 +208,6 @@ public class BulletShooting : ShootingSubject
             for (int i = 0; i < weaponData.currentWeaponSprdCount.spreadCount; i++)
             {
                 sprdSpawnDirection_Right[i].gameObject.SetActive(false);
-            }
-            for (int i = 0; i < weaponData.currentWeaponSprdCount.spreadCount; i++)
-            {
-                sprdSpawnDirection_Left[i].gameObject.SetActive(false);
             }
         }
     }

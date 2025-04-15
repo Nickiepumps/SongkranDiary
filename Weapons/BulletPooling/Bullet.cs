@@ -39,6 +39,7 @@ public class Bullet : MonoBehaviour
         }
         bulletSprite.sprite = bulletPooler.currentBulletSprite; // Set the bullet sprite to match the current bullet type 
         bulletType = bulletPooler.currentBulletType; // Set the bullet behavior to match the current bullet type
+        bulletAnimator.runtimeAnimatorController = bulletPooler.currentAnimator; // Set the bullet animator to match the current bullet type
     }
     private void Start()
     {
@@ -80,7 +81,7 @@ public class Bullet : MonoBehaviour
         bulletCollider.enabled = false; // Disable bullet collider
         bulletEdgeCollider.enabled = true;
         float laserDist = Vector2.Distance(transform.position, laserBoundary.position); // Check distance from laser boundary to bullet spawn
-        bulletEdgeCollider.SetPoints(new List<Vector2> { Vector2.zero, new Vector2(0, laserBoundary.position.x) }); // Get the points of the edge collider
+        bulletEdgeCollider.SetPoints(new List<Vector2> { Vector2.zero, new Vector2(0, laserDist) }); // Get the points of the edge collider
         bulletSprite.size = new Vector2(laserDist, 1); // Scale the object in local space to match the laser distance
         Vector2 bulletPosition = transform.position;
         /*RaycastHit2D[] laserHit = Physics2D.RaycastAll(transform.position, laserBoundary.position);

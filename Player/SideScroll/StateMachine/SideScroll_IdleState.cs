@@ -17,8 +17,8 @@ public class SideScroll_IdleState : PlayerSideScrollStateMachine
         playerSideScroll.playerAnimator.SetBool("Run", false);
         playerSideScroll.playerAnimator.SetBool("Jump", false);
         playerSideScroll.playerAnimator.SetBool("Crouch", false);
-        playerSideScroll.playerCollider.size = new Vector2(playerSideScroll.playerCollider.size.x, playerSideScroll.playerStandColliderSizeY);
-        playerSideScroll.playerCollider.offset = new Vector2(playerSideScroll.playerCollider.offset.x, 0);
+        playerSideScroll.playerCollider.size = playerSideScroll.playerStandColliderSize;
+        playerSideScroll.playerCollider.offset = playerSideScroll.playerStandColliderOffset;
     }
     public override void Update()
     {
@@ -33,7 +33,7 @@ public class SideScroll_IdleState : PlayerSideScrollStateMachine
             {
                 playerSideScroll.PlayerSideScrollStateTransition(new SideScroll_JumpState(playerSideScroll));
             }
-            if (Input.GetKeyDown(KeyCode.S) && playerSideScroll.isPlayerOnGround == true) // Change to Jump state
+            if (Input.GetKey(KeyCode.S) && playerSideScroll.isPlayerOnGround == true) // Change to Jump state
             {
                 playerSideScroll.PlayerSideScrollStateTransition(new SideScroll_CrouchState(playerSideScroll));
             }
