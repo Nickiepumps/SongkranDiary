@@ -11,28 +11,43 @@ public class EnemyDroneStateController : NormalEnemySubject
     private EnemyStateMachine enemyCurrentState;
 
     [Header("Enemy General Properties")]
+    [SerializeField] private NormalEnemySO enemyStats;
     public Rigidbody2D enemyRB;
     public NormalEnemyType normalEnemyType;
+    public Animator droneEnemyAnimator;
     public int currentEnemyHP;
-    public float walkSpeed;
-    public float enemyASPD;
+    public float flySpeed;
     public int damage;
     public SpriteRenderer enemySpriteRenderer;
     public Transform destination;
     public Transform startPoint;
     public float distanceFromPlayer;
 
+    [Header("Drone Bomb Properties")]
+    public GameObject droneBombGameObject;
+
     // Hide from inspector
     public bool isDead = false;
     public int enemyHP;
+    public bool isBombDropped = false;
     private void OnEnable()
     {
-        currentEnemyHP = enemyHP;
+        if(startPoint != null)
+        {
+            transform.position = startPoint.position;
+        }
+        isBombDropped = false;
+        currentEnemyHP = enemyStats.hp;
+        droneBombGameObject.SetActive(true);
+        EnemyStateTransition(new EnemyDroneFlyState(this));
     }
     private void Start()
     {
+        normalEnemyType = enemyStats.NormalEnemyType;
+        flySpeed = enemyStats.movementSpeed;
+        damage = enemyStats.damage;
+        enemySpriteRenderer.sprite = enemyStats.normalSprite;
         player = GameObject.Find("Player_SideScroll").GetComponent<PlayerSideScrollStateController>();
-        EnemyStateTransition(new EnemyDroneFlyState(this));
     }
     private void Update()
     {
@@ -44,6 +59,12 @@ public class EnemyDroneStateController : NormalEnemySubject
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        switch (collision.tag)
+        {
+            case ("PlayerBullet"):
+                NotifyNormalEnemy(EnemyAction.Damaged);
+                return;
+        }
         enemyCurrentState.OnTriggerEnter(collision);
     }
     private void OnTriggerExit2D(Collider2D collision)

@@ -8,6 +8,7 @@ public class NormalEnemySpawner : MonoBehaviour
     [SerializeField] private bool allowShooterSpawn;
     [SerializeField] private bool allowBomberSpawn;
     [SerializeField] private bool allowStationarySpawn;
+    [SerializeField] private bool allowDroneSpawn;
 
     [Header("Spawn Properties")]
     [SerializeField] private int shooterAmountToSpawn;
@@ -23,16 +24,20 @@ public class NormalEnemySpawner : MonoBehaviour
     [Header("Spawners and Prefab")]
     public List<Transform> shooterSpawnerlist;
     public List<Transform> bomberSpawnerlist;
+    public List<Transform> droneSpawnerlist;
     [SerializeField] private List<Transform> stationarySpawnerlist;
     [SerializeField] private GameObject shooterEnemyPrefab;
     [SerializeField] private GameObject bomberEnemyPrefab;
+    [SerializeField] private GameObject droneEnemyPrefab;
     public List<GameObject> spawnedShooterLists = new List<GameObject>();
     public List<GameObject> spawnedBomberLists = new List<GameObject>();
+    public List<GameObject> spawnedDroneLists = new List<GameObject>();
 
     [Header("Enemy Scriptable Object")]
     [SerializeField] private NormalEnemySO shooterSO;
     [SerializeField] private NormalEnemySO bomberSO;
     [SerializeField] private NormalEnemySO stationarySO;
+    [SerializeField] private NormalEnemySO droneSO;
     private void Start()
     {
         if (allowShooterSpawn == true)
@@ -81,6 +86,30 @@ public class NormalEnemySpawner : MonoBehaviour
                 }
                 spawnedBomberLists.Add(bomberEnemy);
                 bomberEnemy.SetActive(false);
+            }
+        }
+        if (allowDroneSpawn == true)
+        {
+            for (int i = 0; i < droneAmountToSpawn; i++)
+            {
+                int spawnElement = Random.Range(0, 5); // Random Spawnpoint
+                GameObject droneEnemy;
+                if (spawnElement > 2)
+                {
+                    droneEnemy = Instantiate(droneEnemyPrefab, droneSpawnerlist[0].position, Quaternion.identity, spawnedDroneGroup);
+                    droneEnemy.GetComponent<EnemyDroneStateController>().destination = droneSpawnerlist[1];
+                    droneEnemy.GetComponent<EnemyDroneStateController>().startPoint = droneSpawnerlist[0];
+                    droneEnemy.GetComponent<EnemyDroneStateController>().enemySpriteRenderer.flipX = true;
+                }
+                else
+                {
+                    droneEnemy = Instantiate(droneEnemyPrefab, droneSpawnerlist[1].position, Quaternion.identity, spawnedDroneGroup);
+                    droneEnemy.GetComponent<EnemyDroneStateController>().destination = droneSpawnerlist[0];
+                    droneEnemy.GetComponent<EnemyDroneStateController>().startPoint = droneSpawnerlist[1];
+                    droneEnemy.GetComponent<EnemyDroneStateController>().enemySpriteRenderer.flipX = false;
+                }
+                spawnedDroneLists.Add(droneEnemy);
+                droneEnemy.SetActive(false);
             }
         }
         if (allowStationarySpawn == true)
