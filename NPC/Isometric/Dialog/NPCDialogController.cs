@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
-public class NPCDialogController : MonoBehaviour, INPCObserver, IPlayerObserver, IGameObserver
+using UnityEngine.EventSystems;
+public class NPCDialogController : MonoBehaviour, INPCObserver, IPlayerObserver, IGameObserver, IPointerEnterHandler, IPointerExitHandler
 {
     [Header("Dialog Type")]
     [SerializeField] private NPCDialogType dialogType;
@@ -12,9 +14,21 @@ public class NPCDialogController : MonoBehaviour, INPCObserver, IPlayerObserver,
     [SerializeField] private PlayerSubject playerSubject; // Player
     [SerializeField] private GameSubject isometricGameSubject; // Isometric Game subject To Do: find gameSubject object in the scene and reference it when turned into prefab
 
+    [Header("GameUIController Reference")]
+    [SerializeField] private GameUIController gameUIController;
+
+    [Header("Audio References")]
+    [SerializeField] private AudioSource npcAudioSouce;
+    [SerializeField] private AudioClip[] npcDialogClipArr;
+
     [Header("Dialog box and Notif References")]
+    [SerializeField] private Color correctColor;// Correct color (green) 
+    [SerializeField] private Color wrongColor; // Correct color (red) 
+    [SerializeField] private Color nonSelectColor; // Non-Selected choice color (dark grey) 
     [SerializeField] private GameObject interactNotif; // Interact notification popup
-    [SerializeField] private GameObject dialogBox; // NPC dialog box
+    [SerializeField] private GameObject dialogBox; // NPC dialog box GameObject
+    [SerializeField] private Image dialogBoxImg; // NPC dialog box Image
+    [SerializeField] private Image[] choiceImgArr; // NPC dialog box Image
     [SerializeField] private TextMeshProUGUI dialogText; // Dialog text
     [SerializeField] private GameObject nextDialogNotif;
     private int dialogSeqNumber = 0;
@@ -35,7 +49,6 @@ public class NPCDialogController : MonoBehaviour, INPCObserver, IPlayerObserver,
     public bool isPlayerUpgrade = false;
 
     private bool finishedDialog = false; // Check status of dialog typewriter effect
-    private GameObject currentChoiceToConfirm; // Player's current choices before submit (For keyboard choosing)
     private GameObject confirmedChoice; // Player's confirmed choice
     private bool startChoosing = false; // Player's choosing dialogs
     private void OnEnable()
@@ -123,6 +136,33 @@ public class NPCDialogController : MonoBehaviour, INPCObserver, IPlayerObserver,
     }
     public void OnSideScrollGameNotify(IsometricGameState isoGameState)
     {
+    }
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if(eventData.pointerEnter.gameObject == choiceButtonLists[0])
+        {
+            choiceImgArr[0].color = Color.white;
+            choiceImgArr[1].color = nonSelectColor;
+            choiceImgArr[2].color = nonSelectColor;
+        }
+        else if(eventData.pointerEnter.gameObject == choiceButtonLists[1])
+        {
+            choiceImgArr[0].color = nonSelectColor;
+            choiceImgArr[1].color = Color.white;
+            choiceImgArr[2].color = nonSelectColor;
+        }
+        else if (eventData.pointerEnter.gameObject == choiceButtonLists[2])
+        {
+            choiceImgArr[0].color = nonSelectColor;
+            choiceImgArr[1].color = nonSelectColor;
+            choiceImgArr[2].color = Color.white;
+        }
+    }
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        choiceImgArr[0].color = Color.white;
+        choiceImgArr[1].color = Color.white;
+        choiceImgArr[2].color = Color.white;
     }
     private void Update()
     {
@@ -218,6 +258,7 @@ public class NPCDialogController : MonoBehaviour, INPCObserver, IPlayerObserver,
         else
         {
             isometricGameSubject.NotifyGameObserver(IsometricGameState.Upgrade);
+            gameUIController.currentNPC = this;
             dialogSeqNumber = 0;
             choicesGroup.SetActive(false);
             dialogBox.SetActive(false);
@@ -245,6 +286,7 @@ public class NPCDialogController : MonoBehaviour, INPCObserver, IPlayerObserver,
             dialogSeqNumber = 0;
             dialogBox.SetActive(false);
             interactNotif.SetActive(true);
+            isPlayerAnswered = false;
             yield return null;
         }
     }
@@ -252,42 +294,65 @@ public class NPCDialogController : MonoBehaviour, INPCObserver, IPlayerObserver,
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            currentChoiceToConfirm = choiceButtonLists[0];
+            choiceImgArr[0].color = Color.white;
+            choiceImgArr[1].color = nonSelectColor;
+            choiceImgArr[2].color = nonSelectColor;
+            confirmedChoice = choiceButtonLists[0];
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            currentChoiceToConfirm = choiceButtonLists[1];
+            choiceImgArr[0].color = nonSelectColor;
+            choiceImgArr[1].color = Color.white;
+            choiceImgArr[2].color = nonSelectColor;
+            confirmedChoice = choiceButtonLists[1];
         }
         else if (Input.GetKeyDown(KeyCode.Alpha3))
         {
-            currentChoiceToConfirm = choiceButtonLists[2];
+            choiceImgArr[0].color = nonSelectColor;
+            choiceImgArr[1].color = nonSelectColor;
+            choiceImgArr[2].color = Color.white;
+            confirmedChoice = choiceButtonLists[2];
         }
-        else if (Input.GetKeyDown(KeyCode.Return))
+        else if (Input.GetKeyDown(KeyCode.Return) && confirmedChoice != null)
         {
-            confirmedChoice = currentChoiceToConfirm;
+            foreach (Image img in choiceImgArr)
+            {
+                img.color = Color.white;
+            }
             startChoosing = false;
-            if(CheckAnswer(confirmedChoice) == true)
-            {
-                Debug.Log("Correct!");
-                isPlayerAnswered = true;
-                StartCoroutine(CorrectResultDialog());
-            }
-            else
-            {
-                Debug.Log("Wrong!");
-                StartCoroutine(WrongResultDialog());
-            }
+            CheckAnswer(confirmedChoice);
+            confirmedChoice = null;
         }
     }
-    private bool CheckAnswer(GameObject choice)
+    public void CheckAnswer(GameObject choice)
     {
         if(choice == correctChoice)
         {
-            return true;
+            Debug.Log("Correct!");
+            isPlayerAnswered = true;
+            npcAudioSouce.clip = npcDialogClipArr[0];
+            npcAudioSouce.Play();
+            dialogBoxImg.color = correctColor;
+            StartCoroutine(AnswerIndicator(correctColor));
+            StartCoroutine(CorrectResultDialog());
         }
         else
         {
-            return false;
+            Debug.Log("Wrong!");
+            isPlayerAnswered = true;
+            npcAudioSouce.clip = npcDialogClipArr[1];
+            npcAudioSouce.Play();
+            dialogBoxImg.color = wrongColor;
+            StartCoroutine(AnswerIndicator(wrongColor));
+            StartCoroutine(WrongResultDialog());
+        }
+    }
+    private IEnumerator AnswerIndicator(Color color)
+    {
+        while (dialogBoxImg.color != Color.white)
+        {
+            dialogBoxImg.color = Vector4.Lerp(dialogBoxImg.color, Color.white, 5 * Time.deltaTime);
+            yield return null;
         }
     }
     private IEnumerator TypeWriterAnimation(string dialog)
