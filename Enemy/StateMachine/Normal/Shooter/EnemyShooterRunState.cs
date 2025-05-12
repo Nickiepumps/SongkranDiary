@@ -9,24 +9,28 @@ public class EnemyShooterRunState : EnemyStateMachine
     private float currentASPD;
     public override void Start()
     {
-        //shooterEnemy.currentEnemyHP = shooterEnemy.enemyHP;
         currentASPD = shooterEnemy.enemyASPD;
-        shooterEnemy.transform.position = new Vector2(shooterEnemy.startPoint.position.x, shooterEnemy.transform.position.y);
     }
     public override void Update()
     {
-        if(shooterEnemy.currentEnemyHP <= 0)
+        /*if (shooterEnemy.isOnGround == true)
+        {
+            shooterEnemy.shooterEnemyAnimator.SetBool("isRun", true);
+            shooterEnemy.shooterEnemyAnimator.SetBool("isJump", false);
+        }*/ // Uncomment this when animation is ready
+
+        if (shooterEnemy.currentEnemyHP <= 0)
         {
             shooterEnemy.EnemyStateTransition(new EnemyShooterDeadState(shooterEnemy));
         }
-        moveDir = Vector2.MoveTowards(shooterEnemy.transform.position, shooterEnemy.destination.position, shooterEnemy.walkSpeed * Time.fixedDeltaTime);
+        moveDir = Vector2.MoveTowards(shooterEnemy.transform.position, new Vector2(shooterEnemy.destination.position.x, shooterEnemy.transform.position.y),
+            shooterEnemy.walkSpeed * Time.fixedDeltaTime);
         currentASPD -= Time.deltaTime;
         if (currentASPD <= 0)
         {
             shooterEnemy.NotifyNormalEnemy(EnemyAction.Shoot);
             currentASPD = shooterEnemy.enemyASPD;
         }
-
         if (Vector2.Distance(shooterEnemy.transform.position, shooterEnemy.destination.position) < 0.5f)
         {
             Debug.Log("Reached Destination");
@@ -35,13 +39,15 @@ public class EnemyShooterRunState : EnemyStateMachine
     }
     public override void FixedUpdate()
     {
-        shooterEnemy.enemyRB.MovePosition(new Vector2(moveDir.x, shooterEnemy.transform.position.y));
+        shooterEnemy.transform.position = moveDir;
     }
     public override void OnTriggerEnter(Collider2D eCollider)
     {
-        
+        if(eCollider.tag == "EnemyJump" && shooterEnemy.isOnGround == true)
+        {
+            shooterEnemy.EnemyStateTransition(new EnemyShooterJumpState(shooterEnemy));
+        }
     }
-
     public override void OnTriggerExit(Collider2D eCollider)
     {
         
@@ -50,7 +56,6 @@ public class EnemyShooterRunState : EnemyStateMachine
     {
         
     }
-
     public override void OnColliderExit(Collision2D pCollider)
     {
         

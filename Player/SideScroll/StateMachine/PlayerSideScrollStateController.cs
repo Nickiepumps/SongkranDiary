@@ -28,9 +28,10 @@ public class PlayerSideScrollStateController : PlayerSubject
     public float walkSpeed = 5; // Player's walk speed
     public float jumpForce = 5f; // Player's jump force
     const float damageImmunityTime = 3f; // Player's invulnerability time, start countdown when player hit by enemy
-    public float playerStandColliderSizeY = 0.7f; // Player's collider height values when standing
-    public float playerCrouchColliderSizeY = 0.39f; // Player's collider height values when crouching
-    public float playerCrouchColliderOffsetY = -0.14f; // Player's collider Y position offset values when crouching
+    public Vector2 playerStandColliderSize; // Player's collider width and height values when standing
+    public Vector2 playerStandColliderOffset; // Player's collider X and Y position offset values when standing
+    public Vector2 playerCrouchColliderSize; // Player's collider width and height values when crouching
+    public Vector2 playerCrouchColliderOffset; // Player's collider X and Y position offset values when crouching
     public bool isPlayerOnGround; // Standing on the ground status
     public bool isCrouch; // Crouching status
     public bool isDamaged = false; // Damaging status
@@ -51,6 +52,12 @@ public class PlayerSideScrollStateController : PlayerSubject
     private void Start()
     {
         playerRB = GetComponent<Rigidbody2D>();
+
+        playerStandColliderSize = new Vector2(playerCollider.size.x, playerCollider.size.y);
+        playerStandColliderOffset = new Vector2(playerCollider.offset.x, playerCollider.offset.y);
+        playerCrouchColliderSize = new Vector2(playerStandColliderSize.x, 1f);
+        playerCrouchColliderOffset = new Vector2(playerStandColliderOffset.x, -0.33f);
+
         currentASPD = currentPlayerStats.currentNormalASPD.aspd;
         aspd = currentASPD;
         playerMaxHP = currentPlayerStats.currentPlayerHP.hpPoint;

@@ -16,6 +16,7 @@ public class EnemyShooterStateController : NormalEnemySubject
     public NormalEnemyType normalEnemyType;
     public int currentEnemyHP;
     public float walkSpeed;
+    public float jumpForce;
     public float enemyASPD;
     public int damage;
     public SpriteRenderer enemySpriteRenderer;
@@ -23,11 +24,18 @@ public class EnemyShooterStateController : NormalEnemySubject
     public Transform startPoint;
     public float distanceFromPlayer;
 
+    [Header("Animator")]
+    //public Animator shooterEnemyAnimator;
+
     // Hide from inspector
     public bool isDead = false;
-    //public int enemyHP;
+    public bool isOnGround = true;
     private void OnEnable()
     {
+        if(startPoint != null)
+        {
+            transform.position = startPoint.position;
+        }
         enemySpriteRenderer.sprite = enemyStats.normalSprite;
         normalEnemyType = enemyStats.NormalEnemyType;
         currentEnemyHP = enemyStats.hp;
@@ -64,10 +72,18 @@ public class EnemyShooterStateController : NormalEnemySubject
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        if (collision.gameObject.tag == "Side_Floor")
+        {
+            isOnGround = true;
+        }
         enemyCurrentState.OnColliderEnter(collision);
     }
     private void OnCollisionExit2D(Collision2D collision)
     {
+        if (collision.gameObject.tag == "Side_Floor")
+        {
+            isOnGround = false;
+        }
         enemyCurrentState.OnColliderExit(collision);
     }
     public void EnemyStateTransition(EnemyStateMachine newEnemyState)

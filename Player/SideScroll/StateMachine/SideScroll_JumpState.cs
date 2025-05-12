@@ -9,7 +9,9 @@ public class SideScroll_JumpState : PlayerSideScrollStateMachine
     {
         playerSideScroll.isPlayerOnGround = false;
         playerSideScroll.playerAnimator.SetBool("Jump", true);
-        playerSideScroll.playerCollider.size = new Vector2(playerSideScroll.playerCollider.size.x, playerSideScroll.playerStandColliderSizeY);
+        playerSideScroll.playerAnimator.SetBool("Crouch", false);
+        playerSideScroll.playerCollider.size = playerSideScroll.playerStandColliderSize;
+        playerSideScroll.playerCollider.offset = playerSideScroll.playerStandColliderOffset;
         playerSideScroll.playerRB.AddForce(Vector2.up * playerSideScroll.jumpForce, ForceMode2D.Impulse);
     }
     public override void Update()

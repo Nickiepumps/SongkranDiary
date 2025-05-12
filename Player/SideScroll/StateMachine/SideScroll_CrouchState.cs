@@ -9,8 +9,8 @@ public class SideScroll_CrouchState : PlayerSideScrollStateMachine
     {
         playerSideScroll.playerAnimator.SetBool("Crouch", true);
         playerSideScroll.isCrouch = true;
-        playerSideScroll.playerCollider.size = new Vector2(playerSideScroll.playerCollider.size.x, playerSideScroll.playerCrouchColliderSizeY);
-        playerSideScroll.playerCollider.offset = new Vector2(playerSideScroll.playerCollider.offset.x, playerSideScroll.playerCrouchColliderOffsetY);
+        playerSideScroll.playerCollider.size = playerSideScroll.playerCrouchColliderSize;
+        playerSideScroll.playerCollider.offset = playerSideScroll.playerCrouchColliderOffset;
     }
     public override void Update()
     {
@@ -21,6 +21,10 @@ public class SideScroll_CrouchState : PlayerSideScrollStateMachine
         else if (Input.GetKeyUp(KeyCode.S) && Input.GetAxisRaw("Horizontal") != 0)
         {
             playerSideScroll.PlayerSideScrollStateTransition(new SideScroll_RunState(playerSideScroll));
+        }
+        else if (Input.GetKeyDown(KeyCode.Space))
+        {
+            playerSideScroll.PlayerSideScrollStateTransition(new SideScroll_JumpState(playerSideScroll));
         }
         if (playerSideScroll.playerCurrentHP <= 0)
         {

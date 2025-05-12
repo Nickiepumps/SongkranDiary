@@ -29,7 +29,7 @@ public class FatKid_BossUltState : BossStateMachine
     public override void Update()
     {
         currentTime -= Time.deltaTime;
-        if (currentTime <= 0 && fatKidBoss.bossScriptableObject.bossName == BossList.FatKid)
+        if (currentTime <= 0)
         {
             if (moveDir.x == rightPos.position.x)
             {

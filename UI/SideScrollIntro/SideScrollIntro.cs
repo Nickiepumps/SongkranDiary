@@ -49,7 +49,7 @@ public class SideScrollIntro : GameSubject
             introWipeMask.padding = new Vector4(currentWipeValue -= introTransitionTime, 0, 0, 0);
             yield return null;
         }
-        NotifySideScrollGameObserver(SideScrollGameState.Play);
+        NotifySideScrollGameObserver(SideScrollGameState.StartRound);
         closingAnim.Play();
         yield return new WaitForSeconds(1f);
         finishCoroutine = true;
@@ -70,7 +70,7 @@ public class SideScrollIntro : GameSubject
             knockOutwipeMask.padding = new Vector4(currentWipeValue += knockOutTransitionTime, 0, 0, 0);
             yield return null;
         }
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(1f);
         finishCoroutine = true;
         knouckOutGroup.gameObject.SetActive(false);
     }
