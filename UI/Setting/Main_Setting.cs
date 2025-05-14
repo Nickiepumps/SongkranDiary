@@ -25,7 +25,11 @@ public class Main_Setting : MonoBehaviour
     private float originalSFXVolume;
     private void OnEnable()
     {
-        // Get all setting values
+        SettingData loadedSettingData = SettingHandler.instance.LoadSetting();
+        masterSlider.value = loadedSettingData.masterVolume;
+        bgmSlider.value = loadedSettingData.bgmVolume;
+        sfxSlider.value = loadedSettingData.sfxVolume;
+
         originalMasterVolume = masterSlider.value;
         originalBGMVolume = bgmSlider.value;
         originalSFXVolume = sfxSlider.value;
@@ -33,13 +37,17 @@ public class Main_Setting : MonoBehaviour
     private void OnDisable()
     {
         // Reset all setting to the original value if player doesn't confirm the setting
-        if(confirmButton.activeSelf == true)
-        {
-            masterSlider.value = originalMasterVolume;
-            bgmSlider.value = originalBGMVolume;
-            sfxSlider.value = originalSFXVolume;
-            confirmButton.SetActive(false);
-        }
+        masterSlider.value = originalMasterVolume;
+        bgmSlider.value = originalBGMVolume;
+        sfxSlider.value = originalSFXVolume;
+        confirmButton.SetActive(false);
+
+        // Master
+        MasterSetting();
+        // BGM
+        BGMSetting();
+        // SFX
+        SFXSetting();
     }
     private void Update()
     {
@@ -93,6 +101,8 @@ public class Main_Setting : MonoBehaviour
     public void ConfirmSetting()
     {
         // To Do: Save all settings to JSON
+        SettingHandler.instance.SaveSetting(masterSlider.value, bgmSlider.value, sfxSlider.value);
+
         originalMasterVolume = masterSlider.value;
         originalBGMVolume = bgmSlider.value;
         originalSFXVolume = sfxSlider.value;
