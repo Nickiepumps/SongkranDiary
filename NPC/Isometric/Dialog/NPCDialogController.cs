@@ -44,6 +44,9 @@ public class NPCDialogController : MonoBehaviour, INPCObserver, IPlayerObserver,
     [SerializeField] private GameObject correctChoice; // Player's correct choice
     [SerializeField] private List<GameObject> choiceButtonLists = new List<GameObject>(); // Player's choices list
 
+    [Header("Reward Window Reference (For NPC with choice only)")]
+    [SerializeField] private GameObject rewardWindow;
+
     [Header("Player Status")]
     [SerializeField] private bool isPlayerAnswered = false;
     public bool isPlayerUpgrade = false;
@@ -98,11 +101,6 @@ public class NPCDialogController : MonoBehaviour, INPCObserver, IPlayerObserver,
                         interactNotif.SetActive(false);
                         dialogBox.SetActive(true);
                         StartCoroutine(ChoiceDialogSequence());
-                    }
-                    else if (isPlayerAnswered == true && isPlayerUpgrade == false && dialogType == NPCDialogType.Choices)
-                    {
-                        isometricGameSubject.GetComponent<GameUIController>().currentNPC = this;
-                        isometricGameSubject.NotifyGameObserver(IsometricGameState.Upgrade);
                     }
                     else
                     {
@@ -257,8 +255,8 @@ public class NPCDialogController : MonoBehaviour, INPCObserver, IPlayerObserver,
         // stop dialog sequence when npc ran through all dialogs in the list
         else
         {
-            isometricGameSubject.NotifyGameObserver(IsometricGameState.Upgrade);
-            gameUIController.currentNPC = this;
+            isometricGameSubject.NotifyGameObserver(IsometricGameState.Paused);
+            rewardWindow.SetActive(true);
             dialogSeqNumber = 0;
             choicesGroup.SetActive(false);
             dialogBox.SetActive(false);

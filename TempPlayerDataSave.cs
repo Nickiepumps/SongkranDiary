@@ -37,4 +37,8 @@ public class TempPlayerDataSave : ScriptableObject
     [Header("Ultimate")]
     public WeaponSO maxPlayerUltAmount;
     public WeaponSO maxUltimateTravelSpeed;
+
+    [Space]
+    [Header("Coin")]
+    public int coinAmount;
 }

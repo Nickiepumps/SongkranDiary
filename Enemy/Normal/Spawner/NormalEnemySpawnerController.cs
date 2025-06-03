@@ -38,6 +38,10 @@ public class NormalEnemySpawnerController : MonoBehaviour
     }
     private void Update()
     {
+        SpawnNormalEnemy();
+    }
+    private void SpawnNormalEnemy()
+    {
         currentTimeToSpawnShooter -= Time.deltaTime;
         currentTimeToSpawnBomber -= Time.deltaTime;
         currentTimeToSpawnDrone -= Time.deltaTime;
@@ -59,7 +63,7 @@ public class NormalEnemySpawnerController : MonoBehaviour
                 }
             }
         }
-        if(startSpawnOnStart == true && currentTimeToSpawnBomber <= 0)
+        if (startSpawnOnStart == true && currentTimeToSpawnBomber <= 0)
         {
             for (int i = 0; i < normalEnemySpawner.spawnedBomberLists.Count; i++)
             {
@@ -99,31 +103,68 @@ public class NormalEnemySpawnerController : MonoBehaviour
     private Transform[] NewSpawnAndDestination(GameObject enemyGO, Transform enemyStartPoint, Transform enemyDestination, SpriteRenderer spriteRenderer)
     {
         Transform[] newPath = new Transform[2];
-        int spawnValue = Random.Range(1, 10);
+        int spawnValue = Random.Range(0, 2);
+        float spawnXOffset = 0f;
         Transform previousStart = enemyStartPoint;
         Transform previousDestination = enemyDestination;
+        Transform newStart;
+        Transform newDestination;
 
-        if(spawnValue > 5)
+        if(spawnValue == 0)
         {
-            enemyDestination = previousStart;
-            enemyStartPoint = previousDestination;
+            newStart = previousDestination;
+            newDestination = previousStart;
+            RaycastHit2D holeRayCheck = Physics2D.Raycast(newStart.position, Vector2.down, Mathf.Infinity);
+            if(holeRayCheck.collider.tag != "E_Boundary")
+            {
+                Debug.Log("There is a hole under the spawn, spawn the enemy at 15 units beside the spawn point");
+                spawnXOffset = 3f;
+            }
+            else
+            {
+                spawnXOffset = 0f;
+            }
         }
         else
         {
-            enemyDestination = previousDestination;
-            enemyStartPoint = previousStart;
+            newStart = previousStart;
+            newDestination = previousDestination;
         }
-        if (enemyStartPoint.transform.eulerAngles == new Vector3(0, 0, 90))
+
+        // Flip the sprite if the starting point is facing left
+        // Check if there is a hole underneath the spawn point; If there is, spawn the enemy at 3 units beside the spawn point
+        if (newStart.transform.eulerAngles == new Vector3(0, 0, 90))
         {
             spriteRenderer.flipX = false;
+            RaycastHit2D holeRayCheck = Physics2D.Raycast(newStart.position, Vector2.down, Mathf.Infinity);
+            if (holeRayCheck.collider.tag != "Side_Floor")
+            {
+                Debug.Log("There is a hole under the spawn, spawn the enemy at 15 units beside the spawn point");
+                spawnXOffset = 3f;
+            }
+            else
+            {
+                spawnXOffset = 0f;
+            }
         }
         else
         {
             spriteRenderer.flipX = true;
+            RaycastHit2D holeRayCheck = Physics2D.Raycast(newStart.position, Vector2.down, Mathf.Infinity);
+            if (holeRayCheck.collider.tag != "Side_Floor")
+            {
+                Debug.Log("There is a hole under the spawn, spawn the enemy at 15 units beside the spawn point");
+                spawnXOffset = -3f;
+            }
+            else
+            {
+                spawnXOffset = 0f;
+            }
         }
-        newPath[0] = enemyStartPoint;
-        newPath[1] = enemyDestination;
-        enemyGO.transform.position = enemyStartPoint.position;
+        newPath[0] = newStart;
+        newPath[1] = newDestination;
+        enemyGO.transform.position = new Vector2(newPath[0].position.x + spawnXOffset, newPath[0].position.y);
+
         return newPath;
     }
 }

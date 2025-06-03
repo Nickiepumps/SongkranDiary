@@ -71,11 +71,11 @@ public class PlayerObserverController : MonoBehaviour, IGameObserver, IPlayerObs
         {
             case (IsometricGameState.Play):
                 Debug.Log("Transition from interact to idle");
+                playerStateController.enabled = true;
                 playerStateController.PlayerStateTransition(new PlayerIdleState(playerStateController));
                 return;
-            case (IsometricGameState.Upgrade):
-                return;
             case (IsometricGameState.Paused):
+                playerStateController.enabled = false;
                 return;
         }
     }

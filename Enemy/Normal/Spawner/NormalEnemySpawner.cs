@@ -40,13 +40,21 @@ public class NormalEnemySpawner : MonoBehaviour
     [SerializeField] private NormalEnemySO droneSO;
     private void Start()
     {
+        CreateNormalEnemy();
+    }
+    private void Update()
+    {
+        
+    }
+    private void CreateNormalEnemy()
+    {
         if (allowShooterSpawn == true)
         {
-            for(int i = 0; i < shooterAmountToSpawn; i++)
+            for (int i = 0; i < shooterAmountToSpawn; i++)
             {
-                int spawnElement = Random.Range(0, 5); // Random Spawnpoint
+                int spawnElement = Random.Range(0, 2); // Random Spawnpoint
                 GameObject shooterEnemy;
-                if (spawnElement > 2)
+                if (spawnElement == 0)
                 {
                     shooterEnemy = Instantiate(shooterEnemyPrefab, shooterSpawnerlist[0].position, Quaternion.identity, spawnedShooterGroup);
                     shooterEnemy.GetComponent<EnemyShooterStateController>().destination = shooterSpawnerlist[1];
@@ -68,9 +76,9 @@ public class NormalEnemySpawner : MonoBehaviour
         {
             for (int i = 0; i < bomberAmountToSpawn; i++)
             {
-                int spawnElement = Random.Range(0, 5); // Random Spawnpoint
+                int spawnElement = Random.Range(0, 2); // Random Spawnpoint
                 GameObject bomberEnemy;
-                if (spawnElement > 2)
+                if (spawnElement == 0)
                 {
                     bomberEnemy = Instantiate(bomberEnemyPrefab, bomberSpawnerlist[0].position, Quaternion.identity, spawnedBomberGroup);
                     bomberEnemy.GetComponent<EnemyBomberStateController>().destination = bomberSpawnerlist[1];
@@ -92,9 +100,9 @@ public class NormalEnemySpawner : MonoBehaviour
         {
             for (int i = 0; i < droneAmountToSpawn; i++)
             {
-                int spawnElement = Random.Range(0, 5); // Random Spawnpoint
+                int spawnElement = Random.Range(0, 2); // Random Spawnpoint
                 GameObject droneEnemy;
-                if (spawnElement > 2)
+                if (spawnElement == 0)
                 {
                     droneEnemy = Instantiate(droneEnemyPrefab, droneSpawnerlist[0].position, Quaternion.identity, spawnedDroneGroup);
                     droneEnemy.GetComponent<EnemyDroneStateController>().destination = droneSpawnerlist[1];

@@ -40,6 +40,10 @@ public class PlayerStats : MonoBehaviour
     public WeaponSO maxPlayerUltAmount;
     public WeaponSO maxUltimateTravelSpeed;
 
+    [Space]
+    [Header("Coin")]
+    public int coinAmount;
+
     private void Start()
     {
         if(tempData != null)
@@ -51,6 +55,7 @@ public class PlayerStats : MonoBehaviour
             currentSprdBulletASPD = tempData.currentSprdBulletASPD;
             currentWeaponSprdCount = tempData.currentWeaponSprdCount;
             currentLsrBulletASPD = tempData.currentLsrBulletASPD;
+            coinAmount = tempData.coinAmount;
         }
     }
 }

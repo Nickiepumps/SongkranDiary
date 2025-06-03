@@ -14,9 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   upgradeType: 3
   bulletType: 1
+  icon: {fileID: -1438507393, guid: 4c9b9a62dbf76fa43bc0a654f5b65c32, type: 3}
+  upgradeName: 
+  upgradeDescription: 
+  upgradeCost: 1
   level: 2
   aspd: 1
   travelSpeed: 10
   spreadCount: 4
-  ulteCount: 0
+  ultCount: 0
   ultChargingSpeed: 0

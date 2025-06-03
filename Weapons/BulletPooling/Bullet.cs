@@ -111,7 +111,7 @@ public class Bullet : MonoBehaviour
         {
             gameObject.SetActive(false);
         }
-        else if(collision.gameObject.tag == "Enemy" && bulletType != BulletType.laser)
+        else if(collision.gameObject.tag == "EnemyHitBox" && bulletType != BulletType.laser)
         {
             isHit = true;
             StartCoroutine(DeactivateBullet());

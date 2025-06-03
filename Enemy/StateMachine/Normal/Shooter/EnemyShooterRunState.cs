@@ -43,6 +43,10 @@ public class EnemyShooterRunState : EnemyStateMachine
     }
     public override void OnTriggerEnter(Collider2D eCollider)
     {
+        if(eCollider.tag == "E_Boundary")
+        {
+            shooterEnemy.gameObject.SetActive(false);
+        }
         if(eCollider.tag == "EnemyJump" && shooterEnemy.isOnGround == true)
         {
             shooterEnemy.EnemyStateTransition(new EnemyShooterJumpState(shooterEnemy));

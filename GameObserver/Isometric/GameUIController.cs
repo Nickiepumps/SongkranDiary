@@ -24,7 +24,7 @@ public class GameUIController : MonoBehaviour, IGameObserver
     [Space]
     [Header("Windows UI References")]
     [Header("Upgrade Window")]
-    [SerializeField] private GameObject upgradeWindow; // Player upgrade window
+    [SerializeField] private GameObject rewardWindow; // Player upgrade window
     [Header("Scoreboard Window")]
     [SerializeField] private GameObject scoreBoard;
     [SerializeField] private GameObject winScoreBoard;
@@ -40,8 +40,6 @@ public class GameUIController : MonoBehaviour, IGameObserver
     [Space]
     [Header("Side Scroll Outro Window")]
     [SerializeField] private SideScrollIntro sideScrollIntroWindow;
-
-    public NPCDialogController currentNPC; // Current NPC the player is talking to, Upgrade Window need to ref this variable to update player upgrade status
     private void OnEnable()
     {
         if (levelType == LevelType.IsoLevel)
@@ -95,15 +93,11 @@ public class GameUIController : MonoBehaviour, IGameObserver
         switch (isoGameState)
         {
             case (IsometricGameState.Play):
-                currentNPC = null;
-                upgradeWindow.SetActive(false);
                 return;
             case (IsometricGameState.Paused):
-                Debug.Log("Game Paused UI");
                 return;
-            case (IsometricGameState.Upgrade):
-                Debug.Log("Upgrade state from GameObserver");
-                upgradeWindow.SetActive(true);
+            case (IsometricGameState.Reward):
+                rewardWindow.SetActive(true);
                 return;
         }
     }
@@ -153,6 +147,23 @@ public class GameUIController : MonoBehaviour, IGameObserver
                 loseScoreBoard.SetActive(true);
                 return;
         }
+    }
+    public void OpenWindow(GameObject windowObj)
+    {
+        if(windowObj.activeSelf == true)
+        {
+            windowObj.SetActive(false);
+            GetComponent<IsometricGameObserverContoller>().NotifyGameObserver(IsometricGameState.Play);
+        }
+        else
+        {
+            windowObj.SetActive(true);
+            GetComponent<IsometricGameObserverContoller>().NotifyGameObserver(IsometricGameState.Paused);
+        }
+    }
+    public IEnumerator OpenObjective()
+    {
+        yield return null;
     }
     private IEnumerator ReachGoal()
     {

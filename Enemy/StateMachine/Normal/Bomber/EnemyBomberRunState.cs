@@ -8,7 +8,6 @@ public class EnemyBomberRunState : EnemyStateMachine
     private Vector2 moveDir;
     public override void Start()
     {
-        bomberEnemy.transform.position = new Vector2(bomberEnemy.startPoint.position.x, bomberEnemy.transform.position.y);
     }
     public override void Update()
     {
@@ -24,7 +23,7 @@ public class EnemyBomberRunState : EnemyStateMachine
     }
     public override void FixedUpdate()
     {
-        bomberEnemy.enemyRB.MovePosition(new Vector2(moveDir.x, bomberEnemy.transform.position.y));
+        bomberEnemy.transform.position = moveDir;
     }
     public override void OnColliderEnter(Collision2D pCollider)
     {
