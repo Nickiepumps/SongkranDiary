@@ -2,7 +2,6 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 
 public class SettingHandler : MonoBehaviour
 {
@@ -30,8 +29,13 @@ public class SettingHandler : MonoBehaviour
     }
     public SettingData LoadSetting()
     {
+        if(File.Exists(Application.dataPath + "/setting.json") == false)
+        {
+            return null;
+        }
         string loadedSettingJson = File.ReadAllText(Application.dataPath + "/setting.json");
         SettingData loadedSetting = JsonUtility.FromJson<SettingData>(loadedSettingJson);
+        Debug.Log(loadedSetting.masterVolume);
         return loadedSetting;
     }
 }

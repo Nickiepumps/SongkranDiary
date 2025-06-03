@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,10 +11,13 @@ public class UpgradeWindow : MonoBehaviour, IGameObserver
 
     [Header("Observer Reference")]
     [SerializeField] private GameSubject gameUIControllerSubject;
-    private GameUIController gameUIController;
 
     [Header("Player's Stat Reference")]
     [SerializeField] private PlayerStats playerStats;
+
+    [Header("Coin Bar")]
+    [SerializeField] private TMP_Text coinAmountText;
+    [SerializeField] private int coinAmount;
 
     [Header("Upgrade Bar Images")]
     [SerializeField] private Image p_HP_UpgradeBar;
@@ -26,13 +29,10 @@ public class UpgradeWindow : MonoBehaviour, IGameObserver
     [SerializeField] private Image bl_Lsr_ASPD_UpgradeBar;
 
     [Header("UpgradeBar Sprites Variants")]
-    [SerializeField] private List<Sprite> p_HP_UpgradeBarLevel = new List<Sprite>();
-    [SerializeField] private List<Sprite> p_Ult_UpgradeBarLevel = new List<Sprite>();
-    [SerializeField] private List<Sprite> bl_norm_ASPD_UpgradeBarLevel = new List<Sprite>();
-    [SerializeField] private List <Sprite> bl_norm_bulletSPD_UpgradeBarLevel = new List<Sprite>();
-    [SerializeField] private List<Sprite> bl_Sprd_SprdCount_UpgradeBarLevel = new List<Sprite>();
-    [SerializeField] private List<Sprite> bl_Sprd_ASPD_UpgradeBarLevel = new List<Sprite>();
-    [SerializeField] private List<Sprite> bl_Lsr_ASPD_UpgradeBarLevel = new List<Sprite>();
+    [SerializeField] private List<Sprite> p_UpgradeBarLevel = new List<Sprite>();
+    [SerializeField] private List<Sprite> bl_norm_UpgradeBarLevel = new List<Sprite>();
+    [SerializeField] private List<Sprite> bl_Sprd_UpgradeBarLevel = new List<Sprite>();
+    [SerializeField] private List<Sprite> bl_Lsr_UpgradeBarLevel = new List<Sprite>();
 
     [Header("Button Sprites")]
     [SerializeField] private Sprite[] btn_ConfirmUpgrade;
@@ -46,11 +46,12 @@ public class UpgradeWindow : MonoBehaviour, IGameObserver
     [SerializeField] private GameObject bl_Sprd_ASPD_UpgradeBtn;
     [SerializeField] private GameObject bl_Lsr_ASPD_UpgradeBtn;
     [SerializeField] private GameObject confirmUpgradeBtn;
+    [SerializeField] private GameObject[] UpgradeBtnArr = new GameObject[7];
 
+    [Space]
     [Header("Player Stats Scriptable Objects")]
     [SerializeField] private List<PlayerStatSO> playerHPLists = new List<PlayerStatSO>();
     [SerializeField] private List<PlayerStatSO> playerUltChargeLists = new List<PlayerStatSO>();
-
     [Space]
     [Header("Weapon Stats Scriptable Objects")]
     [Header("Normal Bullet Stats")]
@@ -61,6 +62,11 @@ public class UpgradeWindow : MonoBehaviour, IGameObserver
     [SerializeField] private List<WeaponSO> spreadBulletCountLists = new List<WeaponSO>();
     [Header("Laser Bullet Stats")]
     [SerializeField] private List<WeaponSO> laserBulletASPDLists = new List<WeaponSO>();
+
+    [Space]
+    [Header("Unlock Costs")]
+    [SerializeField] private int sprdBulletUnlockCost = 5;
+    [SerializeField] private int laserBulletUnlockCost = 5;
 
     private List<PlayerStatSO> allSelectedPlayerStatLists = new List<PlayerStatSO>(); // All selected player's abilities waiting for upgrade
     private List<WeaponSO> allSelectedWeaponStatLists = new List<WeaponSO>(); // All selected weapons' abilities waiting for upgrade
@@ -73,16 +79,16 @@ public class UpgradeWindow : MonoBehaviour, IGameObserver
 
     }
 
-    private void Awake()
-    {
-        gameUIController = gameUIControllerSubject.GetComponent<GameUIController>();
-    }
     private void OnEnable()
     {
+        coinAmount = playerStats.coinAmount;
+        coinAmountText.text = "X " + coinAmount.ToString();
+        UpdateUpgradableDisplay();
         gameUIControllerSubject.AddGameObserver(this);
     }
     private void OnDisable()
     {
+        CancleUpgrade();
         gameUIControllerSubject.RemoveGameObserver(this);
     }
     private void Update()
@@ -101,26 +107,35 @@ public class UpgradeWindow : MonoBehaviour, IGameObserver
             gameObject.SetActive(false);
             gameUIControllerSubject.NotifyGameObserver(IsometricGameState.Play);
         }
+        if(coinAmount == 0)
+        {
+            foreach(GameObject btn in UpgradeBtnArr)
+            {
+                btn.SetActive(false);
+            }
+        }
     }
     public void AddPlayerAbility(PlayerStatSO playerStatType)
     {
-        if(playerStatType.upgradeType == PlayerUpgradeType.playerHP)
+        if(playerStatType.upgradeType == PlayerUpgradeType.playerHP && playerStats.coinAmount >= playerStatType.upgradeCost)
         {
-            int minLevel = -1;
             int currentLevel = playerStats.currentPlayerHP.level;
-            allSelectedPlayerStatLists.Add(playerHPLists[minLevel + currentLevel]);
-            p_HP_UpgradeBar.sprite = p_HP_UpgradeBarLevel[minLevel + currentLevel];
-            p_HP_UpgradeBtn.SetActive(false);
-            Debug.Log("Add player HP level" + playerHPLists[minLevel + currentLevel].level);
+            UpdateCoinAmount(playerHPLists[currentLevel]);
+            allSelectedPlayerStatLists.Add(playerHPLists[currentLevel]);
+            p_HP_UpgradeBar.sprite = p_UpgradeBarLevel[currentLevel];
+            playerStats.currentPlayerHP = playerHPLists[currentLevel];
+            Debug.Log("Add player HP level" + playerHPLists[currentLevel].level);
+            UpdateUpgradableDisplay(playerStatType, p_HP_UpgradeBtn);
         }
-        if (playerStatType.upgradeType == PlayerUpgradeType.playerUlt)
+        if (playerStatType.upgradeType == PlayerUpgradeType.playerUlt && playerStats.coinAmount >= playerStatType.upgradeCost)
         {
-            int minLevel = -1;
             int currentLevel = playerStats.currentPlayerUltCharge.level;
-            allSelectedPlayerStatLists.Add(playerUltChargeLists[minLevel + currentLevel]);
-            p_Ult_UpgradeBar.sprite = p_Ult_UpgradeBarLevel[minLevel + currentLevel];
-            p_Ult_UpgradeBarBtn.SetActive(false);
-            Debug.Log("Add player Ult level" + playerUltChargeLists[minLevel + currentLevel].level);
+            UpdateCoinAmount(playerUltChargeLists[currentLevel]);
+            allSelectedPlayerStatLists.Add(playerUltChargeLists[currentLevel]);
+            p_Ult_UpgradeBar.sprite = p_UpgradeBarLevel[currentLevel];
+            playerStats.currentPlayerUltCharge = playerUltChargeLists[currentLevel];
+            Debug.Log("Add player Ult level" + playerUltChargeLists[currentLevel].level);
+            UpdateUpgradableDisplay(playerStatType, p_Ult_UpgradeBarBtn);
         }
         confirmUpgradeBtn.SetActive(true);
     }
@@ -130,52 +145,160 @@ public class UpgradeWindow : MonoBehaviour, IGameObserver
         {
             if(weaponStat.upgradeType == WeaponUpgradeType.bulletNormASPD)
             {
-                int minLevel = -1;
                 int currentLevel = playerStats.currentNormalASPD.level;
-                allSelectedWeaponStatLists.Add(normalBulletASPDLists[minLevel + currentLevel]);
-                bl_norm_ASPD_UpgradeBar.sprite = bl_norm_ASPD_UpgradeBarLevel[minLevel + currentLevel];
-                bl_norm_ASPD_UpgradeBtn.SetActive(false);
+                UpdateCoinAmount(normalBulletASPDLists[currentLevel]);
+                allSelectedWeaponStatLists.Add(normalBulletASPDLists[currentLevel]);
+                bl_norm_ASPD_UpgradeBar.sprite = bl_norm_UpgradeBarLevel[currentLevel];
+                playerStats.currentNormalASPD = normalBulletASPDLists[currentLevel];
+                UpdateUpgradableDisplay(weaponStat, bl_norm_ASPD_UpgradeBtn);
             }
             if (weaponStat.upgradeType == WeaponUpgradeType.bulletNormSpeed)
             {
-                int minLevel = -1;
                 int currentLevel = playerStats.currentWeaponTravelSpeed.level;
-                allSelectedWeaponStatLists.Add(normalBulletTASPDLists[minLevel + currentLevel]);
-                bl_norm_bulletSPD_UpgradeBar.sprite = bl_norm_bulletSPD_UpgradeBarLevel[minLevel + currentLevel];
-                bl_norm_bulletSPD_UpgradeBtn.SetActive(false);
+                UpdateCoinAmount(normalBulletTASPDLists[currentLevel]);
+                allSelectedWeaponStatLists.Add(normalBulletTASPDLists[currentLevel]);
+                bl_norm_bulletSPD_UpgradeBar.sprite = bl_norm_UpgradeBarLevel[currentLevel];
+                playerStats.currentWeaponTravelSpeed = normalBulletTASPDLists[currentLevel];
+                UpdateUpgradableDisplay(weaponStat, bl_norm_bulletSPD_UpgradeBtn);
             }
         }
         if(weaponStat.bulletType == BulletType.spreadBullet)
         {
             if(weaponStat.upgradeType == WeaponUpgradeType.bulletSprdSprdCount)
             {
-                int minLevel = -1;
                 int currentLevel = playerStats.currentWeaponSprdCount.level;
-                allSelectedWeaponStatLists.Add(spreadBulletCountLists[minLevel + currentLevel]);
-                bl_Sprd_SprdCount_UpgradeBar.sprite = bl_Sprd_SprdCount_UpgradeBarLevel[minLevel + currentLevel];
-                bl_Sprd_SprdCount_UpgradeBtn.SetActive(false);
+                UpdateCoinAmount(spreadBulletCountLists[currentLevel]);
+                allSelectedWeaponStatLists.Add(spreadBulletCountLists[currentLevel]);
+                bl_Sprd_SprdCount_UpgradeBar.sprite = bl_Sprd_UpgradeBarLevel[currentLevel];
+                playerStats.currentWeaponSprdCount = spreadBulletCountLists[currentLevel];
+                UpdateUpgradableDisplay(weaponStat, bl_Sprd_SprdCount_UpgradeBtn);
             }
             if(weaponStat.upgradeType == WeaponUpgradeType.bulletSprdASPD)
             {
-                int minLevel = -1;
                 int currentLevel = playerStats.currentSprdBulletASPD.level;
-                allSelectedWeaponStatLists.Add(spreadBulletASPDLists[minLevel + currentLevel]);
-                bl_Sprd_ASPD_UpgradeBar.sprite = bl_Sprd_ASPD_UpgradeBarLevel[minLevel + currentLevel];
-                bl_Sprd_ASPD_UpgradeBtn.SetActive(false);
+                UpdateCoinAmount(spreadBulletASPDLists[currentLevel]);
+                allSelectedWeaponStatLists.Add(spreadBulletASPDLists[currentLevel]);
+                bl_Sprd_ASPD_UpgradeBar.sprite = bl_Sprd_UpgradeBarLevel[currentLevel];
+                playerStats.currentSprdBulletASPD = spreadBulletASPDLists[currentLevel];
+                UpdateUpgradableDisplay(weaponStat, bl_Sprd_ASPD_UpgradeBtn);
             }
         }
         if(weaponStat.bulletType == BulletType.laser)
         {
             if (weaponStat.upgradeType == WeaponUpgradeType.bulletLsrASPD)
             {
-                int minLevel = -1;
                 int currentLevel = playerStats.currentLsrBulletASPD.level;
-                allSelectedWeaponStatLists.Add(laserBulletASPDLists[minLevel + currentLevel]);
-                bl_Lsr_ASPD_UpgradeBar.sprite = bl_Lsr_ASPD_UpgradeBarLevel[minLevel + currentLevel];
-                bl_Lsr_ASPD_UpgradeBtn.SetActive(false);
+                UpdateCoinAmount(laserBulletASPDLists[currentLevel]);
+                allSelectedWeaponStatLists.Add(laserBulletASPDLists[currentLevel]);
+                bl_Lsr_ASPD_UpgradeBar.sprite = bl_Lsr_UpgradeBarLevel[currentLevel];
+                playerStats.currentLsrBulletASPD = laserBulletASPDLists[currentLevel];
+                UpdateUpgradableDisplay(weaponStat, bl_Lsr_ASPD_UpgradeBtn);
             }
         }
         confirmUpgradeBtn.SetActive(true);
+    }
+    private void UpdateUpgradableDisplay()
+    {
+        // Disable upgrade button if player upgrade to the max level or not enough coin
+        // Call this method when
+        // 1. after purchase one of the upgrade type
+        // 2. when player open the upgrade window
+        //**********************************************************************************//
+        if(playerStats.currentPlayerHP.level == 3)
+        {
+            p_HP_UpgradeBtn.SetActive(false);
+        }
+        else
+        {
+            p_HP_UpgradeBtn.SetActive(true);
+        }
+        if(playerStats.currentPlayerUltCharge.level == 3)
+        {
+            p_Ult_UpgradeBarBtn.SetActive(false);
+        }
+        else
+        {
+            p_Ult_UpgradeBarBtn.SetActive(true);
+        }
+        if (playerStats.currentNormalASPD.level == 3)
+        {
+            bl_norm_ASPD_UpgradeBtn.SetActive(false);
+        }
+        else
+        {
+            bl_norm_ASPD_UpgradeBtn.SetActive(true);
+        }
+        if (playerStats.currentWeaponTravelSpeed.level == 3)
+        {
+            bl_norm_bulletSPD_UpgradeBtn.SetActive(false);
+        }
+        else
+        {
+            bl_norm_bulletSPD_UpgradeBtn.SetActive(true);
+        }
+        if (playerStats.currentWeaponSprdCount.level == 3)
+        {
+            bl_Sprd_SprdCount_UpgradeBtn.SetActive(false);
+        }
+        else
+        {
+            bl_Sprd_SprdCount_UpgradeBtn.SetActive(true);
+        }
+        if (playerStats.currentSprdBulletASPD.level == 3)
+        {
+            bl_Sprd_ASPD_UpgradeBtn.SetActive(false);
+        }
+        else
+        {
+            bl_Sprd_ASPD_UpgradeBtn.SetActive(true);
+        }
+        if (playerStats.currentLsrBulletASPD.level == 3)
+        {
+            bl_Lsr_ASPD_UpgradeBtn.SetActive(false);
+        }
+        else
+        {
+            bl_Lsr_ASPD_UpgradeBtn.SetActive(true);
+        }
+    }
+    private void UpdateUpgradableDisplay(PlayerStatSO playerStat, GameObject upgradeBtn)
+    {
+        if (playerStat.upgradeType == PlayerUpgradeType.playerHP)
+        {
+            if(playerStats.coinAmount < playerStat.upgradeCost || playerStats.currentPlayerHP.level == 3)
+            {
+                upgradeBtn.SetActive(false);
+            }
+            else
+            {
+                upgradeBtn.SetActive(true);
+            }
+        }
+        else
+        {
+            if (playerStats.coinAmount < playerStat.upgradeCost || playerStats.currentPlayerUltCharge.level == 3)
+            {
+                upgradeBtn.SetActive(false);
+            }
+            else
+            {
+                upgradeBtn.SetActive(true);
+            }
+        }
+    }
+    private void UpdateUpgradableDisplay(WeaponSO weaponStat, GameObject upgradeBtn)
+    {
+
+    }
+    private void UpdateCoinAmount(PlayerStatSO playerStat)
+    {
+        coinAmount -= playerStat.upgradeCost;
+        coinAmountText.text = "X " + coinAmount.ToString();
+    }
+    private void UpdateCoinAmount(WeaponSO weaponStat)
+    {
+        coinAmount -= weaponStat.upgradeCost;
+        coinAmountText.text = "X " + coinAmount.ToString();
     }
     public void ConfirmUpgrade()
     {
@@ -184,12 +307,12 @@ public class UpgradeWindow : MonoBehaviour, IGameObserver
             if(playerConfirmStats.upgradeType == PlayerUpgradeType.playerHP)
             {
                 playerStats.currentPlayerHP = playerConfirmStats;
-                tempDataSO.currentPlayerHP = playerConfirmStats;
+                //tempDataSO.currentPlayerHP = playerConfirmStats;
             }
             if(playerConfirmStats.upgradeType == PlayerUpgradeType.playerUlt)
             {
                 playerStats.currentPlayerUltCharge = playerConfirmStats;
-                tempDataSO.currentPlayerUltCharge = playerConfirmStats;
+                //tempDataSO.currentPlayerUltCharge = playerConfirmStats;
             }
         }
         foreach(var weaponConfirmStats in allSelectedWeaponStatLists)
@@ -197,30 +320,90 @@ public class UpgradeWindow : MonoBehaviour, IGameObserver
             if(weaponConfirmStats.upgradeType == WeaponUpgradeType.bulletNormASPD)
             {
                 playerStats.currentNormalASPD = weaponConfirmStats;
-                tempDataSO.currentNormalASPD = weaponConfirmStats;
+                //tempDataSO.currentNormalASPD = weaponConfirmStats;
             }
             if(weaponConfirmStats.upgradeType == WeaponUpgradeType.bulletNormSpeed)
             {
                 playerStats.currentWeaponTravelSpeed = weaponConfirmStats;
-                tempDataSO.currentWeaponTravelSpeed = weaponConfirmStats;
+                //tempDataSO.currentWeaponTravelSpeed = weaponConfirmStats;
             }
             if (weaponConfirmStats.upgradeType == WeaponUpgradeType.bulletSprdSprdCount)
             {
                 playerStats.currentWeaponSprdCount = weaponConfirmStats;
-                tempDataSO.currentWeaponSprdCount = weaponConfirmStats;
+                //tempDataSO.currentWeaponSprdCount = weaponConfirmStats;
             }
             if (weaponConfirmStats.upgradeType == WeaponUpgradeType.bulletSprdASPD)
             {
                 playerStats.currentSprdBulletASPD = weaponConfirmStats;
-                tempDataSO.currentSprdBulletASPD = weaponConfirmStats;
+                //tempDataSO.currentSprdBulletASPD = weaponConfirmStats;
             }
             if (weaponConfirmStats.upgradeType == WeaponUpgradeType.bulletLsrASPD)
             {
                 playerStats.currentLsrBulletASPD = weaponConfirmStats;
-                tempDataSO.currentLsrBulletASPD = weaponConfirmStats;
+                //tempDataSO.currentLsrBulletASPD = weaponConfirmStats;
             }
         }
-        gameUIController.currentNPC.isPlayerUpgrade = true;
+        allSelectedPlayerStatLists.Clear();
+        allSelectedWeaponStatLists.Clear();
+        playerStats.coinAmount = coinAmount;
         confirmUpgradeBtn.SetActive(false);
+    }
+    private void CancleUpgrade()
+    {
+        coinAmount = playerStats.coinAmount;
+        coinAmountText.text = coinAmount.ToString();
+
+        // Reset player stat to the previous level
+        if (allSelectedPlayerStatLists != null)
+        {
+            foreach(var stat in allSelectedPlayerStatLists)
+            {
+                if(stat.upgradeType == PlayerUpgradeType.playerHP)
+                {
+                    p_HP_UpgradeBar.sprite = p_UpgradeBarLevel[playerStats.currentPlayerHP.level - 2];
+                    playerStats.currentPlayerHP = playerHPLists[playerStats.currentPlayerHP.level - 2];
+                }
+                else if(stat.upgradeType == PlayerUpgradeType.playerUlt)
+                {
+                    p_Ult_UpgradeBar.sprite = p_UpgradeBarLevel[playerStats.currentPlayerUltCharge.level - 2];
+                    playerStats.currentPlayerUltCharge = playerUltChargeLists[playerStats.currentPlayerUltCharge.level - 2];
+                }
+            }
+        }
+        if(allSelectedWeaponStatLists != null)
+        {
+            foreach(var stat in allSelectedWeaponStatLists)
+            {
+                if (stat.upgradeType == WeaponUpgradeType.bulletNormASPD)
+                {
+                    bl_norm_ASPD_UpgradeBar.sprite = bl_norm_UpgradeBarLevel[playerStats.currentNormalASPD.level - 2];
+                    playerStats.currentNormalASPD = normalBulletASPDLists[playerStats.currentNormalASPD.level - 2];
+                }
+                else if(stat.upgradeType == WeaponUpgradeType.bulletNormSpeed)
+                {
+                    bl_norm_bulletSPD_UpgradeBar.sprite = bl_norm_UpgradeBarLevel[playerStats.currentWeaponTravelSpeed.level - 2];
+                    playerStats.currentWeaponTravelSpeed = normalBulletTASPDLists[playerStats.currentWeaponTravelSpeed.level - 2];
+                }
+                else if(stat.upgradeType == WeaponUpgradeType.bulletSprdASPD)
+                {
+                    bl_Sprd_ASPD_UpgradeBar.sprite = bl_Sprd_UpgradeBarLevel[playerStats.currentSprdBulletASPD.level - 2];
+                    playerStats.currentSprdBulletASPD = spreadBulletASPDLists[playerStats.currentSprdBulletASPD.level - 2];
+                }
+                else if(stat.upgradeType == WeaponUpgradeType.bulletSprdSprdCount)
+                {
+                    bl_Sprd_SprdCount_UpgradeBar.sprite = bl_Sprd_UpgradeBarLevel[playerStats.currentWeaponSprdCount.level - 2];
+                    playerStats.currentWeaponSprdCount = spreadBulletCountLists[playerStats.currentWeaponSprdCount.level - 2];
+                }
+                else if(stat.upgradeType == WeaponUpgradeType.bulletLsrASPD)
+                {
+                    bl_Lsr_ASPD_UpgradeBar.sprite = bl_Lsr_UpgradeBarLevel[playerStats.currentLsrBulletASPD.level - 2];
+                    playerStats.currentLsrBulletASPD = laserBulletASPDLists[playerStats.currentLsrBulletASPD.level - 2];
+                }
+            }
+        }
+
+        // Clear all selected upgrade lists
+        allSelectedPlayerStatLists.Clear();
+        allSelectedWeaponStatLists.Clear();
     }
 }

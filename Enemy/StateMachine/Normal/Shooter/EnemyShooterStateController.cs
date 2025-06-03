@@ -32,10 +32,6 @@ public class EnemyShooterStateController : NormalEnemySubject
     public bool isOnGround = true;
     private void OnEnable()
     {
-        if(startPoint != null)
-        {
-            transform.position = startPoint.position;
-        }
         enemySpriteRenderer.sprite = enemyStats.normalSprite;
         normalEnemyType = enemyStats.NormalEnemyType;
         currentEnemyHP = enemyStats.hp;

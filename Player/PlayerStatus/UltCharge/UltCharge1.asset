@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: UltCharge1
   m_EditorClassIdentifier: 
   upgradeType: 1
+  icon: {fileID: 1363391175, guid: a385b7b969d17ab4dbae132e00429f31, type: 3}
+  upgradeName: 
+  upgradeDescription: 
   level: 1
   hpPoint: 0
   ultChargeTime: 20

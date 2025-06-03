@@ -25,11 +25,6 @@ public class Main_Setting : MonoBehaviour
     private float originalSFXVolume;
     private void OnEnable()
     {
-        SettingData loadedSettingData = SettingHandler.instance.LoadSetting();
-        masterSlider.value = loadedSettingData.masterVolume;
-        bgmSlider.value = loadedSettingData.bgmVolume;
-        sfxSlider.value = loadedSettingData.sfxVolume;
-
         originalMasterVolume = masterSlider.value;
         originalBGMVolume = bgmSlider.value;
         originalSFXVolume = sfxSlider.value;
@@ -47,7 +42,21 @@ public class Main_Setting : MonoBehaviour
         // BGM
         BGMSetting();
         // SFX
-        SFXSetting();
+        //SFXSetting();
+    }
+    private void Start()
+    {
+        // Load all setting from JSON
+        SettingData loadedSettingData = SettingHandler.instance.LoadSetting();
+        if(loadedSettingData != null)
+        {
+            masterSlider.value = loadedSettingData.masterVolume;
+            bgmSlider.value = loadedSettingData.bgmVolume;
+            sfxSlider.value = loadedSettingData.sfxVolume;
+        }
+        originalMasterVolume = masterSlider.value;
+        originalBGMVolume = bgmSlider.value;
+        originalSFXVolume = sfxSlider.value;
     }
     private void Update()
     {

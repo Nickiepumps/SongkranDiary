@@ -13,8 +13,6 @@ public class PlayerSideScrollStateController : PlayerSubject
     
     [Header("Player Animator Reference")]
     public Animator playerAnimator;
-    public Animator playerHeadAnimator;
-    public Animator playerHandAnimator;
 
     [Header("Player Stats")]
     [SerializeField] private PlayerStats currentPlayerStats;
@@ -109,7 +107,7 @@ public class PlayerSideScrollStateController : PlayerSubject
         {
             switch (collision.tag)
             {
-                case ("EnemyHitBox"):
+                case ("EnemyHitBox"): // For Player to collide with
                     NotifyPlayerObserver(PlayerAction.Damaged);
                     return;
                 case ("EnemyBullet"):
@@ -120,6 +118,9 @@ public class PlayerSideScrollStateController : PlayerSubject
                     return;
                 case ("BlindHitBox"):
                     NotifyPlayerObserver(PlayerAction.Blind);
+                    return;
+                case ("E_Boundary"):
+                    playerCurrentHP = 0;
                     return;
             }
         }

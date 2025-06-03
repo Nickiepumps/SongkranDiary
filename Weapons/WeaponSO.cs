@@ -7,6 +7,10 @@ public class WeaponSO : ScriptableObject
 {
     public WeaponUpgradeType upgradeType;
     public BulletType bulletType;
+    public Sprite icon; // Weapon's upgrade icon
+    public string upgradeName; // Weapon's upgrade name
+    public string upgradeDescription; // Weapon's upgrade description
+    public int upgradeCost; // Weapon's upgrade cost
     public int level; // Weapon's level
     public float aspd; // Player's atack speed
     public float travelSpeed; // Bullet travel speed

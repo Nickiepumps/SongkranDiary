@@ -6,6 +6,10 @@ using UnityEngine;
 public class PlayerStatSO : ScriptableObject
 {
     public PlayerUpgradeType upgradeType;
+    public Sprite icon;
+    public string upgradeName;
+    public string upgradeDescription;
+    public int upgradeCost;
     public int level;
     public int hpPoint;
     public int ultChargeTime;
