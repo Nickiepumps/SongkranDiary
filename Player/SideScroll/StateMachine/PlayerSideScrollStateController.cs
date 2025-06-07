@@ -113,6 +113,9 @@ public class PlayerSideScrollStateController : PlayerSubject
                 case ("EnemyBullet"):
                     NotifyPlayerObserver(PlayerAction.Damaged);
                     return;
+                case ("DamageObstacle"):
+                    NotifyPlayerObserver(PlayerAction.Damaged);
+                    return;
                 case ("HealBullet"):
                     NotifyPlayerObserver(PlayerAction.Heal);
                     return;
