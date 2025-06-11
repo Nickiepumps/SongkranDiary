@@ -42,7 +42,7 @@ public class BucketKid_BossObserverController : MonoBehaviour, IBossObserver, IG
             case(BossAction.Damaged):
                 return;
             case (BossAction.Die):
-                gameUISubject.NotifySideScrollGameObserver(SideScrollGameState.Win); // Why double notify?
+                gameUISubject.NotifySideScrollGameObserver(SideScrollGameState.WinBoss); // Why double notify?
                 return;
         }
     }
@@ -58,8 +58,6 @@ public class BucketKid_BossObserverController : MonoBehaviour, IBossObserver, IG
                 return;
             case (SideScrollGameState.StartRound):
                 bucketKidStateController.isGameStart = true;
-                return;
-            case (SideScrollGameState.EndRound):
                 return;
             case (SideScrollGameState.Paused):
                 return;

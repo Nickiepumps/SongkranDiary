@@ -34,7 +34,8 @@ public class PlayerSideScrollStateController : PlayerSubject
     public bool isCrouch; // Crouching status
     public bool isDamaged = false; // Damaging status
     public bool isDead = false; // Dead status
-    public bool isWin = false; // win stage status
+    public bool isWinBoss = false; // win boss stage status
+    public bool isWinRunNGun = false; // win runNgun stage status
 
     // Hide in inspector
     public Vector2 currentVelocity;
@@ -116,16 +117,19 @@ public class PlayerSideScrollStateController : PlayerSubject
                 case ("DamageObstacle"):
                     NotifyPlayerObserver(PlayerAction.Damaged);
                     return;
-                case ("HealBullet"):
-                    NotifyPlayerObserver(PlayerAction.Heal);
-                    return;
                 case ("BlindHitBox"):
                     NotifyPlayerObserver(PlayerAction.Blind);
                     return;
-                case ("E_Boundary"):
-                    playerCurrentHP = 0;
-                    return;
             }
+        }
+        switch (collision.tag)
+        {
+            case ("HealBullet"):
+                NotifyPlayerObserver(PlayerAction.Heal);
+                return;
+            case ("E_Boundary"):
+                playerCurrentHP = 0;
+                return;
         }
         currentState.OntriggerEnter(collision);
     }

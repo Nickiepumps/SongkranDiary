@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 
 public class SideScrollGameController : GameSubject
@@ -30,7 +28,11 @@ public class SideScrollGameController : GameSubject
     private int coinCounter;
     private void Update()
     {
-        if (sidescrollPlayer.isDead == false && sidescrollPlayer.isWin == false)
+        if (sidescrollPlayer.isDead == false && sidescrollPlayer.isWinRunNGun == false && gameMode == GameType.RunNGun)
+        {
+            CountTime();
+        }
+        else if(sidescrollPlayer.isDead == false && sidescrollPlayer.isWinBoss == false && gameMode == GameType.Boss)
         {
             CountTime();
         }
@@ -43,6 +45,10 @@ public class SideScrollGameController : GameSubject
         {
             NotifySideScrollGameObserver(SideScrollGameState.Play);
             isPaused = false;
+        }
+        if(sidescrollPlayer.transform.position.x >= goalPos.position.x + 8f)
+        {
+            Debug.Log("Show scoreboard");
         }
     }
     public void AddCoin()

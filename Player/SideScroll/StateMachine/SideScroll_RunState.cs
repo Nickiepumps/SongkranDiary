@@ -51,6 +51,11 @@ public class SideScroll_RunState : PlayerSideScrollStateMachine
         {
             playerSideScroll.PlayerSideScrollStateTransition(new SideScroll_DeadState(playerSideScroll));
         }
+
+        if(playerSideScroll.isWinRunNGun == true)
+        {
+            playerSideScroll.PlayerSideScrollStateTransition(new SideScroll_WinRunNGunState(playerSideScroll));
+        }
     }
     public override void FixedUpdate()
     {

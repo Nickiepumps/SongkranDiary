@@ -7,8 +7,13 @@ public class NormalEnemySpawnerController : MonoBehaviour
     [Header("Spawner Reference")]
     [SerializeField] private NormalEnemySpawner normalEnemySpawner;
 
+    [Header("Camera follow reference")]
+    [SerializeField] private SideScroll_PlayerCamera playerCam;
+
     [Header("Spawn Setting")]
-    public bool startSpawnOnStart;
+    public bool spawnShooter;
+    public bool spawnBomber;
+    public bool spawnDrone;
 
     [Header("All Shooter and Bomber Enemies")]
     private List<GameObject> shooterLists = new List<GameObject>();
@@ -38,6 +43,18 @@ public class NormalEnemySpawnerController : MonoBehaviour
     }
     private void Update()
     {
+        if(playerCam.camYTarget == playerCam.midCamY)
+        {
+            spawnShooter = true;
+            spawnBomber = true;
+            spawnDrone = true;
+        }
+        else if(playerCam.camYTarget == playerCam.maxCamDistY)
+        {
+            spawnShooter = false;
+            spawnBomber = false;
+            spawnDrone = true;
+        }
         SpawnNormalEnemy();
     }
     private void SpawnNormalEnemy()
@@ -45,7 +62,7 @@ public class NormalEnemySpawnerController : MonoBehaviour
         currentTimeToSpawnShooter -= Time.deltaTime;
         currentTimeToSpawnBomber -= Time.deltaTime;
         currentTimeToSpawnDrone -= Time.deltaTime;
-        if (startSpawnOnStart == true && currentTimeToSpawnShooter <= 0)
+        if (spawnShooter == true && currentTimeToSpawnShooter <= 0)
         {
             for (int i = 0; i < normalEnemySpawner.spawnedShooterLists.Count; i++)
             {
@@ -63,7 +80,7 @@ public class NormalEnemySpawnerController : MonoBehaviour
                 }
             }
         }
-        if (startSpawnOnStart == true && currentTimeToSpawnBomber <= 0)
+        if (spawnBomber == true && currentTimeToSpawnBomber <= 0)
         {
             for (int i = 0; i < normalEnemySpawner.spawnedBomberLists.Count; i++)
             {
@@ -81,7 +98,7 @@ public class NormalEnemySpawnerController : MonoBehaviour
                 }
             }
         }
-        if (startSpawnOnStart == true && currentTimeToSpawnDrone <= 0)
+        if (spawnDrone == true && currentTimeToSpawnDrone <= 0)
         {
             for (int i = 0; i < normalEnemySpawner.spawnedDroneLists.Count; i++)
             {

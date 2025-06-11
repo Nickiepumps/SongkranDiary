@@ -36,10 +36,18 @@ public class Platform_Movable : Platform
                 // -Y value is the top side of the platform
                 if (contactPoint.normal.y < -0.5f)
                 {
+                    collision.gameObject.transform.SetParent(transform);
                     platformAnim.Play();
                     break;
                 }
             }
+        }
+    }
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if(collision.transform.tag == "Player")
+        {
+            collision.gameObject.transform.SetParent(null);
         }
     }
 }

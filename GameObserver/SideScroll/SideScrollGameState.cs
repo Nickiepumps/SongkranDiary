@@ -2,8 +2,8 @@ public enum SideScrollGameState
 {
     Play,
     StartRound,
-    EndRound,
     Paused,
-    Win,
+    WinBoss,
+    WinRunNGun,
     Lose
 }

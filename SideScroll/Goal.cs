@@ -8,7 +8,7 @@ public class Goal : GameSubject
     {
         if (collision.tag == "Player")
         {
-            NotifySideScrollGameObserver(SideScrollGameState.Win);
+            NotifySideScrollGameObserver(SideScrollGameState.WinRunNGun);
         }
     }
 }

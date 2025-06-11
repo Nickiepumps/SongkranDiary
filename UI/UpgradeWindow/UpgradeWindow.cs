@@ -64,12 +64,15 @@ public class UpgradeWindow : MonoBehaviour, IGameObserver
     [SerializeField] private List<WeaponSO> laserBulletASPDLists = new List<WeaponSO>();
 
     [Space]
-    [Header("Unlock Costs")]
+    [Header("Unlock Costs and Status")]
     [SerializeField] private int sprdBulletUnlockCost = 5;
     [SerializeField] private int laserBulletUnlockCost = 5;
+    [SerializeField] private bool sprdBulletUnlocked = false;
+    [SerializeField] private bool laserBulletUnlocked = false;
 
-    private List<PlayerStatSO> allSelectedPlayerStatLists = new List<PlayerStatSO>(); // All selected player's abilities waiting for upgrade
-    private List<WeaponSO> allSelectedWeaponStatLists = new List<WeaponSO>(); // All selected weapons' abilities waiting for upgrade
+    private List<PlayerStatSO> allSelectedPlayerStatLists = new List<PlayerStatSO>(); // All selected player's abilities waiting to upgrade
+    private List<WeaponSO> allSelectedWeaponStatLists = new List<WeaponSO>(); // All selected weapons' abilities waiting to upgrade
+    private List<GameObject> allUpgradeToUnlockLists = new List<GameObject>(); // All upgrade waiting to unlock
     public void OnGameNotify(IsometricGameState isoGameState)
     {
         
@@ -302,6 +305,20 @@ public class UpgradeWindow : MonoBehaviour, IGameObserver
     }
     public void ConfirmUpgrade()
     {
+        foreach(GameObject statusPanel in allUpgradeToUnlockLists)
+        {
+            if(statusPanel.activeSelf == false)
+            {
+                if(statusPanel.name == "SpreadLockPanel")
+                {
+                    sprdBulletUnlocked = true;
+                }
+                else if(statusPanel.name == "LaserLockPanel")
+                {
+                    laserBulletUnlocked = true;
+                }
+            }
+        }   
         foreach(var playerConfirmStats in allSelectedPlayerStatLists)
         {
             if(playerConfirmStats.upgradeType == PlayerUpgradeType.playerHP)
@@ -345,6 +362,7 @@ public class UpgradeWindow : MonoBehaviour, IGameObserver
         }
         allSelectedPlayerStatLists.Clear();
         allSelectedWeaponStatLists.Clear();
+        allUpgradeToUnlockLists.Clear();
         playerStats.coinAmount = coinAmount;
         confirmUpgradeBtn.SetActive(false);
     }
@@ -352,6 +370,22 @@ public class UpgradeWindow : MonoBehaviour, IGameObserver
     {
         coinAmount = playerStats.coinAmount;
         coinAmountText.text = coinAmount.ToString();
+
+        // Reset Locked upgradePanel
+        foreach(GameObject statusPanel in allUpgradeToUnlockLists)
+        {
+            if(statusPanel.activeSelf == false)
+            {
+                if (statusPanel.name == "SpreadLockPanel" && sprdBulletUnlocked == false)
+                {
+                    statusPanel.SetActive(true);
+                }
+                else if (statusPanel.name == "LaserLockPanel" && laserBulletUnlocked == false)
+                {
+                    statusPanel.SetActive(true);
+                }
+            }
+        }
 
         // Reset player stat to the previous level
         if (allSelectedPlayerStatLists != null)
@@ -405,5 +439,33 @@ public class UpgradeWindow : MonoBehaviour, IGameObserver
         // Clear all selected upgrade lists
         allSelectedPlayerStatLists.Clear();
         allSelectedWeaponStatLists.Clear();
+        allUpgradeToUnlockLists.Clear();
+
+        confirmUpgradeBtn.SetActive(false);
+    }
+    public void UnlockUpgrade(GameObject lockedUpgradePanel)
+    {
+        confirmUpgradeBtn.SetActive(true);
+        switch (lockedUpgradePanel.name)
+        {
+            case("SpreadLockPanel"):
+                if(coinAmount >= sprdBulletUnlockCost)
+                {
+                    coinAmount -= sprdBulletUnlockCost;
+                    coinAmountText.text = "X " + coinAmount.ToString();
+                    lockedUpgradePanel.SetActive(false);
+                    allUpgradeToUnlockLists.Add(lockedUpgradePanel);
+                }
+                return;
+            case ("LaserLockPanel"):
+                if (coinAmount >= laserBulletUnlockCost)
+                {
+                    coinAmount -= laserBulletUnlockCost;
+                    coinAmountText.text = "X " + coinAmount.ToString();
+                    lockedUpgradePanel.SetActive(false);
+                    allUpgradeToUnlockLists.Add(lockedUpgradePanel);
+                }
+                return;
+        }
     }
 }

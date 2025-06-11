@@ -40,6 +40,9 @@ public class GameUIController : MonoBehaviour, IGameObserver
     [Space]
     [Header("Side Scroll Outro Window")]
     [SerializeField] private SideScrollIntro sideScrollIntroWindow;
+    [Space]
+    [Header("Transition Window")]
+    [SerializeField] private GameObject transitionWindow;
     private void OnEnable()
     {
         if (levelType == LevelType.IsoLevel)
@@ -111,23 +114,16 @@ public class GameUIController : MonoBehaviour, IGameObserver
                 return;
             case (SideScrollGameState.StartRound):
                 return;
-            case (SideScrollGameState.EndRound):
-                return;
             case (SideScrollGameState.Paused):
                 pauseWindow.SetActive(true);
                 pauseWindow.GetComponent<PauseWindow>().DisplayCurrentStatus(levelType);
                 Time.timeScale = 0; // To Do: Find a better way to pause the game
                 return;
-            case (SideScrollGameState.Win):
-                Debug.Log("Test");
-                if(levelType == LevelType.BossLevel)
-                {
-                    StartCoroutine(BossKnockOut());
-                }
-                else if (levelType == LevelType.RunNGunLevel)
-                {
-                    StartCoroutine(ReachGoal());
-                }
+            case (SideScrollGameState.WinRunNGun):
+                StartCoroutine(ReachGoal());
+                return;
+            case (SideScrollGameState.WinBoss):
+                StartCoroutine(BossKnockOut());
                 return;
             case (SideScrollGameState.Lose):
                 // show lose scoreboard
@@ -150,6 +146,7 @@ public class GameUIController : MonoBehaviour, IGameObserver
     }
     public void OpenWindow(GameObject windowObj)
     {
+        // Use for open any window in Isometric mode
         if(windowObj.activeSelf == true)
         {
             windowObj.SetActive(false);
@@ -167,6 +164,12 @@ public class GameUIController : MonoBehaviour, IGameObserver
     }
     private IEnumerator ReachGoal()
     {
+        // Wait for player to finish win animation
+        //yield return new WaitForSeconds(1f); Uncomment this when we have player win anim
+        transitionWindow.GetComponentInChildren<Animator>().SetInteger("Transition", 0);
+        yield return new WaitForSeconds(1f);
+        transitionWindow.GetComponentInChildren<Animator>().SetInteger("Transition", 1);
+
         // Show win scoreboard
         enemySpawnController.enabled = false;
         scoreBoard.SetActive(true);

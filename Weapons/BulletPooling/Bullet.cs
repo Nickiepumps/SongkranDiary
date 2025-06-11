@@ -120,6 +120,10 @@ public class Bullet : MonoBehaviour
         {
             StartCoroutine(DeactivateBullet());
         }
+        else if(collision.gameObject.tag == "Side_Interactable" && bulletType != BulletType.laser)
+        {
+            StartCoroutine(DeactivateBullet());
+        }
     }
     // Play splash animation and deactivate bullet
     private IEnumerator DeactivateBullet()

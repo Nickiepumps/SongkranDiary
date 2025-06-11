@@ -42,10 +42,6 @@ public class NormalEnemySpawner : MonoBehaviour
     {
         CreateNormalEnemy();
     }
-    private void Update()
-    {
-        
-    }
     private void CreateNormalEnemy()
     {
         if (allowShooterSpawn == true)

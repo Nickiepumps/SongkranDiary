@@ -63,7 +63,7 @@ public class FatKid_BossObserverController : MonoBehaviour, IBossObserver, IGame
             case (BossAction.Damaged):
                 return;
             case (BossAction.Die):
-                gameUISubject.NotifySideScrollGameObserver(SideScrollGameState.Win);
+                gameUISubject.NotifySideScrollGameObserver(SideScrollGameState.WinBoss);
                 return;
         }
     }

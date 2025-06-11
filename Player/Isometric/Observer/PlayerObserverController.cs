@@ -24,6 +24,9 @@ public class PlayerObserverController : MonoBehaviour, IGameObserver, IPlayerObs
     [SerializeField] private GameSubject sidescrollGameSubject;
     [SerializeField] private GameSubject sidescrollIntroWindowSubject;
 
+    [Header("RunNGun Goal Observer Subject")]
+    [SerializeField] private GameSubject goalSubject;
+
     [Header("Shooting Observer Subject")]
     [SerializeField] private ShootingSubject shootingSubject;
 
@@ -46,11 +49,15 @@ public class PlayerObserverController : MonoBehaviour, IGameObserver, IPlayerObs
         gameUISubject.AddGameObserver(this);
         gameUISubject.AddSideScrollGameObserver(this);
         playerSubject.AddPlayerObserver(this);
-        if(isSideScroll == true)
+        if (isSideScroll == true)
         {
             shootingSubject.AddShootingObserver(this);
             sidescrollGameSubject.AddSideScrollGameObserver(this);
             sidescrollIntroWindowSubject.AddSideScrollGameObserver(this); // Find a way to use this line inside GameUIControllerScript
+        }
+        if(gameType == GameType.RunNGun)
+        {
+            goalSubject.AddSideScrollGameObserver(this);
         }
     }
     private void OnDisable()
@@ -63,6 +70,10 @@ public class PlayerObserverController : MonoBehaviour, IGameObserver, IPlayerObs
             shootingSubject.RemoveShootingObserver(this);
             sidescrollGameSubject.RemoveSideScrollGameObserver(this);
             sidescrollIntroWindowSubject.RemoveSideScrollGameObserver(this); // Find a way to use this line inside GameUIControllerScript
+        }
+        if (gameType == GameType.RunNGun)
+        {
+            goalSubject.RemoveSideScrollGameObserver(this);
         }
     }
     public void OnGameNotify(IsometricGameState isoGameState)
@@ -88,7 +99,10 @@ public class PlayerObserverController : MonoBehaviour, IGameObserver, IPlayerObs
             case (SideScrollGameState.StartRound):
                 playerSideScrollStateController.isGameStart = true;
                 return;
-            case(SideScrollGameState.EndRound):
+            case(SideScrollGameState.WinRunNGun):
+                playerSideScrollStateController.isWinRunNGun = true;
+                return;
+            case (SideScrollGameState.WinBoss):
                 return;
             case (SideScrollGameState.Paused):
                 return;
