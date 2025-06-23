@@ -30,7 +30,10 @@ public class SideScroll_WinRunNGunState : PlayerSideScrollStateMachine
     {
         
     }
+    public override void OnColliderStay(Collision2D pCollider)
+    {
 
+    }
     public override void OnColliderExit(Collision2D pCollider)
     {
         

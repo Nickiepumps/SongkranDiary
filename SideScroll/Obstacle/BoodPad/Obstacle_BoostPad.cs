@@ -39,7 +39,10 @@ public class Obstacle_BoostPad : MonoBehaviour
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
-        playerRB = null;
+        if(collision.tag == "Player")
+        {
+            playerRB = null;
+        }
     }
     private IEnumerator PlayLaunchAnim()
     {

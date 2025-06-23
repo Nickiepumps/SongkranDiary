@@ -9,6 +9,7 @@ public class FatKid_BossObserverController : MonoBehaviour, IBossObserver, IGame
     private FatKid_BossStateController fatKidStateController;
     [SerializeField] private GameSubject gameUISubject;
     [SerializeField] private GameSubject sideScrollGameSubject;
+    [SerializeField] private GameSubject sideScrollIntroGameSubject;
 
     [Header("Boss BulletPooler Reference")]
     [SerializeField] private EnemyBulletPooler enemyBulletPooler;
@@ -28,6 +29,7 @@ public class FatKid_BossObserverController : MonoBehaviour, IBossObserver, IGame
         gameUISubject.AddGameObserver(this);
         gameUISubject.AddSideScrollGameObserver(this);
         sideScrollGameSubject.AddSideScrollGameObserver(this);
+        sideScrollIntroGameSubject.AddSideScrollGameObserver(this);
     }
     private void OnDisable()
     {
@@ -35,6 +37,7 @@ public class FatKid_BossObserverController : MonoBehaviour, IBossObserver, IGame
         gameUISubject.RemoveGameObserver(this);
         gameUISubject.RemoveSideScrollGameObserver(this);
         sideScrollGameSubject.RemoveSideScrollGameObserver(this);
+        sideScrollIntroGameSubject.AddSideScrollGameObserver(this);
     }
     public void OnBossNotify(BossAction action)
     {
@@ -81,6 +84,9 @@ public class FatKid_BossObserverController : MonoBehaviour, IBossObserver, IGame
                 return;
             case (SideScrollGameState.Paused):
                 fatKidStateController.isGameStart = false;
+                return;
+            case (SideScrollGameState.StartRound):
+                fatKidStateController.isGameStart = true;
                 return;
         }
     }

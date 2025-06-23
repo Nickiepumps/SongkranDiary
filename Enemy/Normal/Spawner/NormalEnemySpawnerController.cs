@@ -7,8 +7,14 @@ public class NormalEnemySpawnerController : MonoBehaviour
     [Header("Spawner Reference")]
     [SerializeField] private NormalEnemySpawner normalEnemySpawner;
 
-    [Header("Camera follow reference")]
+    [Header("Camera Follow reference")]
     [SerializeField] private SideScroll_PlayerCamera playerCam;
+
+    [Header("Enemy Spawner")]
+    [SerializeField] private Transform groundRightSpawn;
+    [SerializeField] private Transform groundLeftSpawn;
+    [SerializeField] private Transform airRightSpawn;
+    [SerializeField] private Transform airLeftSpawn;
 
     [Header("Spawn Setting")]
     public bool spawnShooter;
@@ -71,9 +77,8 @@ public class NormalEnemySpawnerController : MonoBehaviour
                     GameObject enemyGO = normalEnemySpawner.spawnedShooterLists[i];
                     EnemyShooterStateController enemyStateController = enemyGO.GetComponent<EnemyShooterStateController>();
                     SpriteRenderer spriteRenderer = enemyStateController.enemySpriteRenderer;
-                    Transform[] path = NewSpawnAndDestination(enemyGO, enemyStateController.startPoint, enemyStateController.destination, spriteRenderer);
-                    enemyStateController.startPoint = path[0];
-                    enemyStateController.destination = path[1];
+                    Transform path = NewSpawnAndDestination(enemyGO, spriteRenderer, true);
+                    enemyStateController.startPoint = path;
                     enemyGO.SetActive(true);
                     currentTimeToSpawnShooter = Random.Range(minShooterSpawnRate, maxShooterSpawnRate);
                     return;
@@ -89,9 +94,8 @@ public class NormalEnemySpawnerController : MonoBehaviour
                     GameObject enemyGO = normalEnemySpawner.spawnedBomberLists[i];
                     EnemyBomberStateController enemyBomberStateController = enemyGO.GetComponent<EnemyBomberStateController>();
                     SpriteRenderer spriteRenderer = enemyBomberStateController.enemySpriteRenderer;
-                    Transform[] path = NewSpawnAndDestination(enemyGO, enemyBomberStateController.startPoint, enemyBomberStateController.destination, spriteRenderer);
-                    enemyBomberStateController.startPoint = path[0];
-                    enemyBomberStateController.destination = path[1];
+                    Transform path = NewSpawnAndDestination(enemyGO, spriteRenderer, true);
+                    enemyBomberStateController.startPoint = path;
                     enemyGO.SetActive(true);
                     currentTimeToSpawnBomber = Random.Range(minBomberSpawnRate, maxBomberSpawnRate);
                     return;
@@ -107,9 +111,8 @@ public class NormalEnemySpawnerController : MonoBehaviour
                     GameObject enemyGO = normalEnemySpawner.spawnedDroneLists[i];
                     EnemyDroneStateController enemyDroneStateController = enemyGO.GetComponent<EnemyDroneStateController>();
                     SpriteRenderer spriteRenderer = enemyDroneStateController.enemySpriteRenderer;
-                    Transform[] path = NewSpawnAndDestination(enemyGO, enemyDroneStateController.startPoint, enemyDroneStateController.destination, spriteRenderer);
-                    enemyDroneStateController.startPoint = path[0];
-                    enemyDroneStateController.destination = path[1];
+                    Transform path = NewSpawnAndDestination(enemyGO, spriteRenderer, false);
+                    enemyDroneStateController.startPoint = path;
                     enemyGO.SetActive(true);
                     currentTimeToSpawnDrone = Random.Range(minDroneSpawnRate, maxDroneSpawnRate);
                     return;
@@ -183,5 +186,69 @@ public class NormalEnemySpawnerController : MonoBehaviour
         enemyGO.transform.position = new Vector2(newPath[0].position.x + spawnXOffset, newPath[0].position.y);
 
         return newPath;
+    }
+    private Transform NewSpawnAndDestination(GameObject enemyGO, SpriteRenderer spriteRenderer, bool isGroundType)
+    {
+        int spawnValue = Random.Range(0, 2);
+        float spawnXOffset = 0f;
+        Transform newStart;
+
+        // Random spawnpoint
+        // Check if there is a hole underneath the spawn point; If there is, spawn the enemy at 3 units beside the spawn point
+        if(isGroundType == true)
+        {
+            if (spawnValue == 0)
+            {
+                newStart = groundLeftSpawn;
+                RaycastHit2D holeRayCheck = Physics2D.Raycast(newStart.position, Vector2.down, Mathf.Infinity);
+                if (holeRayCheck.collider.tag != "E_Boundary" && holeRayCheck.collider.tag != "Side_Floor")
+                {
+                    Debug.Log("There is a hole or obstacle under the spawn, spawn the enemy at 15 units beside the spawn point");
+                    spawnXOffset = 3f;
+                }
+                else
+                {
+                    spawnXOffset = 0f;
+                }
+            }
+            else
+            {
+                newStart = groundRightSpawn;
+                RaycastHit2D holeRayCheck = Physics2D.Raycast(newStart.position, Vector2.down, Mathf.Infinity);
+                if (holeRayCheck.collider.tag != "E_Boundary" && holeRayCheck.collider.tag != "Side_Floor")
+                {
+                    Debug.Log("There is a hole or obstacle under the spawn, spawn the enemy at 15 units beside the spawn point");
+                    spawnXOffset = -3f;
+                }
+                else
+                {
+                    spawnXOffset = 0f;
+                }
+            }
+        }
+        else
+        {
+            if (spawnValue == 0)
+            {
+                newStart = airLeftSpawn;
+            }
+            else
+            {
+                newStart = airRightSpawn;
+            }
+        }
+
+        // Flip the sprite if the starting point is facing left
+        if (newStart.transform.eulerAngles == new Vector3(0, 0, 90))
+        {
+            spriteRenderer.flipX = false;
+        }
+        else
+        {
+            spriteRenderer.flipX = true;
+        }
+        enemyGO.transform.position = new Vector2(newStart.position.x + spawnXOffset, newStart.position.y);
+
+        return newStart;
     }
 }

@@ -13,6 +13,7 @@ public class SideScroll_RunState : PlayerSideScrollStateMachine
         //playerSideScroll.playerHeadAnimator.SetBool("Run", true);
         //playerSideScroll.playerHandAnimator.SetBool("Run", true);
         //playerSideScroll.playerAnimator.SetBool("TestRun", true);
+        playerSideScroll.NotifyPlayerObserver(PlayerAction.Run);
         playerSideScroll.playerAnimator.SetBool("Idle", false);
         playerSideScroll.playerAnimator.SetBool("Run", true);
         playerSideScroll.playerAnimator.SetBool("Crouch", false);
@@ -35,6 +36,10 @@ public class SideScroll_RunState : PlayerSideScrollStateMachine
             // To Do: Change anim to Runback Right
         }
 
+        if (playerSideScroll.playerRB.velocity.y > 0 && playerSideScroll.isJump == true)
+        {
+            playerSideScroll.playerRB.velocity += playerSideScroll.gravityVelocity * playerSideScroll.jumpMultiplier * Time.deltaTime;
+        }
         if (Input.GetAxis("Horizontal") == 0)
         {
             playerSideScroll.PlayerSideScrollStateTransition(new SideScroll_IdleState(playerSideScroll));
@@ -43,9 +48,16 @@ public class SideScroll_RunState : PlayerSideScrollStateMachine
         {
             playerSideScroll.PlayerSideScrollStateTransition(new SideScroll_JumpState(playerSideScroll));
         }
+        else if(Input.GetKeyDown(KeyCode.W) && playerSideScroll.isPlayerOnGround == true)
+        {
+            playerSideScroll.PlayerSideScrollStateTransition(new SideScroll_JumpState(playerSideScroll));
+        }
         if (Input.GetKeyDown(KeyCode.S) && playerSideScroll.isPlayerOnGround == true)
         {
-            playerSideScroll.PlayerSideScrollStateTransition(new SideScroll_CrouchState(playerSideScroll));
+            if (playerSideScroll.GetComponent<BulletAiming>().isAimUp == false)
+            {
+                playerSideScroll.PlayerSideScrollStateTransition(new SideScroll_CrouchState(playerSideScroll));
+            }
         }
         if (playerSideScroll.playerCurrentHP <= 0)
         {
@@ -74,12 +86,20 @@ public class SideScroll_RunState : PlayerSideScrollStateMachine
     {
         if (pCollider.gameObject.tag == "Side_Floor")
         {
+            if (playerSideScroll.isPlayerHighFall == true)
+            {
+                playerSideScroll.playerMovementAudioSource.clip = playerSideScroll.playerAudioClipArr[0];
+                playerSideScroll.playerMovementAudioSource.Play();
+            }
             playerSideScroll.isPlayerOnGround = true;
             playerSideScroll.currentCollidername = pCollider;
             playerSideScroll.playerAnimator.SetBool("Jump", false);
         }
     }
-
+    public override void OnColliderStay(Collision2D pCollider)
+    {
+        
+    }
     public override void OnColliderExit(Collision2D pCollider)
     {
         if (pCollider.gameObject.tag == "Side_Floor")
@@ -89,6 +109,6 @@ public class SideScroll_RunState : PlayerSideScrollStateMachine
     }
     public override void Exit()
     {
-
+        
     }
 }

@@ -50,4 +50,9 @@ public class SideScroll_ShootState : PlayerSideScrollStateMachine
     {
 
     }
+
+    public override void OnColliderStay(Collision2D pCollider)
+    {
+        
+    }
 }

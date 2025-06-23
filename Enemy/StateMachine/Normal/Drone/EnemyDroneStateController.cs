@@ -19,7 +19,6 @@ public class EnemyDroneStateController : NormalEnemySubject
     public float flySpeed;
     public int damage;
     public SpriteRenderer enemySpriteRenderer;
-    public Transform destination;
     public Transform startPoint;
     public float distanceFromPlayer;
 
@@ -27,6 +26,7 @@ public class EnemyDroneStateController : NormalEnemySubject
     public GameObject droneBombGameObject;
 
     // Hide from inspector
+    private Camera cam;
     public bool isDead = false;
     public int enemyHP;
     public bool isBombDropped = false;
@@ -43,6 +43,7 @@ public class EnemyDroneStateController : NormalEnemySubject
     }
     private void Start()
     {
+        cam = Camera.main;
         normalEnemyType = enemyStats.NormalEnemyType;
         flySpeed = enemyStats.movementSpeed;
         damage = enemyStats.damage;
@@ -52,6 +53,11 @@ public class EnemyDroneStateController : NormalEnemySubject
     private void Update()
     {
         enemyCurrentState.Update();
+        Vector2 worldToViewportPoint = cam.WorldToViewportPoint(transform.position);
+        if(worldToViewportPoint.x > 1.2f || worldToViewportPoint.x < -0.2f)
+        {
+            gameObject.SetActive(false);
+        }
     }
     private void FixedUpdate()
     {

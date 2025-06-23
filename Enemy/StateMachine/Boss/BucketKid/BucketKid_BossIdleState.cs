@@ -11,13 +11,13 @@ public class BucketKid_BossIdleState : BossStateMachine
     }
     public override void Update()
     {
-        if(bucketKidBoss.isGameStart == true)
+        /*if(bucketKidBoss.isGameStart == true)
         {
             if (bucketKidBoss.bossHP.currentBossHP <= 0)
             {
                 bucketKidBoss.BossStateTransition(new BucketKid_BossDieState(bucketKidBoss));
             }
-        }
+        } Uncomment this when using BossHealth script*/
     }
     public override void FixedUpdate()
     {

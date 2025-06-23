@@ -9,6 +9,7 @@ public class SideScroll_DeadState : PlayerSideScrollStateMachine
     {
         playerSideScroll.isDead = true;
         playerSideScroll.NotifyPlayerObserver(PlayerAction.Dead);
+        // Play Dead Anim and Dead Sound
         playerSideScroll.gameObject.SetActive(false);
     }
     public override void Update()
@@ -31,7 +32,10 @@ public class SideScroll_DeadState : PlayerSideScrollStateMachine
     {
 
     }
+    public override void OnColliderStay(Collision2D pCollider)
+    {
 
+    }
     public override void OnColliderExit(Collision2D pCollider)
     {
 

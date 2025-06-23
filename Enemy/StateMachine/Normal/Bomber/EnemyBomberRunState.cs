@@ -15,15 +15,18 @@ public class EnemyBomberRunState : EnemyStateMachine
         {
             bomberEnemy.EnemyStateTransition(new EnemyBomberExplodeState(bomberEnemy));
         }
-        moveDir = Vector2.MoveTowards(bomberEnemy.transform.position, bomberEnemy.destination.position, bomberEnemy.walkSpeed * Time.fixedDeltaTime);
-        if (Vector2.Distance(bomberEnemy.transform.position, bomberEnemy.destination.position) < 0.5f)
+        if (bomberEnemy.enemySpriteRenderer.flipX == false)
         {
-            bomberEnemy.gameObject.SetActive(false);
+            bomberEnemy.transform.position += new Vector3(-bomberEnemy.walkSpeed, 0, 0) * Time.deltaTime;
+        }
+        else
+        {
+            bomberEnemy.transform.position += new Vector3(bomberEnemy.walkSpeed, 0, 0) * Time.deltaTime;
         }
     }
     public override void FixedUpdate()
     {
-        bomberEnemy.transform.position = moveDir;
+        
     }
     public override void OnColliderEnter(Collision2D pCollider)
     {
@@ -38,6 +41,10 @@ public class EnemyBomberRunState : EnemyStateMachine
         if(eCollider.tag == "Player")
         {
             bomberEnemy.currentEnemyHP = 0;   
+        }
+        if (eCollider.tag == "EnemyJump" && bomberEnemy.isOnGround == true)
+        {
+            bomberEnemy.EnemyStateTransition(new EnemyBomberJumpState(bomberEnemy));
         }
     }
     public override void OnTriggerExit(Collider2D eCollider)

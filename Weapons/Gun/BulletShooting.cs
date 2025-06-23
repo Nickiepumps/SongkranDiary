@@ -4,8 +4,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class BulletShooting : ShootingSubject
+public class BulletShooting : ShootingSubject, IPlayerObserver
 {
+    [Header("Player Observer Reference")]
+    [SerializeField] private PlayerSubject playerSubject;
+
     [Header("Weapon Data Reference")]
     public PlayerStats weaponData;
     // Current bullet stats
@@ -19,6 +22,10 @@ public class BulletShooting : ShootingSubject
     private bool sprdBullet = false;
     private bool laserBullet = false;
 
+    [Header("Gun Audio Reference")]
+    [SerializeField] private AudioSource gunAudioPlayer;
+    [SerializeField] private AudioClip[] bulletAudioClipArr;
+    
     [Header("Bullet Pooler Reference")]
     [SerializeField] private BulletPooler bulletPooler;
 
@@ -50,10 +57,20 @@ public class BulletShooting : ShootingSubject
     [HideInInspector] public float switchCoolDown = 2f;
     [HideInInspector] public float currentBulletSwitchCoolDownTimer;
     [HideInInspector] public bool coolDownStatus = false;
+    public bool isCrouch = false;
+    public bool isShoot = false;
     private PlayerSideScrollStateController sidescrollPlayer;
     private void Awake()
     {
         sidescrollPlayer = GetComponent<PlayerSideScrollStateController>();
+    }
+    private void OnEnable()
+    {
+        playerSubject.AddPlayerObserver(this);
+    }
+    private void OnDisable()
+    {
+        playerSubject.RemovePlayerObserver(this);
     }
     private void Start()
     {
@@ -63,6 +80,8 @@ public class BulletShooting : ShootingSubject
         currentTravelSpeed = weaponData.currentWeaponTravelSpeed.aspd;
         currentBulletSwitchCoolDownTimer = switchCoolDown;
         aspd = currentASPD;
+
+        gunAudioPlayer.clip = bulletAudioClipArr[0];
     }
     private void Update()
     {
@@ -75,11 +94,30 @@ public class BulletShooting : ShootingSubject
         }
         #endregion
     }
+    public void OnPlayerNotify(PlayerAction playerAction)
+    {
+        switch (playerAction)
+        {
+            case (PlayerAction.Side_Idle):
+                isCrouch = false;
+                break;
+            case (PlayerAction.Run):
+                isCrouch = false;
+                break;
+            case(PlayerAction.Crouch):
+                isCrouch = true;
+                break;
+            case (PlayerAction.Jump):
+                isCrouch = false;
+                break;
+        }
+    }
     private void ShootingControl()
     {
         if (Input.GetKeyDown(KeyCode.Q) && coolDownStatus == false && sprdBullet == false)
         {
             StartCoroutine(SwitchCoolDown());
+            gunAudioPlayer.clip = bulletAudioClipArr[1];
             currentASPD = weaponData.currentSprdBulletASPD.aspd;
             aspd = currentASPD;
             bulletPooler.SwitchBulletType(BulletType.spreadBullet);
@@ -92,6 +130,7 @@ public class BulletShooting : ShootingSubject
         else if (Input.GetKeyDown(KeyCode.Q) && coolDownStatus == false && sprdBullet == true)
         {
             StartCoroutine(SwitchCoolDown());
+            gunAudioPlayer.clip = bulletAudioClipArr[0];
             currentASPD = weaponData.currentNormalASPD.aspd;
             currentTravelSpeed = weaponData.currentWeaponTravelSpeed.aspd;
             aspd = currentASPD;
@@ -105,6 +144,7 @@ public class BulletShooting : ShootingSubject
         if (Input.GetKeyDown(KeyCode.E) && coolDownStatus == false && laserBullet == false)
         {
             StartCoroutine(SwitchCoolDown());
+            gunAudioPlayer.clip = bulletAudioClipArr[2];
             currentASPD = weaponData.currentLsrBulletASPD.aspd;
             aspd = currentASPD;
             bulletPooler.SwitchBulletType(BulletType.laser);
@@ -117,6 +157,7 @@ public class BulletShooting : ShootingSubject
         else if (Input.GetKeyDown(KeyCode.E) && coolDownStatus == false && laserBullet == true)
         {
             StartCoroutine(SwitchCoolDown());
+            gunAudioPlayer.clip = bulletAudioClipArr[0];
             currentASPD = weaponData.currentNormalASPD.aspd;
             aspd = currentASPD;
             bulletPooler.SwitchBulletType(BulletType.normalBullet);
@@ -128,6 +169,7 @@ public class BulletShooting : ShootingSubject
         }
         if (Input.GetMouseButton(0))
         {
+            isShoot = true;
             muzzleFlash.SetActive(true);
             aspd -= Time.deltaTime;
             if (aspd <= 0)
@@ -149,6 +191,7 @@ public class BulletShooting : ShootingSubject
         }
         else
         {
+            isShoot = false;
             muzzleFlash.SetActive(false);
         }
         if (Input.GetKeyDown(KeyCode.S))
@@ -163,6 +206,8 @@ public class BulletShooting : ShootingSubject
     private void ShootingNormalBullet()
     {
         spawnDirection_Right.gameObject.GetComponent<PlayerGun>().ShootBullet(BulletType.normalBullet);
+        gunAudioPlayer.pitch = UnityEngine.Random.Range(0.8f, 1.3f);
+        gunAudioPlayer.Play();
     }
     private void ShootSpreadBullet()
     {
@@ -170,10 +215,14 @@ public class BulletShooting : ShootingSubject
         {
             sprdSpawnDirection_Right[i].gameObject.GetComponent<PlayerGun>().ShootBullet(BulletType.spreadBullet);
         }
+        gunAudioPlayer.pitch = UnityEngine.Random.Range(0.8f, 1.3f);
+        gunAudioPlayer.Play();
     }
     private void ShootLaserBullet()
     {
         laserSpawnDirection_Right.gameObject.GetComponent<PlayerGun>().ShootBullet(BulletType.laser);
+        gunAudioPlayer.pitch = UnityEngine.Random.Range(0.8f, 1.3f);
+        gunAudioPlayer.Play();
     }
     public void SwitchBulletSpawnerType(BulletType newBulletSpawnerType)
     {
@@ -226,15 +275,21 @@ public class BulletShooting : ShootingSubject
         }
         else if (AimAngle() > -150 && AimAngle() <= -120)
         {
-            NotifyShootingObserver(ShootingAction.aim45downleft);
+            if(isCrouch == false)
+            {
+                NotifyShootingObserver(ShootingAction.aim45downleft);
+            }
         }
         else if (AimAngle() > -120 && AimAngle() <= -60)
         {
-            NotifyShootingObserver(ShootingAction.aimdown);
+            //NotifyShootingObserver(ShootingAction.aimdown);
         }
         else if (AimAngle() > -60 && AimAngle() <= -30)
         {
-            NotifyShootingObserver(ShootingAction.aim45downright);
+            if(isCrouch == false)
+            {
+                NotifyShootingObserver(ShootingAction.aim45downright);
+            }
         }
         else if (AimAngle() > -30 && AimAngle() <= 30)
         {
@@ -246,7 +301,10 @@ public class BulletShooting : ShootingSubject
         }
         else if (AimAngle() > 60 && AimAngle() <= 120)
         {
-            NotifyShootingObserver(ShootingAction.aimtop);
+            if(isCrouch == false)
+            {
+                NotifyShootingObserver(ShootingAction.aimtop);
+            }
         }
         else if (AimAngle() > 120 && AimAngle() <= 150)
         {

@@ -22,9 +22,13 @@ public class NormalEnemySpawner : MonoBehaviour
     [SerializeField] private Transform spawnedDroneGroup; // Prevent too many enemy gameObjects appear in Hierachy
 
     [Header("Spawners and Prefab")]
-    public List<Transform> shooterSpawnerlist;
+    /*public List<Transform> shooterSpawnerlist;
     public List<Transform> bomberSpawnerlist;
-    public List<Transform> droneSpawnerlist;
+    public List<Transform> droneSpawnerlist;*/
+    [SerializeField] private Transform groundRightSpawner;
+    [SerializeField] private Transform groundLeftSpawner;
+    [SerializeField] private Transform airRightSpawner;
+    [SerializeField] private Transform airLeftSpawner;
     [SerializeField] private List<Transform> stationarySpawnerlist;
     [SerializeField] private GameObject shooterEnemyPrefab;
     [SerializeField] private GameObject bomberEnemyPrefab;
@@ -52,16 +56,14 @@ public class NormalEnemySpawner : MonoBehaviour
                 GameObject shooterEnemy;
                 if (spawnElement == 0)
                 {
-                    shooterEnemy = Instantiate(shooterEnemyPrefab, shooterSpawnerlist[0].position, Quaternion.identity, spawnedShooterGroup);
-                    shooterEnemy.GetComponent<EnemyShooterStateController>().destination = shooterSpawnerlist[1];
-                    shooterEnemy.GetComponent<EnemyShooterStateController>().startPoint = shooterSpawnerlist[0];
+                    shooterEnemy = Instantiate(shooterEnemyPrefab, groundLeftSpawner.position, Quaternion.identity, spawnedShooterGroup);
+                    shooterEnemy.GetComponent<EnemyShooterStateController>().startPoint = groundLeftSpawner;
                     shooterEnemy.GetComponent<EnemyShooterStateController>().enemySpriteRenderer.flipX = true;
                 }
                 else
                 {
-                    shooterEnemy = Instantiate(shooterEnemyPrefab, shooterSpawnerlist[1].position, Quaternion.identity, spawnedShooterGroup);
-                    shooterEnemy.GetComponent<EnemyShooterStateController>().destination = shooterSpawnerlist[0];
-                    shooterEnemy.GetComponent<EnemyShooterStateController>().startPoint = shooterSpawnerlist[1];
+                    shooterEnemy = Instantiate(shooterEnemyPrefab, groundRightSpawner.position, Quaternion.identity, spawnedShooterGroup);
+                    shooterEnemy.GetComponent<EnemyShooterStateController>().startPoint = groundRightSpawner;
                     shooterEnemy.GetComponent<EnemyShooterStateController>().enemySpriteRenderer.flipX = false;
                 }
                 spawnedShooterLists.Add(shooterEnemy);
@@ -76,16 +78,14 @@ public class NormalEnemySpawner : MonoBehaviour
                 GameObject bomberEnemy;
                 if (spawnElement == 0)
                 {
-                    bomberEnemy = Instantiate(bomberEnemyPrefab, bomberSpawnerlist[0].position, Quaternion.identity, spawnedBomberGroup);
-                    bomberEnemy.GetComponent<EnemyBomberStateController>().destination = bomberSpawnerlist[1];
-                    bomberEnemy.GetComponent<EnemyBomberStateController>().startPoint = bomberSpawnerlist[0];
+                    bomberEnemy = Instantiate(bomberEnemyPrefab, groundLeftSpawner.position, Quaternion.identity, spawnedBomberGroup);
+                    bomberEnemy.GetComponent<EnemyBomberStateController>().startPoint = groundLeftSpawner;
                     bomberEnemy.GetComponent<EnemyBomberStateController>().enemySpriteRenderer.flipX = true;
                 }
                 else
                 {
-                    bomberEnemy = Instantiate(bomberEnemyPrefab, bomberSpawnerlist[1].position, Quaternion.identity, spawnedBomberGroup);
-                    bomberEnemy.GetComponent<EnemyBomberStateController>().destination = bomberSpawnerlist[0];
-                    bomberEnemy.GetComponent<EnemyBomberStateController>().startPoint = bomberSpawnerlist[1];
+                    bomberEnemy = Instantiate(bomberEnemyPrefab, groundRightSpawner.position, Quaternion.identity, spawnedBomberGroup);
+                    bomberEnemy.GetComponent<EnemyBomberStateController>().startPoint = groundRightSpawner;
                     bomberEnemy.GetComponent<EnemyBomberStateController>().enemySpriteRenderer.flipX = false;
                 }
                 spawnedBomberLists.Add(bomberEnemy);
@@ -100,16 +100,14 @@ public class NormalEnemySpawner : MonoBehaviour
                 GameObject droneEnemy;
                 if (spawnElement == 0)
                 {
-                    droneEnemy = Instantiate(droneEnemyPrefab, droneSpawnerlist[0].position, Quaternion.identity, spawnedDroneGroup);
-                    droneEnemy.GetComponent<EnemyDroneStateController>().destination = droneSpawnerlist[1];
-                    droneEnemy.GetComponent<EnemyDroneStateController>().startPoint = droneSpawnerlist[0];
+                    droneEnemy = Instantiate(droneEnemyPrefab, airLeftSpawner.position, Quaternion.identity, spawnedDroneGroup);
+                    droneEnemy.GetComponent<EnemyDroneStateController>().startPoint = airLeftSpawner;
                     droneEnemy.GetComponent<EnemyDroneStateController>().enemySpriteRenderer.flipX = true;
                 }
                 else
                 {
-                    droneEnemy = Instantiate(droneEnemyPrefab, droneSpawnerlist[1].position, Quaternion.identity, spawnedDroneGroup);
-                    droneEnemy.GetComponent<EnemyDroneStateController>().destination = droneSpawnerlist[0];
-                    droneEnemy.GetComponent<EnemyDroneStateController>().startPoint = droneSpawnerlist[1];
+                    droneEnemy = Instantiate(droneEnemyPrefab, airRightSpawner.position, Quaternion.identity, spawnedDroneGroup);
+                    droneEnemy.GetComponent<EnemyDroneStateController>().startPoint = airRightSpawner;
                     droneEnemy.GetComponent<EnemyDroneStateController>().enemySpriteRenderer.flipX = false;
                 }
                 spawnedDroneLists.Add(droneEnemy);

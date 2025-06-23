@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class GameUIController : MonoBehaviour, IGameObserver
+public class GameUIController : MonoBehaviour, IGameObserver, IPlayerObserver
 {
     [Header("Level Type")]
     [SerializeField] private LevelType levelType;
@@ -13,6 +13,7 @@ public class GameUIController : MonoBehaviour, IGameObserver
     [SerializeField] private GameSubject gameControllerSubject; // Game controller subject
     [SerializeField] private GameSubject gameUIControllerSubject; // Game UI Controller subject
     [SerializeField] private GameSubject goalSubject; // Run n Gun destination subject
+    [SerializeField] private PlayerSubject ISOPlayerSubject; // Isometric player subject
     [SerializeField] private GameSubject sideScrollIntroSubject; // Side scroll intro/outro subject
 
     [Header("Game Controller Reference")]
@@ -23,8 +24,12 @@ public class GameUIController : MonoBehaviour, IGameObserver
     [Space]
     [Space]
     [Header("Windows UI References")]
+    [Header("Player HUD")]
+    [SerializeField] private GameObject ISOPlayerHud; // Isometric player HUD
+    [Header("Reward Window")]
+    [SerializeField] private GameObject rewardWindow; // Player reward window
     [Header("Upgrade Window")]
-    [SerializeField] private GameObject rewardWindow; // Player upgrade window
+    [SerializeField] private GameObject upgradeWindow; // Player upgrade window
     [Header("Scoreboard Window")]
     [SerializeField] private GameObject scoreBoard;
     [SerializeField] private GameObject winScoreBoard;
@@ -43,12 +48,16 @@ public class GameUIController : MonoBehaviour, IGameObserver
     [Space]
     [Header("Transition Window")]
     [SerializeField] private GameObject transitionWindow;
+
+    [SerializeField] private GameObject[] allISOWindowArr;
+    [HideInInspector] public bool isNPCTalking = false;
     private void OnEnable()
     {
         if (levelType == LevelType.IsoLevel)
         {
             gameUIControllerSubject.AddGameObserver(this);
             //gameControllerSubject.AddGameObserver(this);
+            ISOPlayerSubject.AddPlayerObserver(this);
         }
         else if(levelType == LevelType.RunNGunLevel)
         {
@@ -74,6 +83,7 @@ public class GameUIController : MonoBehaviour, IGameObserver
         {
             gameUIControllerSubject.RemoveGameObserver(this);
             //gameControllerSubject.RemoveGameObserver(this);
+            ISOPlayerSubject.RemovePlayerObserver(this);
         }
         else if (levelType == LevelType.RunNGunLevel)
         {
@@ -91,13 +101,26 @@ public class GameUIController : MonoBehaviour, IGameObserver
             sideScrollIntroSubject.RemoveSideScrollGameObserver(this);
         }
     }
+    private void Update()
+    {
+        if(levelType == LevelType.IsoLevel)
+        {
+            if (Input.GetKeyDown(KeyCode.Escape) && isNPCTalking == false && CheckAnyOpenedISOWindow() == false)
+            {
+                pauseWindow.SetActive(true);
+                GetComponent<IsometricGameObserverContoller>().NotifyGameObserver(IsometricGameState.Paused);
+            }
+        }
+    }
     public void OnGameNotify(IsometricGameState isoGameState)
     {
         switch (isoGameState)
         {
             case (IsometricGameState.Play):
+                ISOPlayerHud.SetActive(true);
                 return;
             case (IsometricGameState.Paused):
+                ISOPlayerHud.SetActive(false);
                 return;
             case (IsometricGameState.Reward):
                 rewardWindow.SetActive(true);
@@ -144,18 +167,48 @@ public class GameUIController : MonoBehaviour, IGameObserver
                 return;
         }
     }
+    public void OnPlayerNotify(PlayerAction playerAction)
+    {
+        switch (playerAction)
+        {
+            case (PlayerAction.Idle):
+                isNPCTalking = false;
+                return;
+            case (PlayerAction.Talk):
+                ISOPlayerHud.SetActive(false);
+                isNPCTalking = true;
+                return;
+        }
+    }
+    private bool CheckAnyOpenedISOWindow()
+    {
+        foreach(GameObject window in allISOWindowArr)
+        {
+            if(window.activeSelf == true)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
     public void OpenWindow(GameObject windowObj)
     {
         // Use for open any window in Isometric mode
         if(windowObj.activeSelf == true)
         {
             windowObj.SetActive(false);
-            GetComponent<IsometricGameObserverContoller>().NotifyGameObserver(IsometricGameState.Play);
+            if (isNPCTalking == false)
+            {
+                GetComponent<IsometricGameObserverContoller>().NotifyGameObserver(IsometricGameState.Play);
+            }
         }
         else
         {
             windowObj.SetActive(true);
-            GetComponent<IsometricGameObserverContoller>().NotifyGameObserver(IsometricGameState.Paused);
+            if(isNPCTalking == false)
+            {
+                GetComponent<IsometricGameObserverContoller>().NotifyGameObserver(IsometricGameState.Paused);
+            }
         }
     }
     public IEnumerator OpenObjective()

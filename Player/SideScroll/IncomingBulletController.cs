@@ -54,6 +54,7 @@ public class IncomingBulletController : MonoBehaviour
         for(int i = 0; i < incomingBulletPatternList.PatternList[pattern].incomingBullet.Count; i++)
         {
             GameObject bullet = enemyBulletPooler.EnableIncomingBullet();
+            bullet.GetComponent<EnemyBullet>().isIncomingBullet = true;
             bullet.GetComponent<EnemyBullet>().bulletDirection = incomingBulletPatternList.PatternList[pattern].incomingBullet[i].transform.localRotation * Vector2.up;
             bullet.transform.position = incomingBulletPatternList.PatternList[pattern].incomingBullet[i].transform.position;
             bullet.transform.localRotation = incomingBulletPatternList.PatternList[pattern].incomingBullet[i].transform.localRotation;

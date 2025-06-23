@@ -23,21 +23,24 @@ public class EnemyShooterJumpState : EnemyStateMachine
         }
         if (currentTime <= 0 && isJumping == false)
         {
-            isJumping = true;
             shooterEnemy.enemyRB.AddForce(Vector2.up * shooterEnemy.jumpForce, ForceMode2D.Impulse);
+            isJumping = true;
         }
         if(isJumping == true)
         {
-            moveDir = Vector2.MoveTowards(shooterEnemy.transform.position, new Vector2(shooterEnemy.destination.position.x, shooterEnemy.transform.position.y),
-                6 * Time.fixedDeltaTime);
+            if (shooterEnemy.enemySpriteRenderer.flipX == false)
+            {
+                shooterEnemy.transform.position += new Vector3(-6, 0, 0) * Time.deltaTime;
+            }
+            else
+            {
+                shooterEnemy.transform.position += new Vector3(6, 0, 0) * Time.deltaTime;
+            }
         }
     }
     public override void FixedUpdate()
     {
-        if(isJumping == true)
-        {
-            shooterEnemy.transform.position = moveDir;
-        }
+        
     }
     public override void OnTriggerEnter(Collider2D eCollider)
     {

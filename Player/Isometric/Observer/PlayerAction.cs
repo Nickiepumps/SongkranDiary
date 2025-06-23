@@ -6,6 +6,7 @@ public enum PlayerAction
     Talk,
     Stop,
     // Side Scroll mode
+    Side_Idle,
     Run,
     Jump,
     Crouch,

@@ -1,41 +1,40 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 using System;
-
 public class Main_Setting : MonoBehaviour
 {
     [Header("Button")]
-    [SerializeField] private GameObject confirmButton;
+    [SerializeField] private GameObject setting_ConfirmButton;
     [Header("Sounds")]
-    [SerializeField] private AudioSource bgmAudioSouce;
-    [SerializeField] private AudioSource sfxAudioSouce;
+    [SerializeField] private AudioSource setting_BGMAudioSouce;
+    [SerializeField] private AudioSource setting_SFXAudioSouce;
     [Header("Slider")]
-    [SerializeField] private Slider masterSlider;
-    [SerializeField] private Slider bgmSlider;
-    [SerializeField] private Slider sfxSlider;
-    [SerializeField] private TMP_Text masterValue;
-    [SerializeField] private TMP_Text bgmValue;
-    [SerializeField] private TMP_Text sfxValue;
+    [SerializeField] private Slider setting_MasterSlider;
+    [SerializeField] private Slider setting_BGMSlider;
+    [SerializeField] private Slider setting_SFXSlider;
+    [SerializeField] private TMP_Text setting_MasterValue;
+    [SerializeField] private TMP_Text setting_BGMValue;
+    [SerializeField] private TMP_Text setting_SFXValue;
 
-    private float originalMasterVolume;
-    private float originalBGMVolume;
-    private float originalSFXVolume;
+    private float setting_OriginalMasterVolume;
+    private float setting_OriginalBGMVolume;
+    private float setting_OriginalSFXVolume;
     private void OnEnable()
     {
-        originalMasterVolume = masterSlider.value;
-        originalBGMVolume = bgmSlider.value;
-        originalSFXVolume = sfxSlider.value;
+        setting_OriginalMasterVolume = setting_MasterSlider.value;
+        setting_OriginalBGMVolume = setting_BGMSlider.value;
+        setting_OriginalSFXVolume = setting_SFXSlider.value;
     }
     private void OnDisable()
     {
         // Reset all setting to the original value if player doesn't confirm the setting
-        masterSlider.value = originalMasterVolume;
-        bgmSlider.value = originalBGMVolume;
-        sfxSlider.value = originalSFXVolume;
-        confirmButton.SetActive(false);
+        setting_MasterSlider.value = setting_OriginalMasterVolume;
+        setting_BGMSlider.value = setting_OriginalBGMVolume;
+        setting_SFXSlider.value = setting_OriginalSFXVolume;
+        setting_ConfirmButton.SetActive(false);
 
         // Master
         MasterSetting();
@@ -50,13 +49,13 @@ public class Main_Setting : MonoBehaviour
         SettingData loadedSettingData = SettingHandler.instance.LoadSetting();
         if(loadedSettingData != null)
         {
-            masterSlider.value = loadedSettingData.masterVolume;
-            bgmSlider.value = loadedSettingData.bgmVolume;
-            sfxSlider.value = loadedSettingData.sfxVolume;
+            setting_MasterSlider.value = loadedSettingData.masterVolume;
+            setting_BGMSlider.value = loadedSettingData.bgmVolume;
+            setting_SFXSlider.value = loadedSettingData.sfxVolume;
         }
-        originalMasterVolume = masterSlider.value;
-        originalBGMVolume = bgmSlider.value;
-        originalSFXVolume = sfxSlider.value;
+        setting_OriginalMasterVolume = setting_MasterSlider.value;
+        setting_OriginalBGMVolume = setting_BGMSlider.value;
+        setting_OriginalSFXVolume = setting_SFXSlider.value;
     }
     private void Update()
     {
@@ -69,31 +68,31 @@ public class Main_Setting : MonoBehaviour
     }
     private void MasterSetting()
     {
-        masterValue.text = Convert.ToInt32(masterSlider.value * 100).ToString();
-        if (masterSlider.value != originalMasterVolume)
+        setting_MasterValue.text = Convert.ToInt32(setting_MasterSlider.value * 100).ToString();
+        if (setting_MasterSlider.value != setting_OriginalMasterVolume)
         {
-            confirmButton.SetActive(true);
+            setting_ConfirmButton.SetActive(true);
         }
     }
     private void BGMSetting()
     {
-        if (masterSlider.value >= bgmSlider.value)
+        if (setting_MasterSlider.value >= setting_BGMSlider.value)
         {
-            bgmAudioSouce.volume = bgmSlider.value;
+            setting_BGMAudioSouce.volume = setting_BGMSlider.value;
         }
         else
         {
-            bgmAudioSouce.volume = masterSlider.value;
+            setting_BGMAudioSouce.volume = setting_MasterSlider.value;
         }
-        if(bgmSlider.value != originalBGMVolume)
+        if (setting_BGMSlider.value != setting_OriginalBGMVolume)
         {
-            confirmButton.SetActive(true);
+            setting_ConfirmButton.SetActive(true);
         }
-        bgmValue.text = Convert.ToInt32(bgmSlider.value * 100).ToString();
+        setting_BGMValue.text = Convert.ToInt32(setting_BGMSlider.value * 100).ToString();
     }
     private void SFXSetting()
     {
-        if (masterSlider.value >= sfxSlider.value)
+        if (setting_MasterSlider.value >= setting_SFXSlider.value)
         {
             //sfxAudioSouce.volume = sfxSlider.value;
         }
@@ -101,21 +100,20 @@ public class Main_Setting : MonoBehaviour
         {
             //sfxAudioSouce.volume = masterSlider.value;
         }
-        if (sfxSlider.value != originalSFXVolume)
+        if (setting_SFXSlider.value != setting_OriginalSFXVolume)
         {
-            confirmButton.SetActive(true);
+            setting_ConfirmButton.SetActive(true);
         }
-        sfxValue.text = Convert.ToInt32(sfxSlider.value * 100).ToString();
+        setting_SFXValue.text = Convert.ToInt32(setting_SFXSlider.value * 100).ToString();
     }
     public void ConfirmSetting()
     {
         // To Do: Save all settings to JSON
-        SettingHandler.instance.SaveSetting(masterSlider.value, bgmSlider.value, sfxSlider.value);
+        SettingHandler.instance.SaveSetting(setting_MasterSlider.value, setting_BGMSlider.value, setting_SFXSlider.value);
 
-        originalMasterVolume = masterSlider.value;
-        originalBGMVolume = bgmSlider.value;
-        originalSFXVolume = sfxSlider.value;
-        confirmButton.SetActive(false);
+        setting_OriginalMasterVolume = setting_MasterSlider.value;
+        setting_OriginalBGMVolume = setting_BGMSlider.value;
+        setting_OriginalSFXVolume = setting_SFXSlider.value;
+        setting_ConfirmButton.SetActive(false);
     }
-
 }

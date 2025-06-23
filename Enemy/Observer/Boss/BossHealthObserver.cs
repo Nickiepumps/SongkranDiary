@@ -7,8 +7,9 @@ public class BossHealthObserver : MonoBehaviour, IBossObserver
     [Header("Boss Observer References")]
     [SerializeField] private BossSubject bossSubject;
     [Header("Boss Health Properties")]
-    [SerializeField] private BossScriptableObject bossStats;
-    public int currentBossHP;
+    //[SerializeField] private BossScriptableObject bossStats;
+    //public int currentBossHP;
+    [SerializeField] private BossHealth bossHealth;
     [SerializeField] public int bossMaxHP; // Used for game controller to check boss progression
     [Header("Boss Sprite")]
     [SerializeField] private SpriteRenderer bossSpriteRenderer;
@@ -23,8 +24,8 @@ public class BossHealthObserver : MonoBehaviour, IBossObserver
     }
     private void Start()
     {
-        bossMaxHP = bossStats.HP;
-        currentBossHP = bossStats.HP;
+        //bossMaxHP = bossHealth.bossMaxHP;
+        //currentBossHP = bossStats.HP;
     }
     public void OnBossNotify(BossAction action)
     {
@@ -32,7 +33,8 @@ public class BossHealthObserver : MonoBehaviour, IBossObserver
         {
             case (BossAction.Damaged):
                 Debug.Log("Boss Damaged");
-                currentBossHP--;
+                //currentBossHP--;
+                bossHealth.currentBossHP--;
                 StartCoroutine(DamageIndicator());
                 return;
         }

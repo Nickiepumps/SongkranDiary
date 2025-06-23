@@ -86,6 +86,7 @@ public class PlayerObserverController : MonoBehaviour, IGameObserver, IPlayerObs
                 playerStateController.PlayerStateTransition(new PlayerIdleState(playerStateController));
                 return;
             case (IsometricGameState.Paused):
+                playerStateController.PlayerStateTransition(new PlayerIdleState(playerStateController));
                 playerStateController.enabled = false;
                 return;
         }
@@ -103,6 +104,8 @@ public class PlayerObserverController : MonoBehaviour, IGameObserver, IPlayerObs
                 playerSideScrollStateController.isWinRunNGun = true;
                 return;
             case (SideScrollGameState.WinBoss):
+                playerSideScrollStateController.enabled = false;
+                playerSideScrollStateController.gameObject.GetComponent<BulletShooting>().enabled = false;
                 return;
             case (SideScrollGameState.Paused):
                 return;
@@ -122,15 +125,31 @@ public class PlayerObserverController : MonoBehaviour, IGameObserver, IPlayerObs
         {
             switch (playerAction)
             {
+                case (PlayerAction.Side_Idle):
+                    playerSideScrollStateController.isCrouch = false;
+                    break;
+                case (PlayerAction.Run):
+                    playerSideScrollStateController.isCrouch = false;
+                    break;
+                case (PlayerAction.Crouch):
+                    playerSideScrollStateController.isCrouch = true;
+                    break;
+                case (PlayerAction.Jump):
+                    playerSideScrollStateController.isCrouch = false;
+                    break;
                 case (PlayerAction.Damaged):
                     if (playerSideScrollStateController.playerCurrentHP > 0)
                     {
+                        playerSideScrollStateController.playerStatusAudioSource.clip = playerSideScrollStateController.playerAudioClipArr[1];
+                        playerSideScrollStateController.playerStatusAudioSource.Play();
                         playerSideScrollStateController.playerCurrentHP--;
                         healthDisplay.DecreaseHealth(playerSideScrollStateController.playerCurrentHP);
                         playerSideScrollStateController.isDamaged = true;
                     }
                     return;
                 case (PlayerAction.Heal):
+                    playerSideScrollStateController.playerStatusAudioSource.clip = playerSideScrollStateController.playerAudioClipArr[2];
+                    playerSideScrollStateController.playerStatusAudioSource.Play();
                     if (playerSideScrollStateController.playerCurrentHP < playerSideScrollStateController.playerMaxHP)
                     {
                         playerSideScrollStateController.playerCurrentHP++;

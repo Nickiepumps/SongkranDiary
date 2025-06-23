@@ -255,6 +255,7 @@ public class NPCDialogController : MonoBehaviour, INPCObserver, IPlayerObserver,
         // stop dialog sequence when npc ran through all dialogs in the list
         else
         {
+            gameUIController.isNPCTalking = false;
             isometricGameSubject.NotifyGameObserver(IsometricGameState.Paused);
             rewardWindow.SetActive(true);
             dialogSeqNumber = 0;

@@ -23,30 +23,33 @@ public class EnemyShooterRunState : EnemyStateMachine
         {
             shooterEnemy.EnemyStateTransition(new EnemyShooterDeadState(shooterEnemy));
         }
-        moveDir = Vector2.MoveTowards(shooterEnemy.transform.position, new Vector2(shooterEnemy.destination.position.x, shooterEnemy.transform.position.y),
-            shooterEnemy.walkSpeed * Time.fixedDeltaTime);
+        if (shooterEnemy.enemySpriteRenderer.flipX == false)
+        {
+            shooterEnemy.transform.position += new Vector3(-shooterEnemy.walkSpeed, 0, 0) * Time.deltaTime;
+        }
+        else
+        {
+            shooterEnemy.transform.position += new Vector3(shooterEnemy.walkSpeed, 0, 0) * Time.deltaTime;
+        }
         currentASPD -= Time.deltaTime;
         if (currentASPD <= 0)
         {
             shooterEnemy.NotifyNormalEnemy(EnemyAction.Shoot);
             currentASPD = shooterEnemy.enemyASPD;
         }
-        if (Vector2.Distance(shooterEnemy.transform.position, shooterEnemy.destination.position) < 0.5f)
+        /*if (Vector2.Distance(shooterEnemy.transform.position, shooterEnemy.destination.position) < 0.5f)
         {
             Debug.Log("Reached Destination");
             shooterEnemy.gameObject.SetActive(false);
-        }
+        }*/
+        
     }
     public override void FixedUpdate()
     {
-        shooterEnemy.transform.position = moveDir;
+        
     }
     public override void OnTriggerEnter(Collider2D eCollider)
     {
-        if(eCollider.tag == "E_Boundary")
-        {
-            shooterEnemy.gameObject.SetActive(false);
-        }
         if(eCollider.tag == "EnemyJump" && shooterEnemy.isOnGround == true)
         {
             shooterEnemy.EnemyStateTransition(new EnemyShooterJumpState(shooterEnemy));

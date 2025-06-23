@@ -9,6 +9,8 @@ public class SideScrollGameController : GameSubject
     [SerializeField] private GameType gameMode;
     [Header("Side Scroll Player Properties")]
     [SerializeField] private PlayerSideScrollStateController sidescrollPlayer;
+    [Header("Side Scroll Intro Reference")]
+    [SerializeField] private SideScrollIntro sideScrollIntro;
     [Header("Observer References")]
     [SerializeField] private PlayerSubject sidescrollPlayerSubject;
 
@@ -18,7 +20,8 @@ public class SideScrollGameController : GameSubject
     [SerializeField] Transform startPos; // Start pos in the world
     [SerializeField] Transform goalPos; // Goal pos in the world
     [Header("Boss Mode Properties")]
-    [SerializeField] BossHealthObserver bossHP;
+    //[SerializeField] BossHealthObserver bossHP;
+    [SerializeField] BossHealth bossHP;
 
     [HideInInspector] public bool isPaused = false;
     private float timer;
@@ -36,20 +39,24 @@ public class SideScrollGameController : GameSubject
         {
             CountTime();
         }
-        if (Input.GetKeyDown(KeyCode.Escape) && isPaused == false)
+        if (Input.GetKeyDown(KeyCode.Escape) && sideScrollIntro.finishIntro == true)
         {
-            NotifySideScrollGameObserver(SideScrollGameState.Paused);
-            isPaused = true;
+            if(isPaused == false)
+            {
+                NotifySideScrollGameObserver(SideScrollGameState.Paused);
+                isPaused = true;
+            }
+            else
+            {
+                NotifySideScrollGameObserver(SideScrollGameState.Play);
+                isPaused = false;
+            }
+            
         }
-        else if (Input.GetKeyDown(KeyCode.Escape) && isPaused == true)
+        /*if(sidescrollPlayer.transform.position.x >= goalPos.position.x + 8f)
         {
-            NotifySideScrollGameObserver(SideScrollGameState.Play);
-            isPaused = false;
-        }
-        if(sidescrollPlayer.transform.position.x >= goalPos.position.x + 8f)
-        {
-            Debug.Log("Show scoreboard");
-        }
+            // Uncomment this and make player walk toward the goal automatically and ignore any input
+        }*/
     }
     public void AddCoin()
     {

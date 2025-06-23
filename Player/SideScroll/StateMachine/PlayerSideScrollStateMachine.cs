@@ -12,6 +12,7 @@ public abstract class PlayerSideScrollStateMachine
     public abstract void OntriggerEnter(Collider2D pCollider);
     public abstract void OntriggerExit(Collider2D pCollider);
     public abstract void OnColliderEnter(Collision2D pCollider);
+    public abstract void OnColliderStay(Collision2D pCollider);
     public abstract void OnColliderExit(Collision2D pCollider);
     public abstract void Exit();
 }

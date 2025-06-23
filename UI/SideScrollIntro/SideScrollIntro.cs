@@ -20,6 +20,7 @@ public class SideScrollIntro : GameSubject
     [SerializeField] private Image knockOutImage;
     [SerializeField] private float knockOutTransitionTime;
     [HideInInspector] public bool finishCoroutine = false;
+    [HideInInspector] public bool finishIntro = false;
 
     private void Start()
     {
@@ -49,6 +50,7 @@ public class SideScrollIntro : GameSubject
             introWipeMask.padding = new Vector4(currentWipeValue -= introTransitionTime, 0, 0, 0);
             yield return null;
         }
+        finishIntro = true;
         NotifySideScrollGameObserver(SideScrollGameState.StartRound);
         closingAnim.Play();
         yield return new WaitForSeconds(1f);

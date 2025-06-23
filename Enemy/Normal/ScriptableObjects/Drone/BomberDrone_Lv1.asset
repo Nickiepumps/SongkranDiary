@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BomberDrone_Lv1
   m_EditorClassIdentifier: 
   NormalEnemyType: 3
-  hp: 15
+  hp: 5
   damage: 1
   aspd: 0
   movementSpeed: 3

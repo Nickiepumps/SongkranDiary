@@ -7,6 +7,7 @@ public class BulletAiming : MonoBehaviour, IShootingObserver
     [SerializeField] private ShootingSubject shootingSubject;
     [SerializeField] private Transform aimingPivot;
     [SerializeField] private Transform normalBulletSpawn;
+    [HideInInspector] public bool isAimUp;
     private void OnEnable()
     {
         shootingSubject.AddShootingObserver(this);
@@ -20,27 +21,35 @@ public class BulletAiming : MonoBehaviour, IShootingObserver
         switch (shootingAction)
         {
             case(ShootingAction.aimright):
+                isAimUp = false;
                 AimStraightRight();
                 return;
             case (ShootingAction.aim45topright):
+                isAimUp = false;
                 Aim45TopRight();
                 return;
             case (ShootingAction.aim45downright):
+                isAimUp = false;
                 Aim45BottomRight();
                 return;
             case (ShootingAction.aimleft):
+                isAimUp = false;
                 AimStraightLeft();
                 return;
             case (ShootingAction.aim45topleft):
+                isAimUp = false;
                 Aim45TopLeft();
                 return;
             case (ShootingAction.aim45downleft):
+                isAimUp = false;
                 Aim45BottomLeft();
                 return;
             case (ShootingAction.aimtop):
+                isAimUp = true;
                 AimTop();
                 return;
             case (ShootingAction.aimdown):
+                isAimUp = false;
                 AimBottom();
                 return;
         }
@@ -75,6 +84,6 @@ public class BulletAiming : MonoBehaviour, IShootingObserver
     }
     private void AimBottom()
     {
-        aimingPivot.localRotation = Quaternion.Euler(0, 0, -180);
+        //aimingPivot.localRotation = Quaternion.Euler(0, 0, -180);
     }
 }

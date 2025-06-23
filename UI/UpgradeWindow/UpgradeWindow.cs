@@ -81,7 +81,6 @@ public class UpgradeWindow : MonoBehaviour, IGameObserver
     {
 
     }
-
     private void OnEnable()
     {
         coinAmount = playerStats.coinAmount;
@@ -445,7 +444,6 @@ public class UpgradeWindow : MonoBehaviour, IGameObserver
     }
     public void UnlockUpgrade(GameObject lockedUpgradePanel)
     {
-        confirmUpgradeBtn.SetActive(true);
         switch (lockedUpgradePanel.name)
         {
             case("SpreadLockPanel"):
@@ -455,6 +453,7 @@ public class UpgradeWindow : MonoBehaviour, IGameObserver
                     coinAmountText.text = "X " + coinAmount.ToString();
                     lockedUpgradePanel.SetActive(false);
                     allUpgradeToUnlockLists.Add(lockedUpgradePanel);
+                    confirmUpgradeBtn.SetActive(true);
                 }
                 return;
             case ("LaserLockPanel"):
@@ -464,6 +463,7 @@ public class UpgradeWindow : MonoBehaviour, IGameObserver
                     coinAmountText.text = "X " + coinAmount.ToString();
                     lockedUpgradePanel.SetActive(false);
                     allUpgradeToUnlockLists.Add(lockedUpgradePanel);
+                    confirmUpgradeBtn.SetActive(true);
                 }
                 return;
         }

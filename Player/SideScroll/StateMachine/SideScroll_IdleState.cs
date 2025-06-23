@@ -13,6 +13,7 @@ public class SideScroll_IdleState : PlayerSideScrollStateMachine
         //playerSideScroll.playerHeadAnimator.SetBool("Run", false);
         //playerSideScroll.playerHandAnimator.SetBool("Run", false);
         //playerSideScroll.playerAnimator.SetBool("TestRun", false);
+        playerSideScroll.NotifyPlayerObserver(PlayerAction.Side_Idle);
         playerSideScroll.playerAnimator.SetBool("Idle", true);
         playerSideScroll.playerAnimator.SetBool("Run", false);
         playerSideScroll.playerAnimator.SetBool("Jump", false);
@@ -29,13 +30,16 @@ public class SideScroll_IdleState : PlayerSideScrollStateMachine
             {
                 playerSideScroll.PlayerSideScrollStateTransition(new SideScroll_RunState(playerSideScroll));
             }
-            if (Input.GetKeyDown(KeyCode.Space) && playerSideScroll.isPlayerOnGround == true) // Change to Jump state
+            if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W) && playerSideScroll.isPlayerOnGround == true) // Change to Jump state
             {
                 playerSideScroll.PlayerSideScrollStateTransition(new SideScroll_JumpState(playerSideScroll));
             }
             if (Input.GetKey(KeyCode.S) && playerSideScroll.isPlayerOnGround == true) // Change to Jump state
             {
-                playerSideScroll.PlayerSideScrollStateTransition(new SideScroll_CrouchState(playerSideScroll));
+                if (playerSideScroll.GetComponent<BulletAiming>().isAimUp == false)
+                {
+                    playerSideScroll.PlayerSideScrollStateTransition(new SideScroll_CrouchState(playerSideScroll));
+                }
             }
             if (playerSideScroll.playerCurrentHP <= 0)
             {
@@ -59,11 +63,19 @@ public class SideScroll_IdleState : PlayerSideScrollStateMachine
     {
         if(pCollider.gameObject.tag == "Side_Floor")
         {
+            if (playerSideScroll.isPlayerHighFall == true)
+            {
+                playerSideScroll.playerMovementAudioSource.clip = playerSideScroll.playerAudioClipArr[0];
+                playerSideScroll.playerMovementAudioSource.Play();
+            }
             playerSideScroll.isPlayerOnGround = true;
             playerSideScroll.currentCollidername = pCollider;
         }
     }
+    public override void OnColliderStay(Collision2D pCollider)
+    {
 
+    }
     public override void OnColliderExit(Collision2D pCollider)
     {
         if(pCollider.gameObject.tag == "Side_Floor")

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 
 public class PlayerSideScrollStateController : PlayerSubject
@@ -10,9 +11,15 @@ public class PlayerSideScrollStateController : PlayerSubject
     public SpriteRenderer playerSpriteRenderer;
     public Vector2 playerVelocity;
     private PlayerSideScrollStateMachine currentState;
+    public BulletShooting playerBulletShooting;
     
     [Header("Player Animator Reference")]
     public Animator playerAnimator;
+
+    [Header("Player Audio Reference")]
+    public AudioSource playerStatusAudioSource;
+    public AudioSource playerMovementAudioSource;
+    public AudioClip[] playerAudioClipArr;
 
     [Header("Player Stats")]
     [SerializeField] private PlayerStats currentPlayerStats;
@@ -24,14 +31,19 @@ public class PlayerSideScrollStateController : PlayerSubject
 
     [Header("Side-Scroll Player Properties")]
     public float walkSpeed = 5; // Player's walk speed
-    public float jumpForce = 5f; // Player's jump force
+    public float jumpForce = 5f; // Player's jump force. Uses at the start of the jump
+    public float jumpMultiplier = 1.5f; // Player jumping multiplier. Uses after the jump if the player is holding jump button
+    public float fallMultiplier = 1.5f; // Player falling multiplier.
     const float damageImmunityTime = 3f; // Player's invulnerability time, start countdown when player hit by enemy
     public Vector2 playerStandColliderSize; // Player's collider width and height values when standing
     public Vector2 playerStandColliderOffset; // Player's collider X and Y position offset values when standing
     public Vector2 playerCrouchColliderSize; // Player's collider width and height values when crouching
     public Vector2 playerCrouchColliderOffset; // Player's collider X and Y position offset values when crouching
-    public bool isPlayerOnGround; // Standing on the ground status
+    public bool isPlayerOnGround = true; // Standing on the ground status
+    public bool isPlayerHighFall = false;
     public bool isCrouch; // Crouching status
+    public bool isJump; // Jumping status
+    public bool isShoot; // Shooting status
     public bool isDamaged = false; // Damaging status
     public bool isDead = false; // Dead status
     public bool isWinBoss = false; // win boss stage status
@@ -39,8 +51,11 @@ public class PlayerSideScrollStateController : PlayerSubject
 
     // Hide in inspector
     public Vector2 currentVelocity;
+    public Vector2 gravityVelocity;
     public Collision2D currentCollidername;
+    public float currentJumpButtonHoldingTime;
     private float currentImmunityTime;
+    private float currentAirborneTime;
     public float xDir;
     public float currentASPD;
     public bool isGameStart = false;
@@ -57,6 +72,7 @@ public class PlayerSideScrollStateController : PlayerSubject
         playerCrouchColliderSize = new Vector2(playerStandColliderSize.x, 1f);
         playerCrouchColliderOffset = new Vector2(playerStandColliderOffset.x, -0.33f);
 
+        gravityVelocity = -Physics2D.gravity;
         currentASPD = currentPlayerStats.currentNormalASPD.aspd;
         aspd = currentASPD;
         playerMaxHP = currentPlayerStats.currentPlayerHP.hpPoint;
@@ -69,15 +85,29 @@ public class PlayerSideScrollStateController : PlayerSubject
     private void Update()
     {
         currentState.Update();
+        if (Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.W) && currentJumpButtonHoldingTime < 1)
+        {
+            isJump = true;
+            if(currentJumpButtonHoldingTime < 1)
+            {
+                currentJumpButtonHoldingTime += Time.deltaTime;
+            }
+        }
+        else if (Input.GetKeyUp(KeyCode.Space) || Input.GetKeyUp(KeyCode.W) || currentJumpButtonHoldingTime >= 1)
+        {
+            currentJumpButtonHoldingTime = 0;
+            isJump = false;
+        }
+
         // Invulnability timer
         if (isDamaged == true)
         {
             spriteFlashingTimer -= Time.deltaTime;
             currentImmunityTime -= Time.deltaTime;
             // Sprite flashing invulnaibilty 
-            if(spriteFlashingTimer <= 0)
+            if (spriteFlashingTimer <= 0)
             {
-                if(spriteActive == true)
+                if (spriteActive == true)
                 {
                     playerSpriteRenderer.enabled = true;
                     spriteFlashingTimer = spriteFlashingTime;
@@ -90,12 +120,25 @@ public class PlayerSideScrollStateController : PlayerSubject
                     spriteActive = true;
                 }
             }
-            if(currentImmunityTime <= 0)
+            if (currentImmunityTime <= 0)
             {
                 currentImmunityTime = damageImmunityTime;
                 playerSpriteRenderer.enabled = true;
                 isDamaged = false;
             }
+        }
+        if (isPlayerOnGround == false)
+        {
+            currentAirborneTime += Time.deltaTime;
+            if (currentAirborneTime >= 0.5f)
+            {
+                isPlayerHighFall = true;
+            }
+        }
+        else
+        {
+            isPlayerHighFall = false;
+            currentAirborneTime = 0;
         }
     }
     private void FixedUpdate()
@@ -141,12 +184,20 @@ public class PlayerSideScrollStateController : PlayerSubject
     {
         currentState.OnColliderEnter(collision);
     }
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        currentState.OnColliderStay(collision);
+    }
     private void OnCollisionExit2D(Collision2D collision)
     {
         currentState.OnColliderExit(collision);
     }
     public void PlayerSideScrollStateTransition(PlayerSideScrollStateMachine newState)
     {
+        if(currentState != null)
+        {
+            currentState.Exit();
+        }   
         currentState = newState;
         currentState.Start();
     }

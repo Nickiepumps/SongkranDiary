@@ -9,6 +9,7 @@ public class EnemyBullet : MonoBehaviour
     [SerializeField] private Collider2D damageCollider;
     [SerializeField] private Collider2D healCollider;
     public bool isHealBullet = false;
+    public bool isIncomingBullet = false;
     private Rigidbody2D enemyBulletRB;
 
     [Header("Bullet Sprites")]
@@ -37,6 +38,7 @@ public class EnemyBullet : MonoBehaviour
     private void OnDisable()
     {
         isHealBullet = false;
+        isIncomingBullet = false;
         damageCollider.enabled = true;
         healCollider.enabled = false;
         bulletAnimator.SetBool("isHit", false);   
@@ -51,16 +53,24 @@ public class EnemyBullet : MonoBehaviour
         Vector2 bulletPosition = transform.position;
         bulletPosition += bulletDirection * travelSpeed * Time.deltaTime;
         transform.position = bulletPosition;
+        Vector2 camToViewportPoint = Camera.main.WorldToViewportPoint(bulletPosition);
+        if(isIncomingBullet == false)
+        {
+            if (camToViewportPoint.x <= 0 || camToViewportPoint.x >= 1.1f || camToViewportPoint.y <= 0 || camToViewportPoint.y >= 1.1f)
+            {
+                gameObject.SetActive(false);
+            }
+        }
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if(collision.tag == "B_Boundary" && isIncomingBullet == true)
+        {
+            gameObject.SetActive(false);
+        }
         if(collision.tag == "Player" || collision.tag == "PlayerBullet")
         {
             StartCoroutine(DeactivateBullet()); // Play bullet splash anim
-        }
-        else if(collision.tag == "B_Boundary")
-        {
-            gameObject.SetActive(false);
         }
     }
     // Play splash animation and deactivate bullet
