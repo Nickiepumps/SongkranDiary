@@ -1,0 +1,153 @@
+using System.IO;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class SideScroll_StageClearDataHandler : MonoBehaviour, IGameObserver, IBossObserver
+{
+    public static SideScroll_StageClearDataHandler instance;
+
+    /// <summary>
+    /// For Run n Gun mode, use goal subject
+    /// For Boss mode, use boss subject
+    /// For Isometric mode, use game controller subject
+    /// </summary>
+    [SerializeField] private GameSubject gameControllerSubject;
+    [SerializeField] private BossSubject bossSubject;
+
+    public string mapName;
+    public bool Side_L1_Run;
+    public bool Side_L1_Boss;
+    public bool ISO_L1;
+    public bool Side_L2_Run;
+    public bool Side_L2_Boss;
+    public bool ISO_L2;
+    public bool Side_L3_Run;
+    public bool Side_L3_Boss;
+    public bool ISO_L3;
+
+    public GameType gameType;
+    private void Awake()
+    {
+        if(instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+    private void OnEnable()
+    {
+        switch (gameType)
+        {
+            case (GameType.Isometric):
+                //gameControllerSubject.AddGameObserver(this);
+                break;
+            case (GameType.RunNGun):
+                gameControllerSubject.AddSideScrollGameObserver(this);
+                break;
+            case (GameType.Boss):
+                bossSubject.AddBossObserver(this);
+                break;
+        }   
+    }
+    private void OnDisable()
+    {
+        switch (gameType)
+        {
+            case (GameType.Isometric):
+                //gameControllerSubject.RemoveGameObserver(this);
+                break;
+            case (GameType.RunNGun):
+                gameControllerSubject.RemoveSideScrollGameObserver(this);
+                break;
+            case (GameType.Boss):
+                bossSubject.RemoveBossObserver(this);
+                break;
+        }
+    }
+    private void Start()
+    {
+        StageClearData stageClearData = LoadSideScrollStageClear();
+        if(stageClearData != null)
+        {
+            mapName = stageClearData.mapName;
+            Side_L1_Run = stageClearData.Side_L1_Run;
+            Side_L1_Boss = stageClearData.Side_L1_Boss;
+            ISO_L1 = stageClearData.ISO_L1;
+            Side_L2_Run = stageClearData.Side_L2_Run;
+            Side_L2_Boss = stageClearData.Side_L2_Boss;
+            ISO_L2 = stageClearData.ISO_L2;
+            Side_L3_Run = stageClearData.Side_L3_Run;
+            Side_L3_Boss = stageClearData.Side_L3_Boss;
+            ISO_L3 = stageClearData.ISO_L3;
+        }
+        if(gameType != GameType.Isometric)
+        {
+            mapName = SceneManager.GetActiveScene().name;
+        }
+    }
+    public void OnGameNotify(IsometricGameState isoGameState)
+    {
+
+    }
+    public void OnSideScrollGameNotify(SideScrollGameState sidescrollGameState)
+    {
+        if(sidescrollGameState == SideScrollGameState.WinRunNGun)
+        {
+            switch (mapName)
+            {
+                case "Run_1":
+                    Side_L1_Run = true;
+                    SaveSideScrollStageClear();
+                    break;
+            }
+        }
+        
+    }
+    public void OnBossNotify(BossAction action)
+    {
+        if(action == BossAction.Die)
+        switch (mapName)
+        {
+            case "Boss_1":
+                Side_L1_Boss = true;
+                SaveSideScrollStageClear();
+                break;
+        }
+    }
+    public void SaveSideScrollStageClear()
+    {
+        if (Directory.Exists(Application.dataPath) == false)
+        {
+            Directory.CreateDirectory(Application.dataPath);
+        }
+
+        StageClearData stageClearData = new StageClearData();
+        stageClearData.mapName = mapName;
+        stageClearData.Side_L1_Run = Side_L1_Run;
+        stageClearData.Side_L1_Boss = Side_L1_Boss;
+        stageClearData.ISO_L1 = ISO_L1;
+        stageClearData.Side_L2_Run = Side_L2_Run;
+        stageClearData.Side_L2_Boss = Side_L2_Boss;
+        stageClearData.ISO_L2 = ISO_L2;
+        stageClearData.Side_L3_Run = Side_L3_Run;
+        stageClearData.Side_L3_Boss = Side_L3_Boss;
+        stageClearData.ISO_L3 = ISO_L3;
+        string stageClearJson = JsonUtility.ToJson(stageClearData);
+        File.WriteAllText(Application.dataPath + "/stageClear.json", stageClearJson);
+    }
+    public StageClearData LoadSideScrollStageClear()
+    {
+        if (File.Exists(Application.dataPath + "/stageClear.json") == false)
+        {
+            return null;
+        }
+        string loadedStageClearJson = File.ReadAllText(Application.dataPath + "/stageClear.json");
+        StageClearData loadedStageClear = JsonUtility.FromJson<StageClearData>(loadedStageClearJson);
+        return loadedStageClear;
+    }
+}

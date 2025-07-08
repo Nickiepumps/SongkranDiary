@@ -25,7 +25,6 @@ public class Obstacle_BoostPad : MonoBehaviour
             if (playerRB != null)
             {
                 playerRB.AddForce(Vector2.up * boostAmount, ForceMode2D.Impulse);
-                playerRB.GetComponent<PlayerSideScrollStateController>().isPlayerOnGround = false;
             }
             StartCoroutine(PlayLaunchAnim());
         }

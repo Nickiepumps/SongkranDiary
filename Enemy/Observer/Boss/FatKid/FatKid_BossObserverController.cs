@@ -58,7 +58,7 @@ public class FatKid_BossObserverController : MonoBehaviour, IBossObserver, IGame
                 return;
             case (BossAction.Jump):
                 Debug.Log("Boss Jumped");
-                bossSubject.GetComponent<FatKid_BossStateController>().bossRB.AddForce(Vector2.up * 25, ForceMode2D.Impulse);
+                bossSubject.GetComponent<FatKid_BossStateController>().bossRB.AddForce(Vector2.up * 28, ForceMode2D.Impulse);
                 return;
             case (BossAction.Ult):
                 Debug.Log("Boss Ult Observer");
@@ -97,6 +97,9 @@ public class FatKid_BossObserverController : MonoBehaviour, IBossObserver, IGame
     }
     private IEnumerator ShootPattern(int patternValue)
     {
+        fatKidStateController.bossAnimator.SetBool("isShoot", true);
+        fatKidStateController.bossAnimator.SetBool("isIdle", false);
+        fatKidStateController.bossAnimator.SetBool("isAim", false);
         if (patternValue == 1)
         {
             Debug.Log("Boss Shoot Pattern 1");
@@ -108,7 +111,10 @@ public class FatKid_BossObserverController : MonoBehaviour, IBossObserver, IGame
             Debug.Log("Boss Shoot Pattern 2");
             BossShoot(bulletMiddleSpawn, Vector2.left);
         }
-        yield return null;
+        yield return new WaitForSeconds(0.5f);
+        fatKidStateController.bossAnimator.SetBool("isShoot", false);
+        fatKidStateController.bossAnimator.SetBool("isIdle", false);
+        fatKidStateController.bossAnimator.SetBool("isAim", true);
         bossSubject.GetComponent<FatKid_BossStateController>().bossShooting = false;
     }
     private void BossShoot(Transform spawnPos, Vector2 bulletDirection)

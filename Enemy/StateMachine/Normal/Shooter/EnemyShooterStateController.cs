@@ -24,14 +24,24 @@ public class EnemyShooterStateController : NormalEnemySubject
     public float distanceFromPlayer;
 
     [Header("Animator")]
-    //public Animator shooterEnemyAnimator;
+    public Animator shooterEnemyAnimator;
 
+    [Header("Audio Reference")]
+    public AudioClip[] enemyAudioClipArr;
+    public AudioSource enemyAudioSource;
+
+    [Header("Collider")]
+    public BoxCollider2D enemyHitBox;
+    
     // Hide from inspector
     public bool isDead = false;
     public bool isOnGround = true;
     private Camera cam;
     private void OnEnable()
     {
+        isDead = false;
+        enemyHitBox.enabled = true;
+        enemySpriteRenderer.enabled = true;
         enemySpriteRenderer.sprite = enemyStats.normalSprite;
         normalEnemyType = enemyStats.NormalEnemyType;
         currentEnemyHP = enemyStats.hp;
@@ -64,6 +74,11 @@ public class EnemyShooterStateController : NormalEnemySubject
         switch (collision.tag)
         {
             case ("PlayerBullet"):
+                if(isDead == false)
+                {
+                    enemyAudioSource.clip = enemyAudioClipArr[0];
+                    enemyAudioSource.Play();
+                }
                 NotifyNormalEnemy(EnemyAction.Damaged);
                 break;
             case ("E_Boundary"):

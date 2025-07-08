@@ -19,12 +19,17 @@ public class SettingHandler : MonoBehaviour
     }
     public void SaveSetting(float masterValue, float bgmValue, float sfxValue)
     {
+        if (Directory.Exists(Application.dataPath) == false)
+        {
+            Directory.CreateDirectory(Application.dataPath);
+        }
+
         SettingData settingData = new SettingData();
         settingData.masterVolume = masterValue;
         settingData.bgmVolume = bgmValue;
         settingData.sfxVolume = sfxValue;
         string settingJson = JsonUtility.ToJson(settingData);
-        Debug.Log(settingJson);
+
         File.WriteAllText(Application.dataPath + "/setting.json", settingJson);
     }
     public SettingData LoadSetting()

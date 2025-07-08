@@ -15,8 +15,9 @@ public class SideScrollIntro : GameSubject
     [SerializeField] private float introTransitionTime;
     [Header("Knouck out Properties")]
     public GameObject knouckOutGroup;
-    [SerializeField] private RectMask2D knockOutwipeMask;
-    private float knockOutwipeMaskPaddingValue;
+    [SerializeField] private Animation knockoutAnim;
+    //[SerializeField] private RectMask2D knockOutwipeMask;
+    //private float knockOutwipeMaskPaddingValue;
     [SerializeField] private Image knockOutImage;
     [SerializeField] private float knockOutTransitionTime;
     [HideInInspector] public bool finishCoroutine = false;
@@ -25,14 +26,15 @@ public class SideScrollIntro : GameSubject
     private void Start()
     {
         wipeMaskPaddingValue = introWipeMask.GetComponent<RectTransform>().rect.width;
-        knockOutwipeMaskPaddingValue = knockOutImage.GetComponent<RectTransform>().rect.width;
+        //knockOutwipeMaskPaddingValue = knockOutImage.GetComponent<RectTransform>().rect.width;
         StartCoroutine(StartIntroWipeTransition());
     }
     private IEnumerator StartIntroWipeTransition()
     {
         finishCoroutine = false;
+        closingAnim.Play("IntroOpening");
         float currentWipeValue = wipeMaskPaddingValue;
-        while(currentWipeValue > 0)
+        /*while(currentWipeValue > 0)
         {
             introWipeMask.padding = new Vector4(currentWipeValue -= introTransitionTime, 0, 0, 0);
             yield return null;
@@ -42,25 +44,29 @@ public class SideScrollIntro : GameSubject
         {
             introWipeMask.padding = new Vector4(0, 0, currentWipeValue += introTransitionTime, 0);
             yield return null;
-        }
+        }*/
+        yield return new WaitUntil(() => closingAnim.isPlaying == false);
         introText.text = "ลุย!!";
-        yield return new WaitForSeconds(1f);
-        while (currentWipeValue > 0)
+        closingAnim.Play("GoOpening");
+        //yield return new WaitForSeconds(1f);
+        /*while (currentWipeValue > 0)
         {
             introWipeMask.padding = new Vector4(currentWipeValue -= introTransitionTime, 0, 0, 0);
             yield return null;
-        }
+        }*/
+        yield return new WaitForSeconds(0.5f);
         finishIntro = true;
         NotifySideScrollGameObserver(SideScrollGameState.StartRound);
-        closingAnim.Play();
-        yield return new WaitForSeconds(1f);
+        closingAnim.Play("Closing");
+        yield return new WaitUntil(() => closingAnim.isPlaying == false);
         finishCoroutine = true;
         introGroup.gameObject.SetActive(false);
     }
     public IEnumerator StartKnockOutWipeTransition()
     {
         finishCoroutine = false;
-        float currentWipeValue = knockOutwipeMaskPaddingValue;
+        knockoutAnim.Play();
+        /*float currentWipeValue = knockOutwipeMaskPaddingValue;
         while (currentWipeValue > 0)
         {
             knockOutwipeMask.padding = new Vector4(0, 0, currentWipeValue -= knockOutTransitionTime, 0);
@@ -72,7 +78,8 @@ public class SideScrollIntro : GameSubject
             knockOutwipeMask.padding = new Vector4(currentWipeValue += knockOutTransitionTime, 0, 0, 0);
             yield return null;
         }
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(1f);*/
+        yield return new WaitUntil(() => knockoutAnim.isPlaying == false);
         finishCoroutine = true;
         knouckOutGroup.gameObject.SetActive(false);
     }

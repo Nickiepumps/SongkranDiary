@@ -18,7 +18,7 @@ public class SceneController : MonoBehaviour
         Time.timeScale = 1; // Reset timescale to 1 in case the player paused the game
         if (levelType == LevelType.IsoLevel)
         {
-            SceneHandler.playerPosition = playerPos.position;
+            PlayerDataHandler.instance.SavePlayerData();
         }
         SceneHandler.destinationSceneName = targetSceneName;
         StartCoroutine(StartLoadingScreen());

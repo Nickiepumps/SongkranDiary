@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class ShooterEnemyObserverController : MonoBehaviour, INormalEnemyObserver
@@ -45,19 +46,21 @@ public class ShooterEnemyObserverController : MonoBehaviour, INormalEnemyObserve
                 }
                 return;
             case(EnemyAction.Shoot):
-                if(normalEnemySubject.GetComponent<EnemyShooterStateController>().enemySpriteRenderer.flipX == true)
+                if(enemySpriteRenderer.flipX == true)
                 {
-                    EnemyShoot(bulletRightSpawn,Vector2.right, false);
+                    EnemyShoot(bulletLeftSpawn, Vector2.left, true);
                 }
                 else
                 {
-                    EnemyShoot(bulletLeftSpawn, Vector2.left, true);
+                    EnemyShoot(bulletRightSpawn, Vector2.right, false);
                 }
                 return;
             case(EnemyAction.Jump):
                 return;
             case (EnemyAction.Dead):
                 enemySpriteRenderer.color = Color.white;
+                StopAllCoroutines();
+                StartCoroutine(EnemyDead());
                 return;
         }
     }
@@ -95,5 +98,12 @@ public class ShooterEnemyObserverController : MonoBehaviour, INormalEnemyObserve
         enemySpriteRenderer.color = enemyDamagedColor;
         yield return new WaitForSeconds(0.1f);
         enemySpriteRenderer.color = Color.white;
+    }
+    private IEnumerator EnemyDead()
+    {
+        enemySpriteRenderer.enabled = false;
+        normalEnemySubject.GetComponent<EnemyShooterStateController>().enemyHitBox.enabled = false;
+        yield return new WaitForSeconds(0.3f);
+        normalEnemySubject.gameObject.SetActive(false);
     }
 }

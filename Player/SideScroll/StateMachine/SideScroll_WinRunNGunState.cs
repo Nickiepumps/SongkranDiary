@@ -8,7 +8,10 @@ public class SideScroll_WinRunNGunState : PlayerSideScrollStateMachine
     public override void Start()
     {
         // Play Win Animation
-        Debug.Log("Win State");
+        playerSideScroll.playerAnimator.SetBool("Idle", true); // To Do: Change to win anim
+        playerSideScroll.playerAnimator.SetBool("Run", false);
+        playerSideScroll.playerAnimator.SetBool("Jump", false);
+        playerSideScroll.playerAnimator.SetBool("Crouch", false);
     }
     public override void Update()
     {

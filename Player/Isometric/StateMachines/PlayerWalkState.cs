@@ -89,7 +89,10 @@ public class PlayerWalkState : PlayerState
 
     public override void OnEnterTrigger(Collider2D pCollision)
     {
-        player.currentColHit = pCollision;
+        if(player.currentColHit == null)
+        {
+            player.currentColHit = pCollision;
+        }
     }
 
     public override void OnExitTrigger(Collider2D pCollision)

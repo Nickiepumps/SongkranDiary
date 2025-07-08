@@ -108,11 +108,11 @@ public class LevelLandMarkController : MonoBehaviour, IGameObserver, IPlayerObse
     {
         if (landmarkType == LandmarkType.RunNGun)
         {
-            sceneController.ChangeScene("Level1_Run");
+            sceneController.ChangeScene("Run_1");
         }
         else if(landmarkType == LandmarkType.Boss)
         {
-            sceneController.ChangeScene("Level1_Boss");
+            sceneController.ChangeScene("Boss_1");
         }
         
     }

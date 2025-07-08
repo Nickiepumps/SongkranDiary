@@ -13,6 +13,7 @@ public class Bullet : MonoBehaviour
     private BoxCollider2D bulletCollider;
     private EdgeCollider2D bulletEdgeCollider;
     private bool isHit = false;
+    private Camera cam;
 
     [Header("Bullet Animator")]
     public Animator bulletAnimator;
@@ -39,10 +40,11 @@ public class Bullet : MonoBehaviour
         }
         bulletSprite.sprite = bulletPooler.currentBulletSprite; // Set the bullet sprite to match the current bullet type 
         bulletType = bulletPooler.currentBulletType; // Set the bullet behavior to match the current bullet type
-        bulletAnimator.runtimeAnimatorController = bulletPooler.currentAnimator; // Set the bullet animator to match the current bullet type
+        //bulletAnimator.runtimeAnimatorController = bulletPooler.currentAnimator; // Set the bullet animator to match the current bullet type
     }
     private void Start()
     {
+        cam = Camera.main;
         bulletCollider = GetComponent<BoxCollider2D>();
     }
     private void Update()
@@ -54,6 +56,16 @@ public class Bullet : MonoBehaviour
         else if(bulletType == BulletType.spreadBullet)
         {
             SpreadBullet();
+        }
+
+        // To Do: Deactivate Bullet when it go pass the camera
+        Vector2 bulletPos = cam.WorldToViewportPoint(transform.position);
+        if(bulletPos.x < -0.1f || bulletPos.x > 1.1f || bulletPos.y < -0.1f || bulletPos.y > 1.1f)
+        {
+            if (bulletType != BulletType.laser)
+            {
+                gameObject.SetActive(false);
+            }
         }
     }
     private void NormalBullet()
@@ -78,6 +90,7 @@ public class Bullet : MonoBehaviour
     }
     private IEnumerator LaserBullet()
     {
+        bulletAnimator.SetBool("isLaser", true);
         bulletCollider.enabled = false; // Disable bullet collider
         bulletEdgeCollider.enabled = true;
         float laserDist = Vector2.Distance(transform.position, laserBoundary.position); // Check distance from laser boundary to bullet spawn
@@ -102,16 +115,13 @@ public class Bullet : MonoBehaviour
         yield return new WaitForSeconds(0.1f); // Appear only for 0.15 secs
         //laserHit = null; // Clear all the hit object
         bulletEdgeCollider.enabled = false;
+        bulletAnimator.SetBool("isLaser", false);
         gameObject.SetActive(false); // Disable bullet
         yield return null;
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "B_Boundary" && bulletType != BulletType.laser)
-        {
-            gameObject.SetActive(false);
-        }
-        else if(collision.gameObject.tag == "EnemyHitBox" && bulletType != BulletType.laser)
+        if(collision.gameObject.tag == "EnemyHitBox" && bulletType != BulletType.laser)
         {
             isHit = true;
             StartCoroutine(DeactivateBullet());

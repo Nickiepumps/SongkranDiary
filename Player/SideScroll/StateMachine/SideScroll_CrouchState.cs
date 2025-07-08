@@ -22,7 +22,7 @@ public class SideScroll_CrouchState : PlayerSideScrollStateMachine
         {
             playerSideScroll.PlayerSideScrollStateTransition(new SideScroll_RunState(playerSideScroll));
         }
-        else if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W))
+        else if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.I))
         {
             playerSideScroll.PlayerSideScrollStateTransition(new SideScroll_JumpState(playerSideScroll));
         }

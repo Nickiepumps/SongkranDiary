@@ -30,11 +30,11 @@ public class EnemyShooterJumpState : EnemyStateMachine
         {
             if (shooterEnemy.enemySpriteRenderer.flipX == false)
             {
-                shooterEnemy.transform.position += new Vector3(-6, 0, 0) * Time.deltaTime;
+                shooterEnemy.transform.position += new Vector3(6, 0, 0) * Time.deltaTime;
             }
             else
             {
-                shooterEnemy.transform.position += new Vector3(6, 0, 0) * Time.deltaTime;
+                shooterEnemy.transform.position += new Vector3(-6, 0, 0) * Time.deltaTime;
             }
         }
     }

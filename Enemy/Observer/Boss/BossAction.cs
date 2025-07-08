@@ -4,6 +4,7 @@ public enum BossAction
     Jump,
     Shoot,
     Ult,
+    Ult2,
     Damaged,
     Die
 }

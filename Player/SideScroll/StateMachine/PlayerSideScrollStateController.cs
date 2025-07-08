@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 
 public class PlayerSideScrollStateController : PlayerSubject
@@ -31,6 +30,7 @@ public class PlayerSideScrollStateController : PlayerSubject
 
     [Header("Side-Scroll Player Properties")]
     public float walkSpeed = 5; // Player's walk speed
+    public float dashSpeed = 10f; // Player's dash speed
     public float jumpForce = 5f; // Player's jump force. Uses at the start of the jump
     public float jumpMultiplier = 1.5f; // Player jumping multiplier. Uses after the jump if the player is holding jump button
     public float fallMultiplier = 1.5f; // Player falling multiplier.
@@ -39,10 +39,13 @@ public class PlayerSideScrollStateController : PlayerSubject
     public Vector2 playerStandColliderOffset; // Player's collider X and Y position offset values when standing
     public Vector2 playerCrouchColliderSize; // Player's collider width and height values when crouching
     public Vector2 playerCrouchColliderOffset; // Player's collider X and Y position offset values when crouching
+    public Vector2 playerJumpColliderSize; // Player's collider X and Y position offset values when jumping
+    public Vector2 playerJumpColliderOffset; // Player's collider X and Y position offset values when jumping
     public bool isPlayerOnGround = true; // Standing on the ground status
     public bool isPlayerHighFall = false;
     public bool isCrouch; // Crouching status
     public bool isJump; // Jumping status
+    public bool isDash; // Dashing status
     public bool isShoot; // Shooting status
     public bool isDamaged = false; // Damaging status
     public bool isDead = false; // Dead status
@@ -50,9 +53,11 @@ public class PlayerSideScrollStateController : PlayerSubject
     public bool isWinRunNGun = false; // win runNgun stage status
 
     // Hide in inspector
+    public float currentWalkSpeed;
     public Vector2 currentVelocity;
     public Vector2 gravityVelocity;
-    public Collision2D currentCollidername;
+    public Collider2D currentCollider;
+    public string currentColliderName;
     public float currentJumpButtonHoldingTime;
     private float currentImmunityTime;
     private float currentAirborneTime;
@@ -72,6 +77,7 @@ public class PlayerSideScrollStateController : PlayerSubject
         playerCrouchColliderSize = new Vector2(playerStandColliderSize.x, 1f);
         playerCrouchColliderOffset = new Vector2(playerStandColliderOffset.x, -0.33f);
 
+        currentWalkSpeed = walkSpeed;
         gravityVelocity = -Physics2D.gravity;
         currentASPD = currentPlayerStats.currentNormalASPD.aspd;
         aspd = currentASPD;
@@ -85,15 +91,16 @@ public class PlayerSideScrollStateController : PlayerSubject
     private void Update()
     {
         currentState.Update();
-        if (Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.W) && currentJumpButtonHoldingTime < 1)
+
+        if (Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.I) && currentJumpButtonHoldingTime < 1)
         {
             isJump = true;
             if(currentJumpButtonHoldingTime < 1)
             {
-                currentJumpButtonHoldingTime += Time.deltaTime;
+                currentJumpButtonHoldingTime += Time.fixedDeltaTime;
             }
         }
-        else if (Input.GetKeyUp(KeyCode.Space) || Input.GetKeyUp(KeyCode.W) || currentJumpButtonHoldingTime >= 1)
+        else if (Input.GetKeyUp(KeyCode.Space) || Input.GetKeyUp(KeyCode.I) || currentJumpButtonHoldingTime >= 1)
         {
             currentJumpButtonHoldingTime = 0;
             isJump = false;

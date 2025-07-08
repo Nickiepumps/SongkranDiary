@@ -1,7 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEditor.Animations;
 using UnityEngine;
 
 public class BulletPooler : MonoBehaviour
@@ -18,13 +16,8 @@ public class BulletPooler : MonoBehaviour
     //public List<Sprite> bulletTypeSpritesList;
     public List<GameObject> pooledUltLists = new List<GameObject>(); // List for storing spawned ultimate gameObjects
 
-    [Header("Bullet Animator Controller")]
-    [SerializeField] private AnimatorController normalBulletAnimatorController;
-    [SerializeField] private AnimatorController spreadBulletAnimatorController;
-    [SerializeField] private AnimatorController laserBulletAnimatorController;
-
     [HideInInspector]
-    public AnimatorController currentAnimator;
+    //public AnimatorController currentAnimator;
     public Sprite currentBulletSprite;
     public BulletType currentBulletType;
     public Vector2 currentLocalTransform;
@@ -38,7 +31,7 @@ public class BulletPooler : MonoBehaviour
     {
         currentBulletSprite = bulletSpriteArray[0];
         currentBulletType = BulletType.normalBullet;
-        currentAnimator = normalBulletAnimatorController;
+        //currentAnimator = normalBulletAnimatorController;
         currentLocalTransform = bulletPrefab.transform.localScale;
         for (int i = 0; i < bulletAmount; i++)
         {
@@ -79,18 +72,6 @@ public class BulletPooler : MonoBehaviour
     {
         currentBulletType = newBulletType;
         bulletSpriteDict.TryGetValue(currentBulletType, out currentBulletSprite);
-        switch (newBulletType)
-        {
-            case BulletType.normalBullet:
-                currentAnimator = normalBulletAnimatorController;
-                break;
-            case BulletType.spreadBullet:
-                currentAnimator = spreadBulletAnimatorController;
-                break;
-            case BulletType.laser:
-                currentAnimator = laserBulletAnimatorController;
-                break;
-        }
         for (int i = 0; i < pooledbullets.Count; i++)
         {
             if(pooledbullets[i].gameObject.activeSelf == false)
@@ -99,18 +80,6 @@ public class BulletPooler : MonoBehaviour
                 pooledbullets[i].GetComponent<Bullet>().bulletSprite.sprite = currentBulletSprite;
                 pooledbullets[i].GetComponent<Bullet>().bulletSprite.drawMode = SpriteDrawMode.Simple;
                 pooledbullets[i].GetComponent<Bullet>().transform.GetChild(0).transform.localScale = Vector2.one;
-            }
-            if (pooledbullets[i].GetComponent<Bullet>().bulletType == BulletType.normalBullet)
-            {
-                pooledbullets[i].GetComponent<Bullet>().bulletAnimator.runtimeAnimatorController = normalBulletAnimatorController;
-            }
-            else if(pooledbullets[i].GetComponent<Bullet>().bulletType == BulletType.spreadBullet)
-            {
-                pooledbullets[i].GetComponent<Bullet>().bulletAnimator.runtimeAnimatorController = spreadBulletAnimatorController;
-            }
-            else if(pooledbullets[i].GetComponent<Bullet>().bulletType == BulletType.laser)
-            {
-                pooledbullets[i].GetComponent<Bullet>().bulletAnimator.runtimeAnimatorController = laserBulletAnimatorController;
             }
         }
     }

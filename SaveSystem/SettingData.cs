@@ -1,3 +1,4 @@
+[System.Serializable]
 public class SettingData
 {
     public float masterVolume;

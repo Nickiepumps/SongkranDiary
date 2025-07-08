@@ -39,6 +39,7 @@ public class GameUIController : MonoBehaviour, IGameObserver, IPlayerObserver
     [SerializeField] private TMP_Text timerText;
     [SerializeField] private TMP_Text hpText;
     [SerializeField] private TMP_Text gradeText;
+    [SerializeField] private TMP_Text coinAmountText;
     [Space]
     [Header("Pause Window")]
     [SerializeField] private GameObject pauseWindow; // Pause window
@@ -219,6 +220,10 @@ public class GameUIController : MonoBehaviour, IGameObserver, IPlayerObserver
     {
         // Wait for player to finish win animation
         //yield return new WaitForSeconds(1f); Uncomment this when we have player win anim
+        sideScrollIntroWindow.knouckOutGroup.SetActive(true); // Temp 
+        StartCoroutine(sideScrollIntroWindow.StartKnockOutWipeTransition()); // Temp 
+        yield return new WaitUntil(() => sideScrollIntroWindow.finishCoroutine == true); // Change this when we have player win anim
+        transitionWindow.SetActive(true);
         transitionWindow.GetComponentInChildren<Animator>().SetInteger("Transition", 0);
         yield return new WaitForSeconds(1f);
         transitionWindow.GetComponentInChildren<Animator>().SetInteger("Transition", 1);
@@ -230,6 +235,7 @@ public class GameUIController : MonoBehaviour, IGameObserver, IPlayerObserver
         loseScoreBoard.SetActive(false);
         timerText.text = sidescrollGameController.currentTime;
         hpText.text = sidescrollGameController.UpdatePlayerHPCount().ToString();
+        coinAmountText.text = sidescrollGameController.coinCounter.ToString();
         gradeText.text = sidescrollGameController.Result();
         yield return null;
     }
@@ -238,6 +244,11 @@ public class GameUIController : MonoBehaviour, IGameObserver, IPlayerObserver
         sideScrollIntroWindow.knouckOutGroup.SetActive(true);
         StartCoroutine(sideScrollIntroWindow.StartKnockOutWipeTransition());
         yield return new WaitUntil(() => sideScrollIntroWindow.finishCoroutine == true);
+        // Start transition window
+        transitionWindow.SetActive(true);
+        transitionWindow.GetComponentInChildren<Animator>().SetInteger("Transition", 0);
+        yield return new WaitForSeconds(1f);
+        transitionWindow.GetComponentInChildren<Animator>().SetInteger("Transition", 1);
         // Show win scoreboard
         scoreBoard.SetActive(true);
         winScoreBoard.SetActive(true);

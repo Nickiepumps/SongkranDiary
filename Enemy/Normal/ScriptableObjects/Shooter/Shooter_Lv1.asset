@@ -15,8 +15,8 @@ MonoBehaviour:
   NormalEnemyType: 0
   hp: 4
   damage: 1
-  aspd: 1
-  movementSpeed: 3
+  aspd: 2.5
+  movementSpeed: 2
   normalSprite: {fileID: 21300000, guid: 98298cd40161bf64c8a882e5e93fb656, type: 3}
   damagedSprite: {fileID: 21300000, guid: 98298cd40161bf64c8a882e5e93fb656, type: 3}
   deadSprite: {fileID: 21300000, guid: 98298cd40161bf64c8a882e5e93fb656, type: 3}

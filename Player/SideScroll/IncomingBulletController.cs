@@ -10,8 +10,8 @@ public class IncomingBulletController : MonoBehaviour
     [SerializeField] private BulletWarningDisplay bulletwarningDisplay;
     [Header("Camera parent and prefabs")]
     [SerializeField] private Transform camParent;
-    [SerializeField] private GameObject bulletPrefab;
-    [SerializeField] private GameObject bulletSpawnPrefab;
+    //[SerializeField] private GameObject bulletPrefab;
+    //[SerializeField] private GameObject bulletSpawnPrefab;
     [Header("Properties")]
     [SerializeField] private float fireCooldown = 10f;
     [SerializeField] private Transform[] incomingBulletSpawnerArr;
@@ -20,6 +20,13 @@ public class IncomingBulletController : MonoBehaviour
     private float currentCooldown;
     private int pattern;
     private bool startWarning = false;
+    private void OnEnable()
+    {   
+    }
+    private void OnDisable()
+    {
+        startRainingBullet = false;
+    }
     private void Start()
     {
         currentCooldown = fireCooldown;
@@ -54,7 +61,6 @@ public class IncomingBulletController : MonoBehaviour
         for(int i = 0; i < incomingBulletPatternList.PatternList[pattern].incomingBullet.Count; i++)
         {
             GameObject bullet = enemyBulletPooler.EnableIncomingBullet();
-            bullet.GetComponent<EnemyBullet>().isIncomingBullet = true;
             bullet.GetComponent<EnemyBullet>().bulletDirection = incomingBulletPatternList.PatternList[pattern].incomingBullet[i].transform.localRotation * Vector2.up;
             bullet.transform.position = incomingBulletPatternList.PatternList[pattern].incomingBullet[i].transform.position;
             bullet.transform.localRotation = incomingBulletPatternList.PatternList[pattern].incomingBullet[i].transform.localRotation;

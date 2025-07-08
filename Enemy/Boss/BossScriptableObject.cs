@@ -13,6 +13,7 @@ public class BossScriptableObject : ScriptableObject
     public float ultCooldown;
     public float idleTime;
     public float initialIdleTime;
+    public float aspd;
     public float bossNormalMovementSpeed;
     public float bossUltMovementSpeed;
 

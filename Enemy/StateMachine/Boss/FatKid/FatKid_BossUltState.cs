@@ -11,10 +11,12 @@ public class FatKid_BossUltState : BossStateMachine
     private Transform rightPos;
     private Vector2 moveDir;
     float moveSpeed;
+    bool isRight = true;
     public override void Start()
     {
-        Debug.Log("Boss Ult State");
         // Change animation from idle to ult
+        fatKidBoss.bossAnimator.enabled = false;
+
         fatKidBoss.bossSpriteRenderer.sprite = fatKidBoss.bossScriptableObject.ultimateSprite;
         fatKidBoss.normalCollider.enabled = false;
         fatKidBoss.ultCollider.enabled = true;
@@ -31,7 +33,7 @@ public class FatKid_BossUltState : BossStateMachine
         currentTime -= Time.deltaTime;
         if (currentTime <= 0)
         {
-            if (moveDir.x == rightPos.position.x)
+            if (moveDir.x <= rightPos.position.x + 1.57f && isRight == true)
             {
                 fatKidBoss.destination = fatKidBoss.originalPos;
                 moveSpeed = 15;
@@ -40,26 +42,20 @@ public class FatKid_BossUltState : BossStateMachine
                 {
                     fatKidBoss.NotifyBoss(BossAction.Jump);
                     fatKidBoss.isJump = false;
+                    isRight = false;
                 }
             }
-            if(moveDir.x == fatKidBoss.destination.position.x)
+            if(moveDir.x >= fatKidBoss.destination.position.x - 1.57f && isRight == false)
             {
                 fatKidBoss.destination = rightPos;
                 fatKidBoss.BossStateTransition(new FatKid_BossIdleState(fatKidBoss));
             }
-            moveDir = Vector2.MoveTowards(fatKidBoss.transform.position, fatKidBoss.destination.position, moveSpeed * Time.fixedDeltaTime);
+            moveDir = Vector2.MoveTowards(fatKidBoss.transform.position, fatKidBoss.destination.position, moveSpeed * Time.deltaTime);
+            fatKidBoss.transform.position = moveDir;
         }
     }
     public override void FixedUpdate()
     {
-        // Move from left to right
-        if(currentTime <= 0 && fatKidBoss.bossScriptableObject.bossName == BossList.FatKid)
-        {
-            //boss.transform.position = new Vector2(moveDir.x, pos.y);
-            fatKidBoss.transform.position = moveDir;
-        }
-
-        // Transition back to Idle State
     }
     public override void OnTriggerEnter(Collider2D eCollider)
     {
@@ -78,10 +74,6 @@ public class FatKid_BossUltState : BossStateMachine
 
     }
     public override void Exit()
-    {
-
-    }
-    private void NextDestination(Transform nextDestination)
     {
 
     }

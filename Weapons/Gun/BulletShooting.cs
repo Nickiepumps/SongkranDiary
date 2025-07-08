@@ -54,10 +54,14 @@ public class BulletShooting : ShootingSubject, IPlayerObserver
 
     [SerializeField] private GameObject muzzleFlash;
     
+    [HideInInspector] public int currentBulletArrayIndex = 0; // Current index in bullet array start from 0-2 
     [HideInInspector] public float switchCoolDown = 2f;
     [HideInInspector] public float currentBulletSwitchCoolDownTimer;
     [HideInInspector] public bool coolDownStatus = false;
+    private float angle;
+    public bool isAim = false;
     public bool isCrouch = false;
+    public bool isRun = false;
     public bool isShoot = false;
     private PlayerSideScrollStateController sidescrollPlayer;
     private void Awake()
@@ -74,7 +78,7 @@ public class BulletShooting : ShootingSubject, IPlayerObserver
     }
     private void Start()
     {
-        InvokeRepeating("CheckAimAngle", 0, 0.15f); // Aiming angle check
+        //InvokeRepeating("CheckAimAngle", 0, 0.15f); // Aiming angle check
 
         currentASPD = weaponData.currentNormalASPD.aspd;
         currentTravelSpeed = weaponData.currentWeaponTravelSpeed.aspd;
@@ -89,6 +93,7 @@ public class BulletShooting : ShootingSubject, IPlayerObserver
         // Shooting
         if(sidescrollPlayer.isGameStart == true)
         {
+            CheckAimAngle();
             ShootingControl();
             UpdateBulletDisplay();
         }
@@ -99,22 +104,69 @@ public class BulletShooting : ShootingSubject, IPlayerObserver
         switch (playerAction)
         {
             case (PlayerAction.Side_Idle):
+                isRun = false;
                 isCrouch = false;
                 break;
             case (PlayerAction.Run):
+                isRun = true;
                 isCrouch = false;
                 break;
             case(PlayerAction.Crouch):
+                isRun = false;
                 isCrouch = true;
                 break;
             case (PlayerAction.Jump):
+                isRun = false;
                 isCrouch = false;
                 break;
         }
     }
     private void ShootingControl()
     {
-        if (Input.GetKeyDown(KeyCode.Q) && coolDownStatus == false && sprdBullet == false)
+        if (Input.GetKeyDown(KeyCode.E) && coolDownStatus == false)
+        {
+            currentBulletArrayIndex++;
+            if (currentBulletArrayIndex > 2)
+            {
+                currentBulletArrayIndex = 0;
+            }
+            StartCoroutine(SwitchCoolDown());
+            gunAudioPlayer.clip = bulletAudioClipArr[currentBulletArrayIndex];
+            switch (currentBulletArrayIndex)
+            {
+                case 0:
+                    currentASPD = weaponData.currentNormalASPD.aspd;
+                    currentTravelSpeed = weaponData.currentWeaponTravelSpeed.aspd;
+                    bulletPooler.SwitchBulletType(BulletType.normalBullet);
+                    SwitchBulletSpawnerType(BulletType.normalBullet);
+                    NotifyShootingObserver(ShootingAction.switchtonormal);
+                    normalBullet = true;
+                    sprdBullet = false;
+                    laserBullet = false;
+                    break;
+                case 1:
+                    currentASPD = weaponData.currentSprdBulletASPD.aspd;
+                    bulletPooler.SwitchBulletType(BulletType.spreadBullet);
+                    SwitchBulletSpawnerType(BulletType.spreadBullet);
+                    NotifyShootingObserver(ShootingAction.switchtospread);
+                    normalBullet = false;
+                    sprdBullet = true;
+                    laserBullet = false;
+                    break;
+                case 2:
+                    currentASPD = weaponData.currentLsrBulletASPD.aspd;
+                    bulletPooler.SwitchBulletType(BulletType.laser);
+                    SwitchBulletSpawnerType(BulletType.laser);
+                    NotifyShootingObserver(ShootingAction.switchtolaser);
+                    normalBullet = false;
+                    sprdBullet = false;
+                    laserBullet = true;
+                    break;
+            }
+            
+            aspd = currentASPD;
+        }
+        /*if (Input.GetKeyDown(KeyCode.Q) && coolDownStatus == false && sprdBullet == false)
         {
             StartCoroutine(SwitchCoolDown());
             gunAudioPlayer.clip = bulletAudioClipArr[1];
@@ -166,8 +218,16 @@ public class BulletShooting : ShootingSubject, IPlayerObserver
             normalBullet = true;
             sprdBullet = false;
             laserBullet = false;
+        }*/
+        if (Input.GetKey(KeyCode.L))
+        {
+            isAim = true;
         }
-        if (Input.GetMouseButton(0))
+        else
+        {
+            isAim = false;
+        }
+        if (Input.GetKey(KeyCode.J))
         {
             isShoot = true;
             muzzleFlash.SetActive(true);
@@ -262,9 +322,44 @@ public class BulletShooting : ShootingSubject, IPlayerObserver
     }
     private float AimAngle()
     {
+        // Mouse Aiming
         // Calculate angle of current mouse position base on player's origin
-        Vector2 pos = Input.mousePosition - Camera.main.WorldToScreenPoint(transform.position);
+        /*Vector2 pos = Input.mousePosition - Camera.main.WorldToScreenPoint(transform.position);
         float angle = MathF.Atan2(pos.y, pos.x) * Mathf.Rad2Deg;
+        return angle;*/
+
+        // Keyboard Aiming
+        if (Input.GetKey(KeyCode.D) && Input.GetKey(KeyCode.W))
+        {
+            angle = 45;
+        }
+        else if (Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.W))
+        {
+            angle = 135;
+        }
+        else if (Input.GetKey(KeyCode.W))
+        {
+            angle = 90;
+        }
+        else if (Input.GetKey(KeyCode.D))
+        {
+            angle = 0;
+        }
+        else if (Input.GetKey(KeyCode.A))
+        {
+            angle = 180;
+        }
+        else
+        {
+            if (playerSpriteDirection.flipX == false)
+            {
+                angle = 0;
+            }
+            else
+            {
+                angle = 180;
+            }
+        }
         return angle;
     }
     private void CheckAimAngle()
@@ -275,10 +370,10 @@ public class BulletShooting : ShootingSubject, IPlayerObserver
         }
         else if (AimAngle() > -150 && AimAngle() <= -120)
         {
-            if(isCrouch == false)
+            /*if(isCrouch == false)
             {
                 NotifyShootingObserver(ShootingAction.aim45downleft);
-            }
+            }*/
         }
         else if (AimAngle() > -120 && AimAngle() <= -60)
         {
@@ -286,10 +381,10 @@ public class BulletShooting : ShootingSubject, IPlayerObserver
         }
         else if (AimAngle() > -60 && AimAngle() <= -30)
         {
-            if(isCrouch == false)
+            /*if(isCrouch == false)
             {
                 NotifyShootingObserver(ShootingAction.aim45downright);
-            }
+            }*/
         }
         else if (AimAngle() > -30 && AimAngle() <= 30)
         {
@@ -301,7 +396,7 @@ public class BulletShooting : ShootingSubject, IPlayerObserver
         }
         else if (AimAngle() > 60 && AimAngle() <= 120)
         {
-            if(isCrouch == false)
+            if(isCrouch == false && isRun == false)
             {
                 NotifyShootingObserver(ShootingAction.aimtop);
             }

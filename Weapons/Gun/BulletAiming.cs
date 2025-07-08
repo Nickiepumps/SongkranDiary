@@ -5,6 +5,7 @@ using UnityEngine;
 public class BulletAiming : MonoBehaviour, IShootingObserver
 {
     [SerializeField] private ShootingSubject shootingSubject;
+    [SerializeField] private Animator playerAnimator;
     [SerializeField] private Transform aimingPivot;
     [SerializeField] private Transform normalBulletSpawn;
     [HideInInspector] public bool isAimUp;
@@ -56,30 +57,36 @@ public class BulletAiming : MonoBehaviour, IShootingObserver
     }
     private void AimStraightRight()
     {
+        playerAnimator.SetFloat("AimAngle", 0f);
         aimingPivot.localRotation = Quaternion.Euler(0,0,-90);
     }
     private void Aim45TopRight()
     {
+        playerAnimator.SetFloat("AimAngle", -45f);
         aimingPivot.localRotation = Quaternion.Euler(0, 0, -45);
     }
     private void Aim45BottomRight()
     {
-        aimingPivot.localRotation = Quaternion.Euler(0, 0, -135);
+        //playerAnimator.SetFloat("AimAngle", -135f);
+        //aimingPivot.localRotation = Quaternion.Euler(0, 0, -135);
     }
     private void AimStraightLeft()
     {
+        playerAnimator.SetFloat("AimAngle", 0f);
         aimingPivot.localRotation = Quaternion.Euler(0, 0, 90);
     }
     private void Aim45TopLeft()
     {
+        playerAnimator.SetFloat("AimAngle", -45f);
         aimingPivot.localRotation = Quaternion.Euler(0, 0, 45);
     }
     private void Aim45BottomLeft()
     {
-        aimingPivot.localRotation = Quaternion.Euler(0, 0, 135);
+        //aimingPivot.localRotation = Quaternion.Euler(0, 0, 135);
     }
     private void AimTop()
     {
+        playerAnimator.SetFloat("AimAngle", -90f);
         aimingPivot.localRotation = Quaternion.Euler(0, 0, 0);
     }
     private void AimBottom()

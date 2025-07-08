@@ -38,7 +38,6 @@ public class EnemyBullet : MonoBehaviour
     private void OnDisable()
     {
         isHealBullet = false;
-        isIncomingBullet = false;
         damageCollider.enabled = true;
         healCollider.enabled = false;
         bulletAnimator.SetBool("isHit", false);   

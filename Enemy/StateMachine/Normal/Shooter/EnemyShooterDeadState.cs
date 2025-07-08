@@ -8,8 +8,9 @@ public class EnemyShooterDeadState : EnemyStateMachine
     public override void Start()
     {
         shooterEnemy.isDead = true;
+        shooterEnemy.enemyAudioSource.clip = shooterEnemy.enemyAudioClipArr[1];
+        shooterEnemy.enemyAudioSource.Play();
         shooterEnemy.NotifyNormalEnemy(EnemyAction.Dead);
-        shooterEnemy.gameObject.SetActive(false);
     }
     public override void Update()
     {

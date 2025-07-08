@@ -13,11 +13,11 @@ public class EnemyShooterRunState : EnemyStateMachine
     }
     public override void Update()
     {
-        /*if (shooterEnemy.isOnGround == true)
+        if (shooterEnemy.isOnGround == true)
         {
             shooterEnemy.shooterEnemyAnimator.SetBool("isRun", true);
-            shooterEnemy.shooterEnemyAnimator.SetBool("isJump", false);
-        }*/ // Uncomment this when animation is ready
+            //shooterEnemy.shooterEnemyAnimator.SetBool("isJump", false);
+        } // Uncomment this when animation is ready
 
         if (shooterEnemy.currentEnemyHP <= 0)
         {
@@ -25,11 +25,11 @@ public class EnemyShooterRunState : EnemyStateMachine
         }
         if (shooterEnemy.enemySpriteRenderer.flipX == false)
         {
-            shooterEnemy.transform.position += new Vector3(-shooterEnemy.walkSpeed, 0, 0) * Time.deltaTime;
+            shooterEnemy.transform.position += new Vector3(shooterEnemy.walkSpeed, 0, 0) * Time.deltaTime;
         }
         else
         {
-            shooterEnemy.transform.position += new Vector3(shooterEnemy.walkSpeed, 0, 0) * Time.deltaTime;
+            shooterEnemy.transform.position += new Vector3(-shooterEnemy.walkSpeed, 0, 0) * Time.deltaTime;
         }
         currentASPD -= Time.deltaTime;
         if (currentASPD <= 0)

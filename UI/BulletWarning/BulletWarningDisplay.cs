@@ -1,26 +1,40 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class BulletWarningDisplay : MonoBehaviour
 {
     [SerializeField] private Image[] warningSignArr;
+    private void OnEnable()
+    {
+        foreach(Image image in warningSignArr)
+        {
+            image.enabled = true;
+        }
+    }
+    private void OnDisable()
+    {
+        foreach (Image image in warningSignArr)
+        {
+            image.enabled = false;
+        }
+    }
     public void ShowBulletWarningSign(Transform bulletSpawner, int spawnerIndex)
     {
         Vector2 spawnerViewportPosToScreenPos = Camera.main.WorldToScreenPoint(bulletSpawner.transform.position);
-        Debug.Log(spawnerViewportPosToScreenPos);
-        if(spawnerViewportPosToScreenPos.y >= 1080)
+
+        // Offset image to appear near the screen border
+        // Image will appear at correct position on any screen resolution
+        if (spawnerViewportPosToScreenPos.y >= 1080)
         {
-            spawnerViewportPosToScreenPos = new Vector2(spawnerViewportPosToScreenPos.x, 1000);
+            spawnerViewportPosToScreenPos = new Vector2(spawnerViewportPosToScreenPos.x, Screen.height - 46);
         }
-        else if(spawnerViewportPosToScreenPos.x < 0)
+        else if (spawnerViewportPosToScreenPos.x < 0)
         {
             spawnerViewportPosToScreenPos = new Vector2(80, spawnerViewportPosToScreenPos.y);
         }
-        else if(spawnerViewportPosToScreenPos.x > 0)
+        else if (spawnerViewportPosToScreenPos.x > 0)
         {
-            spawnerViewportPosToScreenPos = new Vector2(1840, spawnerViewportPosToScreenPos.y);
+            spawnerViewportPosToScreenPos = new Vector2(Screen.width - 46, spawnerViewportPosToScreenPos.y);
         }
         warningSignArr[spawnerIndex].transform.position = spawnerViewportPosToScreenPos;
         warningSignArr[spawnerIndex].gameObject.SetActive(true);

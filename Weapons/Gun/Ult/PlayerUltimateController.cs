@@ -37,13 +37,11 @@ public class PlayerUltimateController : MonoBehaviour
                 currentUltReady++;
                 currentTime = ultChargeTime;
                 ultReady = true;
-                Debug.Log("Ult Ready " + currentUltReady);
             }
             if (currentUltReady == 3)
             {
                 currentUltReady = Mathf.Clamp(currentUltReady, 0, 3);
                 ultAmountText.text = currentUltReady.ToString();
-                Debug.Log("Ult Max");
             }
         }
         if(currentUltReady <= 0)
@@ -51,10 +49,9 @@ public class PlayerUltimateController : MonoBehaviour
             ultReady = false;
         }
 
-        if (Input.GetMouseButtonDown(2) && ultReady == true)
+        if (Input.GetKeyDown(KeyCode.K) && ultReady == true)
         {
             currentUltReady--;
-            Debug.Log(currentUltReady + " Ult Left");
             ThrowProjectile();
         }
         UpdateUltDisplay();

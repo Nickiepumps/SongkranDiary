@@ -1,17 +1,31 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using UnityEngine;
 
 public class PlayerCameraController : MonoBehaviour, IPlayerObserver
 {
+    [Header("Player Observer Reference")]
     [SerializeField] private PlayerSubject player; // Player's observer subject
     private Camera playerCam; // Player's camera
+
+    [Header("Camera targets")]
     [SerializeField] private Transform playerTarget; // Player's transform 
+    [SerializeField] private Transform bossLevelTarget; // Player's transform 
+    [SerializeField] private Transform runLevelTarget; // Player's transform
+    private Transform currentFocusTarget;
+
+    [Header("Camera follow properties")]
     [SerializeField] private float maxCamDistX, maxCamDistY, minCamDistX, minCamDistY; // Min/Max camera distance to follow player and not out of bound
     [SerializeField] private float followSpeed = 3f; // Camera follow speed
     private float camZoomInSize = 1.5f;
     private float camZoomOutSize = 3f;
+    private float focusTime = 2f;
+    private float currentFocusTime;
     private bool zoomIn, zoomOut;
+    private bool isFocusNextLevel = false;
+    private bool startFocusLevel = false;
+    private StageClearData stageClearData;
     private void OnEnable()
     {
         playerCam = Camera.main;
@@ -21,29 +35,58 @@ public class PlayerCameraController : MonoBehaviour, IPlayerObserver
     {
         player.RemovePlayerObserver(this);
     }
+    private void Start()
+    {
+        stageClearData = SideScroll_StageClearDataHandler.instance.LoadSideScrollStageClear();
+        if(stageClearData != null)
+        {
+            CheckMapToFocus(stageClearData.mapName);
+        }
+        currentFocusTime = focusTime;
+    }
     private void FixedUpdate()
     {
-        if (zoomIn)
+        if(isFocusNextLevel == false)
         {
-            Transform npcTransform = player.GetComponent<PlayerStateController>().currentColHit.gameObject.transform;
-            playerCam.orthographicSize = Mathf.Lerp(playerCam.orthographicSize, camZoomInSize, 3f * Time.fixedDeltaTime);
-            playerCam.transform.position = Vector3.Lerp(playerCam.transform.position, new Vector3(npcTransform.position.x,
-                npcTransform.position.y, playerCam.transform.position.z), followSpeed * Time.deltaTime); // Camera focus on the NPC
+            if (zoomIn)
+            {
+                Transform npcTransform = player.GetComponent<PlayerStateController>().currentColHit.gameObject.transform;
+                playerCam.orthographicSize = Mathf.Lerp(playerCam.orthographicSize, camZoomInSize, 3f * Time.fixedDeltaTime);
+                playerCam.transform.position = Vector3.Lerp(playerCam.transform.position, new Vector3(npcTransform.position.x,
+                    npcTransform.position.y, playerCam.transform.position.z), followSpeed * Time.deltaTime); // Camera focus on the NPC
+            }
+            else if (zoomOut)
+            {
+                playerCam.orthographicSize = Mathf.Lerp(playerCam.orthographicSize, camZoomOutSize, 3f * Time.fixedDeltaTime);
+                playerCam.transform.position = Vector3.Lerp(playerCam.transform.position,
+                new Vector3(playerTarget.position.x, playerTarget.position.y, playerCam.transform.position.z), followSpeed * Time.deltaTime); // Follow player smoothly
+                /*playerCam.transform.position = new Vector3(Mathf.Clamp(playerCam.transform.position.x, minCamDistX, maxCamDistX), Mathf.Clamp(playerCam.transform.position.y, minCamDistY, maxCamDistY),
+                    playerCam.transform.position.z); // Camera focus on the player*/
+            }
         }
-        else if (zoomOut)
+        else
         {
-            playerCam.orthographicSize = Mathf.Lerp(playerCam.orthographicSize, camZoomOutSize, 3f * Time.fixedDeltaTime);
-            playerCam.transform.position = Vector3.Lerp(playerCam.transform.position,
-            new Vector3(playerTarget.position.x, playerTarget.position.y, playerCam.transform.position.z), followSpeed * Time.deltaTime); // Follow player smoothly
-            /*playerCam.transform.position = new Vector3(Mathf.Clamp(playerCam.transform.position.x, minCamDistX, maxCamDistX), Mathf.Clamp(playerCam.transform.position.y, minCamDistY, maxCamDistY),
-                playerCam.transform.position.z); // Camera focus on the player*/
+            Vector2 movedir = Vector2.Lerp(playerCam.transform.position, currentFocusTarget.position, followSpeed * Time.deltaTime);
+            if(movedir.x <= currentFocusTarget.position.x + 0.1f && movedir.y <= currentFocusTarget.position.y + 0.1f)
+            {
+                currentFocusTime -= Time.deltaTime;
+                if (currentFocusTime <= 0)
+                {
+                    isFocusNextLevel = false;
+                }
+            }
+            else
+            {
+                playerCam.transform.position = new Vector3(movedir.x, movedir.y, playerCam.transform.position.z);
+            }
         }
+        
     }
     public void OnPlayerNotify(PlayerAction playerAction)
     {
         switch (playerAction)
         {
-            case(PlayerAction.Idle):
+            case (PlayerAction.Idle):
                 zoomIn = false;
                 zoomOut = true;
                 return;
@@ -55,6 +98,33 @@ public class PlayerCameraController : MonoBehaviour, IPlayerObserver
                 zoomIn = false;
                 zoomOut = true;
                 return;
+        }
+    }
+    private void CheckMapToFocus(string previousMap)
+    {
+        switch (previousMap)
+        {
+            case "Run_1":
+                if (stageClearData.Side_L1_Run == true)
+                {
+                    currentFocusTarget = bossLevelTarget;
+                    isFocusNextLevel = true;
+                    Debug.Log("Run 1 cleared");
+                }
+                break;
+            case "Boss_1":
+                if (stageClearData.Side_L1_Boss == true)
+                {
+                    Debug.Log("Boss 1 cleared");
+                }
+                break;
+            case "Level1_ISO":
+                if (stageClearData.ISO_L1 == true)
+                {
+                    Debug.Log("ISO 1 cleared");
+                }
+                break;
+
         }
     }
 }

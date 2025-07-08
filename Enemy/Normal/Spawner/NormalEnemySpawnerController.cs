@@ -49,18 +49,20 @@ public class NormalEnemySpawnerController : MonoBehaviour
     }
     private void Update()
     {
+        /*// Spawn all enemy type if player is on low elevation
         if(playerCam.camYTarget == playerCam.midCamY)
         {
             spawnShooter = true;
             spawnBomber = true;
             spawnDrone = true;
         }
-        else if(playerCam.camYTarget == playerCam.maxCamDistY)
+        // Spawn all enemy type if player is on high elevation
+        else if (playerCam.camYTarget == playerCam.maxCamDistY)
         {
             spawnShooter = false;
             spawnBomber = false;
             spawnDrone = true;
-        }
+        }*/
         SpawnNormalEnemy();
     }
     private void SpawnNormalEnemy()
@@ -203,8 +205,8 @@ public class NormalEnemySpawnerController : MonoBehaviour
                 RaycastHit2D holeRayCheck = Physics2D.Raycast(newStart.position, Vector2.down, Mathf.Infinity);
                 if (holeRayCheck.collider.tag != "E_Boundary" && holeRayCheck.collider.tag != "Side_Floor")
                 {
-                    Debug.Log("There is a hole or obstacle under the spawn, spawn the enemy at 15 units beside the spawn point");
-                    spawnXOffset = 3f;
+                    Debug.Log("There is a hole or obstacle under the spawn, spawn the enemy at 3 units behind the spawn point");
+                    spawnXOffset = -3f;
                 }
                 else
                 {
@@ -217,8 +219,8 @@ public class NormalEnemySpawnerController : MonoBehaviour
                 RaycastHit2D holeRayCheck = Physics2D.Raycast(newStart.position, Vector2.down, Mathf.Infinity);
                 if (holeRayCheck.collider.tag != "E_Boundary" && holeRayCheck.collider.tag != "Side_Floor")
                 {
-                    Debug.Log("There is a hole or obstacle under the spawn, spawn the enemy at 15 units beside the spawn point");
-                    spawnXOffset = -3f;
+                    Debug.Log("There is a hole or obstacle under the spawn, spawn the enemy at 3 units behind the spawn point");
+                    spawnXOffset = 3f;
                 }
                 else
                 {
@@ -241,11 +243,11 @@ public class NormalEnemySpawnerController : MonoBehaviour
         // Flip the sprite if the starting point is facing left
         if (newStart.transform.eulerAngles == new Vector3(0, 0, 90))
         {
-            spriteRenderer.flipX = false;
+            spriteRenderer.flipX = true;
         }
         else
         {
-            spriteRenderer.flipX = true;
+            spriteRenderer.flipX = false;
         }
         enemyGO.transform.position = new Vector2(newStart.position.x + spawnXOffset, newStart.position.y);
 

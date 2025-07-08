@@ -13,15 +13,19 @@ public class Platform_Movable : Platform
     {
         platformRB = GetComponent<Rigidbody2D>();
     }
+    private void Start()
+    {
+        GetComponent<BoxCollider2D>().enabled = true;
+    }
     private void FixedUpdate()
     {
-        Vector2 direction = Vector2.MoveTowards(transform.position, platformMovePath[platformDestination].position, platformSpeed * Time.fixedDeltaTime);
+        Vector2 direction = Vector2.MoveTowards(transform.position, platformMovePath[platformDestination].position, platformSpeed * Time.fixedDeltaTime); 
         platformRB.MovePosition(direction);
-        if(transform.position == platformMovePath[1].position)
+        if(Vector2.Distance(transform.position, platformMovePath[1].position) <= 0)
         {
             platformDestination = 0;
         }
-        else if(transform.position == platformMovePath[0].position)
+        else if(Vector2.Distance(transform.position, platformMovePath[0].position) <= 0)
         {
             platformDestination = 1;
         }
@@ -30,16 +34,11 @@ public class Platform_Movable : Platform
     {
         if (collision.transform.tag == "Player")
         {
-            // Check each platform's contact point and play the animation when the player stepped on top of the platform
-            foreach (ContactPoint2D contactPoint in collision.contacts)
+            Vector2 normal = collision.GetContact(0).normal;
+            if (normal.y == -1)
             {
-                // -Y value is the top side of the platform
-                if (contactPoint.normal.y < -0.5f)
-                {
-                    collision.gameObject.transform.SetParent(transform);
-                    platformAnim.Play();
-                    break;
-                }
+                collision.gameObject.transform.SetParent(transform);
+                platformAnim.Play();
             }
         }
     }

@@ -11,19 +11,23 @@ public class SideScroll_JumpState : PlayerSideScrollStateMachine
         playerSideScroll.isPlayerOnGround = false;
         playerSideScroll.playerAnimator.SetBool("Jump", true);
         playerSideScroll.playerAnimator.SetBool("Crouch", false);
-        playerSideScroll.playerCollider.size = playerSideScroll.playerStandColliderSize;
-        playerSideScroll.playerCollider.offset = playerSideScroll.playerStandColliderOffset;
+        playerSideScroll.playerAnimator.SetBool("Dash", false);
+        playerSideScroll.playerCollider.size = playerSideScroll.playerJumpColliderSize;
+        playerSideScroll.playerCollider.offset = playerSideScroll.playerJumpColliderOffset;
         playerSideScroll.playerRB.AddForce(Vector2.up * playerSideScroll.jumpForce, ForceMode2D.Impulse);
     }
     public override void Update()
     {
-        if(playerSideScroll.playerRB.velocity.y > 0 && playerSideScroll.isJump == true)
+        if (playerSideScroll.isPlayerOnGround == true || Input.GetAxisRaw("Horizontal") != 0)
         {
-            playerSideScroll.playerRB.velocity +=  playerSideScroll.gravityVelocity * playerSideScroll.jumpMultiplier * Time.deltaTime;
+            if (playerSideScroll.playerBulletShooting.isAim == false)
+            {
+                playerSideScroll.PlayerSideScrollStateTransition(new SideScroll_RunState(playerSideScroll));
+            }
         }
-        if (playerSideScroll.xDir != 0 || Input.GetAxisRaw("Horizontal") != 0) // Change to Run state
+        else if(Input.GetKeyDown(KeyCode.LeftShift) && playerSideScroll.isDash == false)
         {
-            playerSideScroll.PlayerSideScrollStateTransition(new SideScroll_RunState(playerSideScroll));
+            playerSideScroll.PlayerSideScrollStateTransition(new SideScroll_DashState(playerSideScroll));
         }
         if (playerSideScroll.playerCurrentHP <= 0)
         {
@@ -32,7 +36,14 @@ public class SideScroll_JumpState : PlayerSideScrollStateMachine
     }
     public override void FixedUpdate()
     {
-        
+        if (playerSideScroll.playerRB.velocity.y > 0 && playerSideScroll.isJump == true)
+        {
+            playerSideScroll.playerRB.velocity += playerSideScroll.gravityVelocity * playerSideScroll.jumpMultiplier * Time.deltaTime;
+        }
+        if (playerSideScroll.playerRB.velocity.y < 0)
+        {
+            playerSideScroll.playerRB.velocity -= playerSideScroll.gravityVelocity * playerSideScroll.fallMultiplier * Time.deltaTime;
+        }
     }
     public override void OntriggerEnter(Collider2D pCollider)
     {
@@ -46,22 +57,36 @@ public class SideScroll_JumpState : PlayerSideScrollStateMachine
     {
         if (pCollider.gameObject.tag == "Side_Floor")
         {
-            if (playerSideScroll.isPlayerHighFall == true)
+            Vector2 normal = pCollider.GetContact(0).normal;
+            if(normal.y <= 1 && normal.y > -1 && normal.y != 0)
             {
-                playerSideScroll.playerMovementAudioSource.clip = playerSideScroll.playerAudioClipArr[0];
-                playerSideScroll.playerMovementAudioSource.Play();
+                if (playerSideScroll.isPlayerHighFall == true)
+                {
+                    playerSideScroll.playerMovementAudioSource.clip = playerSideScroll.playerAudioClipArr[0];
+                    playerSideScroll.playerMovementAudioSource.Play();
+                }
+                playerSideScroll.currentCollider = pCollider.collider;
+                playerSideScroll.isPlayerOnGround = true;
+                playerSideScroll.playerAnimator.SetBool("Jump", false);
+                playerSideScroll.PlayerSideScrollStateTransition(new SideScroll_IdleState(playerSideScroll));
             }
-            playerSideScroll.currentCollidername = pCollider;
-            playerSideScroll.isPlayerOnGround = true;
-            playerSideScroll.PlayerSideScrollStateTransition(new SideScroll_IdleState(playerSideScroll));
         }
     }
     public override void OnColliderStay(Collision2D pCollider)
     {
+        
     }
     public override void OnColliderExit(Collision2D pCollider)
     {
-        playerSideScroll.currentCollidername = null;
+        if (pCollider.gameObject.tag == "Side_Floor")
+        {
+            playerSideScroll.currentWalkSpeed = playerSideScroll.walkSpeed;
+            if (pCollider.collider == playerSideScroll.currentCollider)
+            {
+                playerSideScroll.isPlayerOnGround = false;
+                playerSideScroll.currentCollider = null;
+            }
+        }
     }
     public override void Exit()
     {

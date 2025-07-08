@@ -9,6 +9,9 @@ public class FatKid_BossStateController : BossSubject
     [Header("Boss Scriptable Object")]
     public BossScriptableObject bossScriptableObject;
 
+    [Header("Boss Animator")]
+    public Animator bossAnimator;    
+
     [Header("Boss Properties")]
     public BossHealth bossHP;
     public SpriteRenderer bossSpriteRenderer;

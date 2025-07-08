@@ -17,8 +17,9 @@ public class SideScrollGameController : GameSubject
     [Header("Side Scroll Game Properties")]
     [Header("Run n Gun Mode Properties")]
     [Header("Start and Goal Position")]
-    [SerializeField] Transform startPos; // Start pos in the world
-    [SerializeField] Transform goalPos; // Goal pos in the world
+    [SerializeField] private Transform startPos; // Start pos in the world
+    [SerializeField] private Transform goalPos; // Goal pos in the world
+    [SerializeField] private int totalCoinAmount; // All call amount in the map
     [Header("Boss Mode Properties")]
     //[SerializeField] BossHealthObserver bossHP;
     [SerializeField] BossHealth bossHP;
@@ -28,7 +29,7 @@ public class SideScrollGameController : GameSubject
     private int minute;
     private int second;
     public string currentTime;
-    private int coinCounter;
+    public int coinCounter;
     private void Update()
     {
         if (sidescrollPlayer.isDead == false && sidescrollPlayer.isWinRunNGun == false && gameMode == GameType.RunNGun)
@@ -50,13 +51,8 @@ public class SideScrollGameController : GameSubject
             {
                 NotifySideScrollGameObserver(SideScrollGameState.Play);
                 isPaused = false;
-            }
-            
+            }   
         }
-        /*if(sidescrollPlayer.transform.position.x >= goalPos.position.x + 8f)
-        {
-            // Uncomment this and make player walk toward the goal automatically and ignore any input
-        }*/
     }
     public void AddCoin()
     {
@@ -98,7 +94,7 @@ public class SideScrollGameController : GameSubject
     {
         // To Do: requirement are different depending on type of gamemode
         string grade;
-        if(sidescrollPlayer.playerCurrentHP >= 3 && minute <= 1)
+        if(sidescrollPlayer.playerCurrentHP >= 3 && minute <= 1 && coinCounter == totalCoinAmount)
         {
             grade = "A";
         }
