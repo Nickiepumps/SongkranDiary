@@ -7,14 +7,18 @@ public class EnemyBulletPooler : MonoBehaviour
     [Header("Enemy Bullet Prefab")]
     [SerializeField] private GameObject enemyBulletPrefab;
     [SerializeField] private GameObject incomingBulletPrefab;
+    [SerializeField] private GameObject obstacleBulletPrefab;
 
     [Header("Pooling Property")]
-    [SerializeField] private int amountTopool;
-    [SerializeField] private int incomingBulletamountTopool;
+    [SerializeField] private int amountTopool; // Amount of bullet for enemy
+    [SerializeField] private int incomingBulletamountTopool; // Amount of bullet for periodic attack
+    [SerializeField] private int obstacleBulletamountTopool; // Amount of bullet for any obstacle that can shoot
     [SerializeField] private Transform pooledEnemyBulletGroup; // Prevent too many enemy bullet gameObjects appear in Hierachy
-    [SerializeField] private Transform pooledIncomingBulletGroup;
+    [SerializeField] private Transform pooledIncomingBulletGroup; // Pooled incoming bullet group
+    [SerializeField] private Transform pooledObstacleBulletGroup; // Pooled obstacle bullet group
     private List<GameObject> pooledEnemyBulletList = new List<GameObject>();
     private List<GameObject> pooledIncomingBulletList = new List<GameObject>();
+    private List<GameObject> pooledObstacleBulletList = new List<GameObject>();
     private void Start()
     {
         for (int i = 0; i < amountTopool; i++)
@@ -28,6 +32,15 @@ public class EnemyBulletPooler : MonoBehaviour
             GameObject incomingBullet = Instantiate(incomingBulletPrefab, pooledIncomingBulletGroup);
             pooledIncomingBulletList.Add(incomingBullet);
             incomingBullet.SetActive(false);
+        }
+        if(obstacleBulletPrefab != null)
+        {
+            for (int i = 0; i < obstacleBulletamountTopool; i++)
+            {
+                GameObject obstacleBullet = Instantiate(obstacleBulletPrefab, pooledObstacleBulletGroup);
+                pooledObstacleBulletList.Add(obstacleBullet);
+                obstacleBullet.SetActive(false);
+            }
         }
     }
     public GameObject EnableEnemyBullet()
@@ -48,6 +61,17 @@ public class EnemyBulletPooler : MonoBehaviour
             if (pooledIncomingBulletList[i].activeSelf == false)
             {
                 return pooledIncomingBulletList[i];
+            }
+        }
+        return null;
+    }
+    public GameObject EnableObstacleBullet()
+    {
+        for (int i = 0; i < pooledObstacleBulletList.Count; i++)
+        {
+            if (pooledObstacleBulletList[i].activeSelf == false)
+            {
+                return pooledObstacleBulletList[i];
             }
         }
         return null;

@@ -17,6 +17,7 @@ public class RewardWindow : MonoBehaviour
         int randomCoinAmount = Random.Range(1, 4); // Adjust the max amount later
         playerCoin.coinAmount += randomCoinAmount;
         rewardNameText.text = "ตังค่าขนม " + randomCoinAmount + " เหรียญ";
+        PlayerDataHandler.instance.SavePlayerData();
     }
     private void Update()
     {

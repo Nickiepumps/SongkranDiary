@@ -1,6 +1,9 @@
+using System.Collections.Generic;
+
 [System.Serializable]
 public class StageClearData
 {
+    public List<LevelDataSO> levelData = new List<LevelDataSO>();
     public string mapName;
     public bool Side_L1_Run;
     public bool Side_L1_Boss;

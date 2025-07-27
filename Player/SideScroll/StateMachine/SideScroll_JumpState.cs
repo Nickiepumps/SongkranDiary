@@ -12,8 +12,8 @@ public class SideScroll_JumpState : PlayerSideScrollStateMachine
         playerSideScroll.playerAnimator.SetBool("Jump", true);
         playerSideScroll.playerAnimator.SetBool("Crouch", false);
         playerSideScroll.playerAnimator.SetBool("Dash", false);
-        playerSideScroll.playerCollider.size = playerSideScroll.playerJumpColliderSize;
         playerSideScroll.playerCollider.offset = playerSideScroll.playerJumpColliderOffset;
+        playerSideScroll.playerCollider.size = playerSideScroll.playerJumpColliderSize;
         playerSideScroll.playerRB.AddForce(Vector2.up * playerSideScroll.jumpForce, ForceMode2D.Impulse);
     }
     public override void Update()
@@ -25,7 +25,7 @@ public class SideScroll_JumpState : PlayerSideScrollStateMachine
                 playerSideScroll.PlayerSideScrollStateTransition(new SideScroll_RunState(playerSideScroll));
             }
         }
-        else if(Input.GetKeyDown(KeyCode.LeftShift) && playerSideScroll.isDash == false)
+        else if (Input.GetKeyDown(KeyCode.LeftShift) && playerSideScroll.isDash == false)
         {
             playerSideScroll.PlayerSideScrollStateTransition(new SideScroll_DashState(playerSideScroll));
         }
@@ -55,7 +55,7 @@ public class SideScroll_JumpState : PlayerSideScrollStateMachine
     }
     public override void OnColliderEnter(Collision2D pCollider)
     {
-        if (pCollider.gameObject.tag == "Side_Floor")
+        if (pCollider.gameObject.tag == "Side_Floor" || pCollider.gameObject.tag == "Side_Interactable")
         {
             Vector2 normal = pCollider.GetContact(0).normal;
             if(normal.y <= 1 && normal.y > -1 && normal.y != 0)

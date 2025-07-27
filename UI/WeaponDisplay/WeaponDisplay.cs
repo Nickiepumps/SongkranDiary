@@ -28,17 +28,17 @@ public class WeaponDisplay : MonoBehaviour, IShootingObserver
         {
             case (ShootingAction.switchtonormal):
                 bulletDisplay.sprite = bulletSprites[0];
-                spreadBulletDisplay.sprite = bulletKeySprites[0];
+                //spreadBulletDisplay.sprite = bulletKeySprites[0];
                 laserBulletDisplay.sprite = bulletKeySprites[2];
                 return;
             case (ShootingAction.switchtospread):
                 bulletDisplay.sprite = bulletSprites[1];
-                spreadBulletDisplay.sprite = bulletKeySprites[1];
+                //spreadBulletDisplay.sprite = bulletKeySprites[1];
                 laserBulletDisplay.sprite = bulletKeySprites[2];
                 return;
             case (ShootingAction.switchtolaser):
                 bulletDisplay.sprite = bulletSprites[2];
-                spreadBulletDisplay.sprite = bulletKeySprites[0];
+                //spreadBulletDisplay.sprite = bulletKeySprites[0];
                 laserBulletDisplay.sprite = bulletKeySprites[3];
                 return;
             case (ShootingAction.chargeult):
@@ -54,7 +54,7 @@ public class WeaponDisplay : MonoBehaviour, IShootingObserver
         if (coolDownStatus == true)
         {
             currentTimer -= Time.deltaTime;
-            spreadBulletDisplay.fillAmount = 1 - (currentTimer / cooldownTime);
+            //spreadBulletDisplay.fillAmount = 1 - (currentTimer / cooldownTime);
             laserBulletDisplay.fillAmount = 1 - (currentTimer / cooldownTime);
             if (currentTimer <= 0)
             {
@@ -63,7 +63,7 @@ public class WeaponDisplay : MonoBehaviour, IShootingObserver
         }
         else
         {
-            spreadBulletDisplay.fillAmount = 1;
+            //spreadBulletDisplay.fillAmount = 1;
             laserBulletDisplay.fillAmount = 1;
         }
     }

@@ -7,26 +7,13 @@ public class ISO_Window : MonoBehaviour
 {
     [Header("Game UI Controller Reference")]
     public GameUIController gameUIController;
-    [Header("Switch Animation Speed")]
-    public float animationSpeed;
+    [Header("Switch Animation Reference")]
+    public Animation uiAnimation;
     public IEnumerator ISOWindowTransition(GameObject currentWindow, GameObject targetWindow)
     {
-        while (currentWindow.transform.rotation.eulerAngles.y < 90)
-        {
-            currentWindow.transform.Rotate(0, animationSpeed, 0);
-            yield return null;
-        }
+        uiAnimation.Play("CloseMenu");
+        yield return new WaitUntil(() => uiAnimation.isPlaying == false);
         currentWindow.SetActive(false);
         targetWindow.SetActive(true);
-        yield return null;
-    }
-    public IEnumerator WindowRotate(GameObject window)
-    {
-        while (window.transform.rotation.eulerAngles.y > 0)
-        {
-            window.transform.Rotate(0, animationSpeed, 0);
-            yield return null;
-        }
-        yield return null;
     }
 }

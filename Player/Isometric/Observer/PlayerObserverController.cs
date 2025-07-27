@@ -165,6 +165,7 @@ public class PlayerObserverController : MonoBehaviour, IGameObserver, IPlayerObs
                     }
                     return;
                 case (PlayerAction.Dead):
+                    healthDisplay.DecreaseHealth(playerSideScrollStateController.playerCurrentHP);
                     gameUISubject.NotifySideScrollGameObserver(SideScrollGameState.Lose);
                     return;
                 case (PlayerAction.win):

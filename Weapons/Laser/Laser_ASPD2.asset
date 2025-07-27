@@ -19,7 +19,7 @@ MonoBehaviour:
   upgradeDescription: 
   upgradeCost: 1
   level: 2
-  aspd: 0.8
+  aspd: 0.4
   travelSpeed: 0
   spreadCount: 1
   ultCount: 0

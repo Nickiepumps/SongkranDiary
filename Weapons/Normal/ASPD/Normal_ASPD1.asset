@@ -20,7 +20,7 @@ MonoBehaviour:
   upgradeDescription: "\u0E04\u0E27\u0E32\u0E21\u0E40\u0E23\u0E47\u0E27\u0E01\u0E32\u0E23\u0E22\u0E34\u0E07\u0E40\u0E23\u0E47\u0E27\u0E02\u0E36\u0E49\u0E19"
   upgradeCost: 1
   level: 1
-  aspd: 0.15
+  aspd: 0.2
   travelSpeed: 15
   spreadCount: 1
   ultCount: 0

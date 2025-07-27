@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerStats : MonoBehaviour
 {
     // Delete this variable when finished prototype
-    [SerializeField] private TempPlayerDataSave tempData;
+    //[SerializeField] private TempPlayerDataSave tempData;
 
     // To do: Use this script for saving data
     [Header("Player Stats")]
@@ -25,6 +25,7 @@ public class PlayerStats : MonoBehaviour
 
     [Space]
     [Header("Spread Bullet")]
+    public bool spreadBulletUnlocked;
     public WeaponSO currentSprdBulletASPD;
     public WeaponSO maxSprdBulletASPD;
     public WeaponSO currentWeaponSprdCount;
@@ -32,6 +33,7 @@ public class PlayerStats : MonoBehaviour
 
     [Space]
     [Header("Laser Bullet")]
+    public bool laserBulletUnlocked;
     public WeaponSO currentLsrBulletASPD;
     public WeaponSO maxLsrBulletASPD;
 
@@ -46,16 +48,17 @@ public class PlayerStats : MonoBehaviour
 
     private void Start()
     {
-        if(tempData != null)
+        PlayerData playerData = PlayerDataHandler.instance.LoadPlayerData();
+        if(playerData != null)
         {
-            currentPlayerHP = tempData.currentPlayerHP;
-            currentPlayerUltCharge = tempData.currentPlayerUltCharge;
-            currentNormalASPD = tempData.currentNormalASPD;
-            currentWeaponTravelSpeed = tempData.currentWeaponTravelSpeed;
-            currentSprdBulletASPD = tempData.currentSprdBulletASPD;
-            currentWeaponSprdCount = tempData.currentWeaponSprdCount;
-            currentLsrBulletASPD = tempData.currentLsrBulletASPD;
-            coinAmount = tempData.coinAmount;
+            currentPlayerHP = playerData.hpSO;
+            currentPlayerUltCharge = playerData.ultChargeSO;
+            currentNormalASPD = playerData.bulletNormalASPDSO;
+            currentWeaponTravelSpeed = playerData.bulletNormalTSPDSO;
+            currentWeaponSprdCount = playerData.bulletSpreadCountSO;
+            currentSprdBulletASPD = playerData.bulletSpreadASPDSO;
+            currentLsrBulletASPD = playerData.bulletLaserASPDSO;
+            coinAmount = playerData.Coin;
         }
     }
 }

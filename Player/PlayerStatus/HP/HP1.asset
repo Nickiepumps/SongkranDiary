@@ -16,6 +16,7 @@ MonoBehaviour:
   icon: {fileID: -1750647650, guid: a385b7b969d17ab4dbae132e00429f31, type: 3}
   upgradeName: 
   upgradeDescription: 
+  upgradeCost: 0
   level: 1
   hpPoint: 3
   ultChargeTime: 0

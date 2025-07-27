@@ -53,6 +53,7 @@ public class SceneController : MonoBehaviour
     {
         transitionCanvas.SetActive(true);
         transitionAnimator.SetInteger("Transition", 0);
+        transitionAnimator.SetBool("IsISO", false);
         yield return new WaitForSeconds(1f);
         SceneManager.LoadScene("LoadingScreen");
     }
@@ -66,12 +67,14 @@ public class SceneController : MonoBehaviour
         }
         transitionCanvas.SetActive(true);
         transitionAnimator.SetInteger("Transition", 0);
+        transitionAnimator.SetBool("IsISO", false);
         yield return new WaitForSeconds(1f);
         destinationScene.allowSceneActivation = true;
     }
     private IEnumerator TransitionOut()
     {
         transitionAnimator.SetInteger("Transition", 1);
+        transitionAnimator.SetBool("IsISO", false);
         yield return new WaitForSeconds(1f);
         transitionCanvas.SetActive(false);
     }

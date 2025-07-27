@@ -20,6 +20,9 @@ public class PlayerSideScrollStateController : PlayerSubject
     public AudioSource playerMovementAudioSource;
     public AudioClip[] playerAudioClipArr;
 
+    [Header("Player Physic2D Reference")]
+    public PhysicsMaterial2D antislipPhysicMat;
+
     [Header("Player Stats")]
     [SerializeField] private PlayerStats currentPlayerStats;
     public int playerCurrentHP;
@@ -29,6 +32,9 @@ public class PlayerSideScrollStateController : PlayerSubject
     public int playerCurrentUltChargeTime = 0;
 
     [Header("Side-Scroll Player Properties")]
+    public LayerMask floorLayerMaskExclude;
+    public LayerMask platformDropdownLayerMaskExclude;
+    public LayerMask pitfallLayerMask;
     public float walkSpeed = 5; // Player's walk speed
     public float dashSpeed = 10f; // Player's dash speed
     public float jumpForce = 5f; // Player's jump force. Uses at the start of the jump
@@ -45,6 +51,7 @@ public class PlayerSideScrollStateController : PlayerSubject
     public bool isPlayerHighFall = false;
     public bool isCrouch; // Crouching status
     public bool isJump; // Jumping status
+    public bool isFallen; // Fallen into the pit
     public bool isDash; // Dashing status
     public bool isShoot; // Shooting status
     public bool isDamaged = false; // Damaging status
@@ -54,7 +61,7 @@ public class PlayerSideScrollStateController : PlayerSubject
 
     // Hide in inspector
     public float currentWalkSpeed;
-    public Vector2 currentVelocity;
+    //public Vector2 currentVelocity;
     public Vector2 gravityVelocity;
     public Collider2D currentCollider;
     public string currentColliderName;
@@ -65,6 +72,8 @@ public class PlayerSideScrollStateController : PlayerSubject
     public float currentASPD;
     public bool isGameStart = false;
     private float aspd;
+    private float floatingTime = 0.5f;
+    private float currentFloatTime;
     private float spriteFlashingTime = 0.2f;
     private float spriteFlashingTimer;
     private bool spriteActive = false;
@@ -86,26 +95,38 @@ public class PlayerSideScrollStateController : PlayerSubject
         playerMaxUltChargeTime = currentPlayerStats.currentPlayerUltCharge.ultChargeTime;
         currentImmunityTime = damageImmunityTime;
         spriteFlashingTimer = 0;
+        currentFloatTime = floatingTime;
         PlayerSideScrollStateTransition(new SideScroll_IdleState(this));
     }
     private void Update()
     {
         currentState.Update();
 
-        if (Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.I) && currentJumpButtonHoldingTime < 1)
+        if(isFallen == false)
         {
-            isJump = true;
-            if(currentJumpButtonHoldingTime < 1)
+            if (Input.GetKey(KeyCode.Z) && currentJumpButtonHoldingTime < 1)
             {
-                currentJumpButtonHoldingTime += Time.fixedDeltaTime;
+                if (currentJumpButtonHoldingTime < 1)
+                {
+                    isJump = true;
+                    currentJumpButtonHoldingTime += Time.deltaTime;
+                }
+            }
+            if (currentJumpButtonHoldingTime >= 1)
+            {
+                isJump = false;
+            }
+            if (Input.GetKeyUp(KeyCode.Z))
+            {
+                currentJumpButtonHoldingTime = 0;
+                isJump = false;
             }
         }
-        else if (Input.GetKeyUp(KeyCode.Space) || Input.GetKeyUp(KeyCode.I) || currentJumpButtonHoldingTime >= 1)
+        else
         {
-            currentJumpButtonHoldingTime = 0;
             isJump = false;
+            currentJumpButtonHoldingTime = 0;
         }
-
         // Invulnability timer
         if (isDamaged == true)
         {
@@ -147,6 +168,16 @@ public class PlayerSideScrollStateController : PlayerSubject
             isPlayerHighFall = false;
             currentAirborneTime = 0;
         }
+        if (isFallen == true)
+        {
+            currentFloatTime -= Time.deltaTime;
+            if (currentFloatTime <= 0)
+            {
+                playerCollider.excludeLayers = floorLayerMaskExclude;
+                playerRB.gravityScale = 5;
+                currentFloatTime = floatingTime;
+            }
+        }
     }
     private void FixedUpdate()
     {
@@ -170,6 +201,18 @@ public class PlayerSideScrollStateController : PlayerSubject
                 case ("BlindHitBox"):
                     NotifyPlayerObserver(PlayerAction.Blind);
                     return;
+                case ("E_Boundary"):
+                    if (playerCurrentHP == 1)
+                    {
+                        playerCurrentHP = 0;
+                    }
+                    else
+                    {
+                        NotifyPlayerObserver(PlayerAction.Damaged);
+                        isFallen = true;
+                        PlayerSideScrollStateTransition(new SideScroll_FallenState(this));
+                    }
+                    return;
             }
         }
         switch (collision.tag)
@@ -178,7 +221,8 @@ public class PlayerSideScrollStateController : PlayerSubject
                 NotifyPlayerObserver(PlayerAction.Heal);
                 return;
             case ("E_Boundary"):
-                playerCurrentHP = 0;
+                isFallen = true;
+                PlayerSideScrollStateTransition(new SideScroll_FallenState(this));
                 return;
         }
         currentState.OntriggerEnter(collision);

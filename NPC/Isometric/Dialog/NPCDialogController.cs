@@ -186,7 +186,7 @@ public class NPCDialogController : MonoBehaviour, INPCObserver, IPlayerObserver,
         StartCoroutine(TypeWriterAnimation(outroDialog));
         yield return new WaitUntil(() => finishedDialog == true);
         nextDialogNotif.SetActive(true);
-        yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.Return));
+        yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space));
         isometricGameSubject.NotifyGameObserver(IsometricGameState.Play);
         dialogBox.SetActive(false);
         interactNotif.SetActive(true);
@@ -201,7 +201,7 @@ public class NPCDialogController : MonoBehaviour, INPCObserver, IPlayerObserver,
             StartCoroutine(TypeWriterAnimation(dialogLists[dialogSeqNumber].ToString()));
             yield return new WaitUntil(() => finishedDialog == true);
             nextDialogNotif.SetActive(true);
-            yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.Return));
+            yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space));
             dialogSeqNumber++;
             StartCoroutine(NormalDialogSequence());
         }
@@ -233,7 +233,7 @@ public class NPCDialogController : MonoBehaviour, INPCObserver, IPlayerObserver,
             StartCoroutine(TypeWriterAnimation(dialogLists[dialogSeqNumber].ToString()));
             yield return new WaitUntil(() => finishedDialog == true);
             nextDialogNotif.SetActive(true);
-            yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.Return));
+            yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space));
             dialogSeqNumber++;
             StartCoroutine(ChoiceDialogSequence());
         }
@@ -248,7 +248,7 @@ public class NPCDialogController : MonoBehaviour, INPCObserver, IPlayerObserver,
             StartCoroutine(TypeWriterAnimation(correctAnswerDialogLists[dialogSeqNumber].ToString()));
             yield return new WaitUntil(() => finishedDialog == true);
             nextDialogNotif.SetActive(true);
-            yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.Return));
+            yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space));
             dialogSeqNumber++;
             StartCoroutine(CorrectResultDialog());
         }
@@ -274,7 +274,7 @@ public class NPCDialogController : MonoBehaviour, INPCObserver, IPlayerObserver,
             StartCoroutine(TypeWriterAnimation(wrongAnswerDialogLists[dialogSeqNumber].ToString()));
             yield return new WaitUntil(() => finishedDialog == true);
             nextDialogNotif.SetActive(true);
-            yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.Return));
+            yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space));
             dialogSeqNumber++;
             StartCoroutine(WrongResultDialog());
         }
@@ -293,26 +293,29 @@ public class NPCDialogController : MonoBehaviour, INPCObserver, IPlayerObserver,
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            choiceImgArr[0].color = Color.white;
+            /*choiceImgArr[0].color = Color.white;
             choiceImgArr[1].color = nonSelectColor;
             choiceImgArr[2].color = nonSelectColor;
-            confirmedChoice = choiceButtonLists[0];
+            confirmedChoice = choiceButtonLists[0];*/
+            CheckAnswer(choiceButtonLists[0]);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            choiceImgArr[0].color = nonSelectColor;
+            /*choiceImgArr[0].color = nonSelectColor;
             choiceImgArr[1].color = Color.white;
             choiceImgArr[2].color = nonSelectColor;
-            confirmedChoice = choiceButtonLists[1];
+            confirmedChoice = choiceButtonLists[1];*/
+            CheckAnswer(choiceButtonLists[1]);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha3))
         {
-            choiceImgArr[0].color = nonSelectColor;
+            /*choiceImgArr[0].color = nonSelectColor;
             choiceImgArr[1].color = nonSelectColor;
             choiceImgArr[2].color = Color.white;
-            confirmedChoice = choiceButtonLists[2];
+            confirmedChoice = choiceButtonLists[2];*/
+            CheckAnswer(choiceButtonLists[2]);
         }
-        else if (Input.GetKeyDown(KeyCode.Return) && confirmedChoice != null)
+        /*else if (Input.GetKeyDown(KeyCode.Return) && confirmedChoice != null)
         {
             foreach (Image img in choiceImgArr)
             {
@@ -321,7 +324,7 @@ public class NPCDialogController : MonoBehaviour, INPCObserver, IPlayerObserver,
             startChoosing = false;
             CheckAnswer(confirmedChoice);
             confirmedChoice = null;
-        }
+        }*/
     }
     public void CheckAnswer(GameObject choice)
     {

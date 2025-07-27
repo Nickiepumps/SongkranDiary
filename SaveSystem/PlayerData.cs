@@ -11,6 +11,15 @@ public class PlayerData
     public int bulletNormalTSPDLevel;
     public int bulletNormalASPDLevel;
     public int bulletSpreadCountLevel;
-    public int bulletSpreadASPD;
-    public int bulletLaserASPD;
+    public int bulletSpreadASPDLevel;
+    public int bulletLaserASPDLevel;
+    public bool bulletSpreadUnlocked;
+    public bool bulletLaserUnlocked;
+    public PlayerStatSO hpSO;
+    public PlayerStatSO ultChargeSO;
+    public WeaponSO bulletNormalTSPDSO;
+    public WeaponSO bulletNormalASPDSO;
+    public WeaponSO bulletSpreadCountSO;
+    public WeaponSO bulletSpreadASPDSO;
+    public WeaponSO bulletLaserASPDSO;
 }

@@ -9,8 +9,8 @@ public class ISO_Setting : ISO_Window
     [SerializeField] private GameObject previousMenu;
     private void OnEnable()
     {
-        transform.eulerAngles = new Vector3(0, -90, 0);
-        StartCoroutine(WindowRotate(gameObject));
+        //transform.eulerAngles = new Vector3(0, -90, 0);
+        uiAnimation.Play("OpenMenu");
     }
     private void Update()
     {

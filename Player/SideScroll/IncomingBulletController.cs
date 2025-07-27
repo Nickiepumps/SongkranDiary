@@ -7,7 +7,7 @@ public class IncomingBulletController : MonoBehaviour
     [Header("Enemy bullet pooler script reference")]
     [SerializeField] private EnemyBulletPooler enemyBulletPooler;
     [Header("Bullet warning display script reference")]
-    [SerializeField] private BulletWarningDisplay bulletwarningDisplay;
+    public BulletWarningDisplay bulletwarningDisplay;
     [Header("Camera parent and prefabs")]
     [SerializeField] private Transform camParent;
     //[SerializeField] private GameObject bulletPrefab;
@@ -16,15 +16,18 @@ public class IncomingBulletController : MonoBehaviour
     [SerializeField] private float fireCooldown = 10f;
     [SerializeField] private Transform[] incomingBulletSpawnerArr;
     [SerializeField] private IncomingBulletPatternList incomingBulletPatternList = new IncomingBulletPatternList();
+    [HideInInspector] public int startPatternRange;
+    [HideInInspector] public int endPatternRange;
     public bool startRainingBullet = false;
     private float currentCooldown;
     private int pattern;
     private bool startWarning = false;
     private void OnEnable()
-    {   
+    {
     }
     private void OnDisable()
     {
+        currentCooldown = fireCooldown;
         startRainingBullet = false;
     }
     private void Start()
@@ -37,12 +40,12 @@ public class IncomingBulletController : MonoBehaviour
         {
             currentCooldown -= Time.deltaTime;
         }
-        if(currentCooldown <= 3f && currentCooldown > 0)
+        if(currentCooldown <= 2f && currentCooldown > 0)
         {
             if(startWarning == false)
             {
                 startWarning = true;
-                pattern = Random.Range(0, incomingBulletPatternList.PatternList.Count);
+                pattern = Random.Range(startPatternRange, endPatternRange);
                 for(int i = 0; i < incomingBulletPatternList.PatternList[pattern].incomingBullet.Count; i++)
                 {
                     bulletwarningDisplay.ShowBulletWarningSign(incomingBulletPatternList.PatternList[pattern].incomingBullet[i].transform, i);

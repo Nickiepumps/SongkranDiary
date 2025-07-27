@@ -23,6 +23,11 @@ public class SideScrollGameController : GameSubject
     [Header("Boss Mode Properties")]
     //[SerializeField] BossHealthObserver bossHP;
     [SerializeField] BossHealth bossHP;
+    [Header("Album Properties")]
+    [Header("Side SCroll Album Image Reward")]
+    [SerializeField] private AlbumSO albumImageSO;
+    [Header("Side SCroll Album Controller")]
+    [SerializeField] private SideScroll_AlbumController sideScroll_AlbumController;
 
     [HideInInspector] public bool isPaused = false;
     private float timer;
@@ -94,9 +99,17 @@ public class SideScrollGameController : GameSubject
     {
         // To Do: requirement are different depending on type of gamemode
         string grade;
-        if(sidescrollPlayer.playerCurrentHP >= 3 && minute <= 1 && coinCounter == totalCoinAmount)
+        if(gameMode == GameType.RunNGun && sidescrollPlayer.playerCurrentHP >= 3 && minute <= 1 && coinCounter == totalCoinAmount)
         {
             grade = "A";
+            albumImageSO.unlockStatus = true; // Unlock the album image if Player got A rank
+            AlbumDataHandler.instance.SaveAlbumData(sideScroll_AlbumController);
+        }
+        else if(gameMode == GameType.Boss && sidescrollPlayer.playerCurrentHP >= 3 && minute <= 2)
+        {
+            grade = "A";
+            albumImageSO.unlockStatus = true; // Unlock the album image if Player got A rank
+            AlbumDataHandler.instance.SaveAlbumData(sideScroll_AlbumController);
         }
         else
         {

@@ -34,6 +34,10 @@ public class UpgradeWindow : MonoBehaviour, IGameObserver
     [SerializeField] private List<Sprite> bl_Sprd_UpgradeBarLevel = new List<Sprite>();
     [SerializeField] private List<Sprite> bl_Lsr_UpgradeBarLevel = new List<Sprite>();
 
+    [Header("Locked Upgrade Sprites")]
+    [SerializeField] private GameObject bl_Sprd_LockedGO;
+    [SerializeField] private GameObject bl_Lsr_LockedGO;
+
     [Header("Button Sprites")]
     [SerializeField] private Sprite[] btn_ConfirmUpgrade;
 
@@ -84,7 +88,7 @@ public class UpgradeWindow : MonoBehaviour, IGameObserver
     private void OnEnable()
     {
         coinAmount = playerStats.coinAmount;
-        coinAmountText.text = "X " + coinAmount.ToString();
+        coinAmountText.text = coinAmount.ToString() + " เหรียญ";
         UpdateUpgradableDisplay();
         gameUIControllerSubject.AddGameObserver(this);
     }
@@ -92,6 +96,22 @@ public class UpgradeWindow : MonoBehaviour, IGameObserver
     {
         CancleUpgrade();
         gameUIControllerSubject.RemoveGameObserver(this);
+    }
+    private void Start()
+    {
+        PlayerData playerStats = PlayerDataHandler.instance.LoadPlayerData();
+        if(playerStats != null)
+        {
+            bl_Sprd_LockedGO.SetActive(!playerStats.bulletSpreadUnlocked);
+            bl_Lsr_LockedGO.SetActive(!playerStats.bulletLaserUnlocked);
+            p_HP_UpgradeBar.sprite = p_UpgradeBarLevel[playerStats.hpLevel - 1];
+            p_Ult_UpgradeBar.sprite = p_UpgradeBarLevel[playerStats.ultChargeLevel - 1];
+            bl_norm_ASPD_UpgradeBar.sprite = bl_norm_UpgradeBarLevel[playerStats.bulletNormalASPDLevel - 1];
+            bl_norm_bulletSPD_UpgradeBar.sprite = bl_norm_UpgradeBarLevel[playerStats.bulletNormalTSPDLevel - 1];
+            bl_Sprd_ASPD_UpgradeBar.sprite = bl_Sprd_UpgradeBarLevel[playerStats.bulletSpreadASPDLevel - 1];
+            bl_Sprd_SprdCount_UpgradeBar.sprite = bl_Sprd_UpgradeBarLevel[playerStats.bulletSpreadCountLevel - 1];
+            bl_Lsr_ASPD_UpgradeBar.sprite = bl_Lsr_UpgradeBarLevel[playerStats.bulletLaserASPDLevel - 1];
+        }
     }
     private void Update()
     {
@@ -295,12 +315,12 @@ public class UpgradeWindow : MonoBehaviour, IGameObserver
     private void UpdateCoinAmount(PlayerStatSO playerStat)
     {
         coinAmount -= playerStat.upgradeCost;
-        coinAmountText.text = "X " + coinAmount.ToString();
+        coinAmountText.text = coinAmount.ToString() + " เหรียญ";
     }
     private void UpdateCoinAmount(WeaponSO weaponStat)
     {
         coinAmount -= weaponStat.upgradeCost;
-        coinAmountText.text = "X " + coinAmount.ToString();
+        coinAmountText.text = coinAmount.ToString() + " เหรียญ";
     }
     public void ConfirmUpgrade()
     {
@@ -309,12 +329,10 @@ public class UpgradeWindow : MonoBehaviour, IGameObserver
             if(playerConfirmStats.upgradeType == PlayerUpgradeType.playerHP)
             {
                 playerStats.currentPlayerHP = playerConfirmStats;
-                //tempDataSO.currentPlayerHP = playerConfirmStats;
             }
             if(playerConfirmStats.upgradeType == PlayerUpgradeType.playerUlt)
             {
                 playerStats.currentPlayerUltCharge = playerConfirmStats;
-                //tempDataSO.currentPlayerUltCharge = playerConfirmStats;
             }
         }
         foreach(var weaponConfirmStats in allSelectedWeaponStatLists)
@@ -322,33 +340,29 @@ public class UpgradeWindow : MonoBehaviour, IGameObserver
             if(weaponConfirmStats.upgradeType == WeaponUpgradeType.bulletNormASPD)
             {
                 playerStats.currentNormalASPD = weaponConfirmStats;
-                //tempDataSO.currentNormalASPD = weaponConfirmStats;
             }
             if(weaponConfirmStats.upgradeType == WeaponUpgradeType.bulletNormSpeed)
             {
                 playerStats.currentWeaponTravelSpeed = weaponConfirmStats;
-                //tempDataSO.currentWeaponTravelSpeed = weaponConfirmStats;
             }
             if (weaponConfirmStats.upgradeType == WeaponUpgradeType.bulletSprdSprdCount)
             {
                 playerStats.currentWeaponSprdCount = weaponConfirmStats;
-                //tempDataSO.currentWeaponSprdCount = weaponConfirmStats;
             }
             if (weaponConfirmStats.upgradeType == WeaponUpgradeType.bulletSprdASPD)
             {
                 playerStats.currentSprdBulletASPD = weaponConfirmStats;
-                //tempDataSO.currentSprdBulletASPD = weaponConfirmStats;
             }
             if (weaponConfirmStats.upgradeType == WeaponUpgradeType.bulletLsrASPD)
             {
                 playerStats.currentLsrBulletASPD = weaponConfirmStats;
-                //tempDataSO.currentLsrBulletASPD = weaponConfirmStats;
             }
         }
         allSelectedPlayerStatLists.Clear();
         allSelectedWeaponStatLists.Clear();
         allUpgradeToUnlockLists.Clear();
         playerStats.coinAmount = coinAmount;
+        PlayerDataHandler.instance.SavePlayerData();
         confirmUpgradeBtn.SetActive(false);
     }
     private void CancleUpgrade()
@@ -423,9 +437,11 @@ public class UpgradeWindow : MonoBehaviour, IGameObserver
                     coinAmount -= sprdBulletUnlockCost;
                     coinAmountText.text = "X " + coinAmount.ToString();
                     sprdBulletUnlocked = true;
+                    playerStats.spreadBulletUnlocked = true;
+                    PlayerDataHandler.instance.SavePlayerData();
                     lockedUpgradePanel.SetActive(false);
                 }
-                return;
+                break;
             case ("LaserLockPanel"):
                 if (coinAmount >= laserBulletUnlockCost)
                 {
@@ -433,9 +449,11 @@ public class UpgradeWindow : MonoBehaviour, IGameObserver
                     coinAmount -= laserBulletUnlockCost;
                     coinAmountText.text = "X " + coinAmount.ToString();
                     laserBulletUnlocked = true;
+                    playerStats.laserBulletUnlocked = true;
+                    PlayerDataHandler.instance.SavePlayerData();
                     lockedUpgradePanel.SetActive(false);
                 }
-                return;
+                break;
         }
     }
 }

@@ -108,7 +108,6 @@ public class Main_Setting : MonoBehaviour
     }
     public void ConfirmSetting()
     {
-        // To Do: Save all settings to JSON
         SettingHandler.instance.SaveSetting(setting_MasterSlider.value, setting_BGMSlider.value, setting_SFXSlider.value);
 
         setting_OriginalMasterVolume = setting_MasterSlider.value;

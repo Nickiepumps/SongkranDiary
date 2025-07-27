@@ -7,12 +7,6 @@ public class SideScroll_IdleState : PlayerSideScrollStateMachine
     public SideScroll_IdleState(PlayerSideScrollStateController playerSideScroll) : base(playerSideScroll) { }
     public override void Start()
     {
-        //playerSideScroll.isCrouch = false;
-        //playerSideScroll.playerHandAnimator.SetBool("Idle", true);
-        //playerSideScroll.playerHeadAnimator.SetBool("Idle", true);
-        //playerSideScroll.playerHeadAnimator.SetBool("Run", false);
-        //playerSideScroll.playerHandAnimator.SetBool("Run", false);
-        //playerSideScroll.playerAnimator.SetBool("TestRun", false);
         playerSideScroll.NotifyPlayerObserver(PlayerAction.Side_Idle);
         playerSideScroll.playerAnimator.SetBool("Idle", true);
         playerSideScroll.playerAnimator.SetBool("Run", false);
@@ -32,14 +26,14 @@ public class SideScroll_IdleState : PlayerSideScrollStateMachine
             playerSideScroll.playerAnimator.SetBool("Jump", true);
         }
         playerSideScroll.currentWalkSpeed = playerSideScroll.walkSpeed;
-        playerSideScroll.playerCollider.size = playerSideScroll.playerStandColliderSize;
         playerSideScroll.playerCollider.offset = playerSideScroll.playerStandColliderOffset;
+        playerSideScroll.playerCollider.size = playerSideScroll.playerStandColliderSize;
     }
     public override void Update()
     {
         if (playerSideScroll.isGameStart == true)
         {
-            //playerSideScroll.xDir = Input.GetAxisRaw("Horizontal") * playerSideScroll.walkSpeed;
+            playerSideScroll.xDir = Input.GetAxisRaw("Horizontal") * playerSideScroll.walkSpeed;
             if (playerSideScroll.playerRB.velocity.y < 0)
             {
                 playerSideScroll.playerRB.velocity -= playerSideScroll.gravityVelocity * playerSideScroll.fallMultiplier * Time.deltaTime;
@@ -51,14 +45,14 @@ public class SideScroll_IdleState : PlayerSideScrollStateMachine
                     playerSideScroll.PlayerSideScrollStateTransition(new SideScroll_RunState(playerSideScroll));
                 }
             }
-            if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.I) && playerSideScroll.isPlayerOnGround == true) // Change to Jump state
+            if (Input.GetKeyDown(KeyCode.Z) && playerSideScroll.isPlayerOnGround == true) // Change to Jump state
             {
                 if (playerSideScroll.GetComponent<BulletAiming>().isAimUp == false)
                 {
                     playerSideScroll.PlayerSideScrollStateTransition(new SideScroll_JumpState(playerSideScroll));
                 }
             }
-            if (Input.GetKey(KeyCode.S) && playerSideScroll.isPlayerOnGround == true) // Change to Jump state
+            if (Input.GetKey(KeyCode.DownArrow) && playerSideScroll.isPlayerOnGround == true) // Change to Jump state
             {
                 if (playerSideScroll.GetComponent<BulletAiming>().isAimUp == false)
                 {
@@ -89,7 +83,7 @@ public class SideScroll_IdleState : PlayerSideScrollStateMachine
     }
     public override void OnColliderEnter(Collision2D pCollider)
     {
-        if(pCollider.gameObject.tag == "Side_Floor")
+        if(pCollider.gameObject.tag == "Side_Floor" || pCollider.gameObject.tag == "Side_Interactable")
         {
             Vector2 normal = pCollider.GetContact(0).normal;
             if(normal.y <= 1 && normal.y > -1 && normal.y != 0)
@@ -99,8 +93,14 @@ public class SideScroll_IdleState : PlayerSideScrollStateMachine
                     playerSideScroll.playerMovementAudioSource.clip = playerSideScroll.playerAudioClipArr[0];
                     playerSideScroll.playerMovementAudioSource.Play();
                 }
-                //playerSideScroll.isDash = false;
+                if (pCollider.collider.usedByEffector == false)
+                {
+                    playerSideScroll.playerCollider.excludeLayers = playerSideScroll.floorLayerMaskExclude;
+                }
+                playerSideScroll.isFallen = false;
+                playerSideScroll.isDash = false;
                 playerSideScroll.isPlayerOnGround = true;
+                playerSideScroll.playerCollider.enabled = true;
                 playerSideScroll.currentCollider = pCollider.collider;
                 playerSideScroll.playerAnimator.SetBool("Jump", false);
             }

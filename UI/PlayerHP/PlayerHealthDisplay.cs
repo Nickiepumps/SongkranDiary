@@ -38,7 +38,7 @@ public class PlayerHealthDisplay : MonoBehaviour, IPlayerObserver
         for(int i = 0; i < maxHealthPoint; i++)
         {
             Image hp = Instantiate(healthUI, playerHealthGroup);
-            healthUI.rectTransform.sizeDelta = new Vector2(48f, 48f);
+            healthUI.rectTransform.sizeDelta = new Vector2(38f, 38f);
             healthUI.sprite = healthActiveIcon;
             healthIconList.Add(hp);
         }
@@ -62,6 +62,11 @@ public class PlayerHealthDisplay : MonoBehaviour, IPlayerObserver
                 return;
             case (PlayerAction.Blind):
                 currentHealthPoint--;
+                UpdateEmotionIcon(maxHealthPoint, currentHealthPoint);
+                playerHealthHUDGroup.GetComponent<Animation>().Play();
+                return;
+            case (PlayerAction.Dead):
+                currentHealthPoint = 0;
                 UpdateEmotionIcon(maxHealthPoint, currentHealthPoint);
                 playerHealthHUDGroup.GetComponent<Animation>().Play();
                 return;

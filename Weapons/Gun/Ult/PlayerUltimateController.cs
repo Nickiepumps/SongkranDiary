@@ -49,7 +49,7 @@ public class PlayerUltimateController : MonoBehaviour
             ultReady = false;
         }
 
-        if (Input.GetKeyDown(KeyCode.K) && ultReady == true)
+        if (Input.GetKeyDown(KeyCode.V) && ultReady == true)
         {
             currentUltReady--;
             ThrowProjectile();

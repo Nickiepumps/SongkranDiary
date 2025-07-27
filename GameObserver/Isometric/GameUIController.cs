@@ -24,18 +24,35 @@ public class GameUIController : MonoBehaviour, IGameObserver, IPlayerObserver
     [Space]
     [Space]
     [Header("Windows UI References")]
+    [Header("Isometric mode")]
+    [Space]
+    [Space]
+    [Header("Diary Audio")]
+    public AudioSource diaryAudioPlayer;
+    public AudioClip[] diaryAudioClipArr;
     [Header("Player HUD")]
     [SerializeField] private GameObject ISOPlayerHud; // Isometric player HUD
     [Header("Reward Window")]
     [SerializeField] private GameObject rewardWindow; // Player reward window
+    [Header("Diary Main Window")]
+    [SerializeField] private GameObject diaryMainWindow; // Player upgrade window
     [Header("Upgrade Window")]
     [SerializeField] private GameObject upgradeWindow; // Player upgrade window
+    [Header("Album Window")]
+    [SerializeField] private GameObject albumWindow; // Player album window
+    [Header("Postcard Window")]
+    [SerializeField] private GameObject postcardWindow; // Postcard window
+    [Space]
+    [Space]
+    [Header("Side-Scroll mode")]
     [Header("Scoreboard Window")]
     [SerializeField] private GameObject scoreBoard;
+    [SerializeField] private GameObject scoreBoardBG;
     [SerializeField] private GameObject winScoreBoard;
     [SerializeField] private GameObject loseScoreBoard;
     [SerializeField] private Image scoreBoardDistantUI;
     [SerializeField] private Image currentProgreesionIcon;
+    [SerializeField] private TMP_Text loseText;
     [SerializeField] private TMP_Text timerText;
     [SerializeField] private TMP_Text hpText;
     [SerializeField] private TMP_Text gradeText;
@@ -49,6 +66,7 @@ public class GameUIController : MonoBehaviour, IGameObserver, IPlayerObserver
     [Space]
     [Header("Transition Window")]
     [SerializeField] private GameObject transitionWindow;
+    [SerializeField] private Animator transitionAnimator;
 
     [SerializeField] private GameObject[] allISOWindowArr;
     [HideInInspector] public bool isNPCTalking = false;
@@ -155,14 +173,16 @@ public class GameUIController : MonoBehaviour, IGameObserver, IPlayerObserver
                 winScoreBoard.SetActive(false);
                 if(levelType == LevelType.RunNGunLevel)
                 {
-                    currentProgreesionIcon.rectTransform.anchoredPosition = new Vector2(sidescrollGameController.CheckGoalDistant(scoreBoardDistantUI),
+                    Vector2 progressValue = new Vector2(sidescrollGameController.CheckGoalDistant(scoreBoardDistantUI),
                         currentProgreesionIcon.rectTransform.anchoredPosition.y);
+                    StartCoroutine(StartPlayerLoseProgression(progressValue));
                     enemySpawnController.enabled = false;
                 }
                 else if(levelType == LevelType.BossLevel)
                 {
-                    currentProgreesionIcon.rectTransform.anchoredPosition = new Vector2(sidescrollGameController.CheckBossProgression(scoreBoardDistantUI),
+                    Vector2 progressValue = new Vector2(sidescrollGameController.CheckBossProgression(scoreBoardDistantUI),
                         currentProgreesionIcon.rectTransform.anchoredPosition.y);
+                    StartCoroutine(StartPlayerLoseProgression(progressValue));
                 }
                 loseScoreBoard.SetActive(true);
                 return;
@@ -192,6 +212,17 @@ public class GameUIController : MonoBehaviour, IGameObserver, IPlayerObserver
         }
         return false;
     }
+    public void OpenDiaryWindow()
+    {
+        upgradeWindow.SetActive(false);
+        albumWindow.SetActive(false);
+    }
+    public void CloseDiaryWindow()
+    {
+        albumWindow.SetActive(false);
+        upgradeWindow.SetActive(true);
+        OpenWindow(diaryMainWindow);
+    }
     public void OpenWindow(GameObject windowObj)
     {
         // Use for open any window in Isometric mode
@@ -216,12 +247,46 @@ public class GameUIController : MonoBehaviour, IGameObserver, IPlayerObserver
     {
         yield return null;
     }
+    public IEnumerator StartTransitionISOScene(Transform startPos)
+    {
+        Time.timeScale = 1; // Reset timescale to 1 in case the player paused the game
+        transitionWindow.SetActive(true);
+        transitionAnimator.SetInteger("Transition", 0);
+        transitionAnimator.SetBool("IsISO", true);
+        yield return new WaitForSeconds(0.5f);
+        ISOPlayerSubject.gameObject.transform.position = startPos.position;
+        postcardWindow.SetActive(false);
+        yield return new WaitForSeconds(1.5f);
+        transitionAnimator.SetInteger("Transition", 1);
+        transitionAnimator.SetBool("IsISO", true);
+        GetComponent<IsometricGameObserverContoller>().NotifyGameObserver(IsometricGameState.Play);
+        yield return new WaitForSeconds(0.2f);
+        transitionWindow.SetActive(false);
+    }
+    private IEnumerator StartPlayerLoseProgression(Vector2 progressValue)
+    {
+        loseText.GetComponent<Animation>().Play();
+        yield return new WaitUntil(() => loseText.GetComponent<Animation>().isPlaying == false);
+        scoreBoardBG.SetActive(true);
+        loseScoreBoard.SetActive(true);
+        while(currentProgreesionIcon.rectTransform.anchoredPosition.x < progressValue.x)
+        {
+            currentProgreesionIcon.rectTransform.anchoredPosition = new Vector2(currentProgreesionIcon.rectTransform.anchoredPosition.x + 1, currentProgreesionIcon.rectTransform.anchoredPosition.y);
+            yield return null;
+        }
+        if(currentProgreesionIcon.rectTransform.anchoredPosition.x > progressValue.x)
+        {
+            currentProgreesionIcon.rectTransform.anchoredPosition = progressValue;
+        }
+        yield return null;
+    }
     private IEnumerator ReachGoal()
     {
         // Wait for player to finish win animation
         //yield return new WaitForSeconds(1f); Uncomment this when we have player win anim
-        sideScrollIntroWindow.knouckOutGroup.SetActive(true); // Temp 
-        StartCoroutine(sideScrollIntroWindow.StartKnockOutWipeTransition()); // Temp 
+        scoreBoardBG.SetActive(true);
+        sideScrollIntroWindow.reachGoalGroup.SetActive(true);
+        StartCoroutine(sideScrollIntroWindow.StartReachGoalAnimation());
         yield return new WaitUntil(() => sideScrollIntroWindow.finishCoroutine == true); // Change this when we have player win anim
         transitionWindow.SetActive(true);
         transitionWindow.GetComponentInChildren<Animator>().SetInteger("Transition", 0);

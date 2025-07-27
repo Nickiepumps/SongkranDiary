@@ -15,8 +15,10 @@ public class EnemyShooterStateController : NormalEnemySubject
     public Rigidbody2D enemyRB;
     public NormalEnemyType normalEnemyType;
     public int currentEnemyHP;
-    public float walkSpeed;
-    public float jumpForce;
+    public float walkSpeed; // Default walk speed
+    public float jumpForce; // Default jump force
+    public float triggerWalkSpeed; // Enemy walk modify trigger; reset to default speed when exit the trigger
+    public float triggerJumpForce; // Enemy jump modify trigger; reset to default speed when exit the trigger
     public float enemyASPD;
     public int damage;
     public SpriteRenderer enemySpriteRenderer;
@@ -46,6 +48,8 @@ public class EnemyShooterStateController : NormalEnemySubject
         normalEnemyType = enemyStats.NormalEnemyType;
         currentEnemyHP = enemyStats.hp;
         walkSpeed = enemyStats.movementSpeed;
+        triggerWalkSpeed = walkSpeed;
+        triggerJumpForce = jumpForce;
         enemyASPD = enemyStats.aspd;
         damage = enemyStats.damage;
     }
@@ -78,8 +82,8 @@ public class EnemyShooterStateController : NormalEnemySubject
                 {
                     enemyAudioSource.clip = enemyAudioClipArr[0];
                     enemyAudioSource.Play();
+                    NotifyNormalEnemy(EnemyAction.Damaged);
                 }
-                NotifyNormalEnemy(EnemyAction.Damaged);
                 break;
             case ("E_Boundary"):
                 gameObject.SetActive(false);

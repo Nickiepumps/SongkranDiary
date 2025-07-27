@@ -17,6 +17,6 @@ MonoBehaviour:
   upgradeName: 
   upgradeDescription: 
   upgradeCost: 1
-  level: 3
+  level: 1
   hpPoint: 0
   ultChargeTime: 10

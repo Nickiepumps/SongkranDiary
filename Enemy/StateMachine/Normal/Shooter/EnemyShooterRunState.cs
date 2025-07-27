@@ -52,6 +52,12 @@ public class EnemyShooterRunState : EnemyStateMachine
     {
         if(eCollider.tag == "EnemyJump" && shooterEnemy.isOnGround == true)
         {
+            SideScroll_EnemyJumpModifyTrigger newJumpProperties = eCollider.GetComponent<SideScroll_EnemyJumpModifyTrigger>();
+            if (newJumpProperties != null && newJumpProperties.enemyUseThisJumpProperties == true)
+            {
+                //shooterEnemy.triggerWalkSpeed = newJumpProperties.newEnemyLaunchSpeed;
+                shooterEnemy.triggerJumpForce = newJumpProperties.newEnemyJumpForce;
+            }
             shooterEnemy.EnemyStateTransition(new EnemyShooterJumpState(shooterEnemy));
         }
     }

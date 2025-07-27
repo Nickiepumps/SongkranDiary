@@ -13,7 +13,7 @@ public class PlayerCameraController : MonoBehaviour, IPlayerObserver
     [SerializeField] private Transform playerTarget; // Player's transform 
     [SerializeField] private Transform bossLevelTarget; // Player's transform 
     [SerializeField] private Transform runLevelTarget; // Player's transform
-    private Transform currentFocusTarget;
+    [HideInInspector] public Transform currentFocusTarget;
 
     [Header("Camera follow properties")]
     [SerializeField] private float maxCamDistX, maxCamDistY, minCamDistX, minCamDistY; // Min/Max camera distance to follow player and not out of bound
@@ -23,7 +23,8 @@ public class PlayerCameraController : MonoBehaviour, IPlayerObserver
     private float focusTime = 2f;
     private float currentFocusTime;
     private bool zoomIn, zoomOut;
-    private bool isFocusNextLevel = false;
+    public bool isFocusNextLevel = false;
+    public bool isReachFocusTarget = false;
     private bool startFocusLevel = false;
     private StageClearData stageClearData;
     private void OnEnable()
@@ -37,12 +38,12 @@ public class PlayerCameraController : MonoBehaviour, IPlayerObserver
     }
     private void Start()
     {
-        stageClearData = SideScroll_StageClearDataHandler.instance.LoadSideScrollStageClear();
+        /*stageClearData = SideScroll_StageClearDataHandler.instance.LoadSideScrollStageClear();
         if(stageClearData != null)
         {
             CheckMapToFocus(stageClearData.mapName);
         }
-        currentFocusTime = focusTime;
+        currentFocusTime = focusTime;*/
     }
     private void FixedUpdate()
     {
@@ -66,21 +67,22 @@ public class PlayerCameraController : MonoBehaviour, IPlayerObserver
         }
         else
         {
-            Vector2 movedir = Vector2.Lerp(playerCam.transform.position, currentFocusTarget.position, followSpeed * Time.deltaTime);
-            if(movedir.x <= currentFocusTarget.position.x + 0.1f && movedir.y <= currentFocusTarget.position.y + 0.1f)
+            Vector2 movedir = Vector2.MoveTowards(playerCam.transform.position, currentFocusTarget.position, followSpeed * Time.deltaTime);
+            if(movedir.x == currentFocusTarget.position.x && movedir.y == currentFocusTarget.position.y)
             {
-                currentFocusTime -= Time.deltaTime;
+                isReachFocusTarget = true;
+                /*currentFocusTime -= Time.deltaTime;
                 if (currentFocusTime <= 0)
                 {
                     isFocusNextLevel = false;
-                }
+                }*/
             }
             else
             {
+                isReachFocusTarget = false;
                 playerCam.transform.position = new Vector3(movedir.x, movedir.y, playerCam.transform.position.z);
             }
         }
-        
     }
     public void OnPlayerNotify(PlayerAction playerAction)
     {
@@ -124,7 +126,6 @@ public class PlayerCameraController : MonoBehaviour, IPlayerObserver
                     Debug.Log("ISO 1 cleared");
                 }
                 break;
-
         }
     }
 }

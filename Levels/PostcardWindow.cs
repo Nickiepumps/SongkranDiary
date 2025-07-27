@@ -15,6 +15,13 @@ public class PostcardWindow : MonoBehaviour, IGameObserver
     [Header("Scene Controller (For Keyboard Only)")]
     [SerializeField] SceneController sceneController;
     public string sceneName;
+
+    [Header("Game UI Controller (For Keyboard Only)")]
+    [SerializeField] private GameUIController gameUIController;
+
+    [HideInInspector] public bool isTransitionToNewISOArea = false;
+    [HideInInspector] public Transform mapStartPoint;
+
     private void OnEnable()
     {
         gameSubject.AddGameObserver(this);
@@ -33,7 +40,14 @@ public class PostcardWindow : MonoBehaviour, IGameObserver
     {
         if (Input.GetKeyDown(KeyCode.Return))
         {
-            sceneController.ChangeScene(sceneName);
+            if(isTransitionToNewISOArea == false)
+            {
+                sceneController.ChangeScene(sceneName);
+            }
+            else
+            {
+                gameUIController.StartCoroutine(gameUIController.StartTransitionISOScene(mapStartPoint));
+            }
         }
         if (Input.GetKeyDown(KeyCode.Escape))
         {

@@ -26,16 +26,28 @@ public class PlayerDataHandler : MonoBehaviour
         PlayerData playerData = LoadPlayerData();
         if(playerData != null)
         {
-            isoPlayerStateController.transform.position = playerData.playerISOPos;
-            playerStats.currentPlayerHP.level = playerData.hpLevel;
-            playerStats.currentPlayerUltCharge.level = playerData.ultChargeLevel;
-            playerStats.currentPlayerUltAmount.level = playerData.ultAmountLevel;
-            playerStats.currentNormalASPD.level = playerData.bulletNormalASPDLevel;
-            playerStats.currentWeaponTravelSpeed.level = playerData.bulletNormalTSPDLevel;
-            playerStats.currentSprdBulletASPD.level = playerData.bulletSpreadASPD;
-            playerStats.currentWeaponSprdCount.level = playerData.bulletSpreadCountLevel;
-            playerStats.currentLsrBulletASPD.level = playerData.bulletLaserASPD;
+            if(isoPlayerStateController != null)
+            {
+                isoPlayerStateController.transform.position = playerData.playerISOPos;
+            }
+            playerStats.currentPlayerHP = playerData.hpSO;
+            //playerStats.currentPlayerHP.level = playerData.hpLevel;
+            playerStats.currentPlayerUltCharge = playerData.ultChargeSO;
+            //playerStats.currentPlayerUltCharge.level = playerData.ultChargeLevel;
+            //playerStats.currentPlayerUltAmount.level = playerData.ultAmountLevel;
+            playerStats.currentNormalASPD = playerData.bulletNormalASPDSO;
+            //playerStats.currentNormalASPD.level = playerData.bulletNormalASPDLevel;
+            playerStats.currentWeaponTravelSpeed = playerData.bulletNormalTSPDSO;
+            //playerStats.currentWeaponTravelSpeed.level = playerData.bulletNormalTSPDLevel;
+            playerStats.currentSprdBulletASPD = playerData.bulletSpreadASPDSO;
+            //playerStats.currentSprdBulletASPD.level = playerData.bulletSpreadASPDLevel;
+            playerStats.currentWeaponSprdCount = playerData.bulletSpreadCountSO;
+            //playerStats.currentWeaponSprdCount.level = playerData.bulletSpreadCountLevel;
+            playerStats.currentLsrBulletASPD = playerData.bulletLaserASPDSO;
+            //playerStats.currentLsrBulletASPD.level = playerData.bulletLaserASPDLevel;
             playerStats.coinAmount = playerData.Coin;
+            playerStats.spreadBulletUnlocked = playerData.bulletSpreadUnlocked;
+            playerStats.laserBulletUnlocked = playerData.bulletLaserUnlocked;
         }
     }
     public void SavePlayerData()
@@ -52,10 +64,19 @@ public class PlayerDataHandler : MonoBehaviour
         playerData.ultAmountLevel = playerStats.currentPlayerUltAmount.level;
         playerData.bulletNormalASPDLevel = playerStats.currentNormalASPD.level;
         playerData.bulletNormalTSPDLevel = playerStats.currentWeaponTravelSpeed.level;
-        playerData.bulletSpreadASPD = playerStats.currentSprdBulletASPD.level;
+        playerData.bulletSpreadASPDLevel = playerStats.currentSprdBulletASPD.level;
         playerData.bulletSpreadCountLevel = playerStats.currentWeaponSprdCount.level;
-        playerData.bulletLaserASPD = playerStats.currentLsrBulletASPD.level;
+        playerData.bulletLaserASPDLevel = playerStats.currentLsrBulletASPD.level;
         playerData.Coin = playerStats.coinAmount;
+        playerData.bulletSpreadUnlocked = playerStats.spreadBulletUnlocked;
+        playerData.bulletLaserUnlocked = playerStats.laserBulletUnlocked;
+        playerData.hpSO = playerStats.currentPlayerHP;
+        playerData.ultChargeSO = playerStats.currentPlayerUltCharge;
+        playerData.bulletNormalASPDSO = playerStats.currentNormalASPD;
+        playerData.bulletNormalTSPDSO = playerStats.currentWeaponTravelSpeed;
+        playerData.bulletSpreadCountSO = playerStats.currentWeaponSprdCount;
+        playerData.bulletSpreadASPDSO = playerStats.currentSprdBulletASPD;
+        playerData.bulletLaserASPDSO = playerStats.currentLsrBulletASPD;
 
         string playerDataJson = JsonUtility.ToJson(playerData);
         File.WriteAllText(Application.dataPath + "/playerData.json", playerDataJson);

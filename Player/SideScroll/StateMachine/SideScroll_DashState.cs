@@ -15,7 +15,7 @@ public class SideScroll_DashState : PlayerSideScrollStateMachine
         playerSideScroll.playerAnimator.SetBool("Idle", false);
         playerSideScroll.playerAnimator.SetBool("Run", false);
         playerSideScroll.playerAnimator.SetBool("Jump", false);
-
+        
         playerSideScroll.playerRB.gravityScale = 0;
         currentDashTime = DashTime;
         playerSideScroll.isDash = true;

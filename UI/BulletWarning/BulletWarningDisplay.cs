@@ -24,9 +24,10 @@ public class BulletWarningDisplay : MonoBehaviour
 
         // Offset image to appear near the screen border
         // Image will appear at correct position on any screen resolution
-        if (spawnerViewportPosToScreenPos.y >= 1080)
+        Debug.Log("Before Modify:" + spawnerViewportPosToScreenPos);
+        if (spawnerViewportPosToScreenPos.y >= Screen.height)
         {
-            spawnerViewportPosToScreenPos = new Vector2(spawnerViewportPosToScreenPos.x, Screen.height - 46);
+            spawnerViewportPosToScreenPos = new Vector2(spawnerViewportPosToScreenPos.x, Screen.height-80);
         }
         else if (spawnerViewportPosToScreenPos.x < 0)
         {
@@ -34,8 +35,9 @@ public class BulletWarningDisplay : MonoBehaviour
         }
         else if (spawnerViewportPosToScreenPos.x > 0)
         {
-            spawnerViewportPosToScreenPos = new Vector2(Screen.width - 46, spawnerViewportPosToScreenPos.y);
+            spawnerViewportPosToScreenPos = new Vector2(Screen.width - 80, spawnerViewportPosToScreenPos.y);
         }
+        Debug.Log("After Modify:" + spawnerViewportPosToScreenPos);
         warningSignArr[spawnerIndex].transform.position = spawnerViewportPosToScreenPos;
         warningSignArr[spawnerIndex].gameObject.SetActive(true);
     }

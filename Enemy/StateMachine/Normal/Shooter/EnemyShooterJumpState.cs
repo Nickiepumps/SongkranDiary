@@ -23,7 +23,8 @@ public class EnemyShooterJumpState : EnemyStateMachine
         }
         if (currentTime <= 0 && isJumping == false)
         {
-            shooterEnemy.enemyRB.AddForce(Vector2.up * shooterEnemy.jumpForce, ForceMode2D.Impulse);
+            shooterEnemy.enemyRB.AddForce(Vector2.up * shooterEnemy.triggerJumpForce, ForceMode2D.Impulse);
+            shooterEnemy.NotifyNormalEnemy(EnemyAction.Jump);
             isJumping = true;
         }
         if(isJumping == true)
@@ -50,6 +51,7 @@ public class EnemyShooterJumpState : EnemyStateMachine
     {
         if(eCollider.tag == "EnemyJump")
         {
+            shooterEnemy.triggerJumpForce = shooterEnemy.jumpForce;
             shooterEnemy.EnemyStateTransition(new EnemyShooterRunState(shooterEnemy));
         }
     }

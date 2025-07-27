@@ -123,12 +123,23 @@ public class BulletShooting : ShootingSubject, IPlayerObserver
     }
     private void ShootingControl()
     {
-        if (Input.GetKeyDown(KeyCode.E) && coolDownStatus == false)
+        if (Input.GetKeyDown(KeyCode.F) && coolDownStatus == false)
         {
             currentBulletArrayIndex++;
             if (currentBulletArrayIndex > 2)
             {
                 currentBulletArrayIndex = 0;
+            }
+            if(currentBulletArrayIndex == 1)
+            {
+                if (weaponData.spreadBulletUnlocked == false && weaponData.laserBulletUnlocked == false)
+                {
+                    currentBulletArrayIndex = 0;
+                }
+                else if (weaponData.spreadBulletUnlocked == false && weaponData.laserBulletUnlocked == true)
+                {
+                    currentBulletArrayIndex = 2;
+                }
             }
             StartCoroutine(SwitchCoolDown());
             gunAudioPlayer.clip = bulletAudioClipArr[currentBulletArrayIndex];
@@ -219,7 +230,7 @@ public class BulletShooting : ShootingSubject, IPlayerObserver
             sprdBullet = false;
             laserBullet = false;
         }*/
-        if (Input.GetKey(KeyCode.L))
+        if (Input.GetKey(KeyCode.C))
         {
             isAim = true;
         }
@@ -227,7 +238,7 @@ public class BulletShooting : ShootingSubject, IPlayerObserver
         {
             isAim = false;
         }
-        if (Input.GetKey(KeyCode.J))
+        if (Input.GetKey(KeyCode.X))
         {
             isShoot = true;
             muzzleFlash.SetActive(true);
@@ -254,23 +265,26 @@ public class BulletShooting : ShootingSubject, IPlayerObserver
             isShoot = false;
             muzzleFlash.SetActive(false);
         }
-        if (Input.GetKeyDown(KeyCode.S))
+        if (Input.GetKeyDown(KeyCode.DownArrow))
         {
             aimPivot.localPosition = new Vector3(aimPivot.localPosition.x, aimPivot.localPosition.y - 0.497f, 0);
         }
-        else if (Input.GetKeyUp(KeyCode.S))
+        else if (Input.GetKeyUp(KeyCode.DownArrow))
         {
-            aimPivot.localPosition = Vector3.zero;
+            aimPivot.localPosition = new Vector3(aimPivot.localPosition.x, aimPivot.localPosition.y + 0.497f, 0);
         }
     }
     private void ShootingNormalBullet()
     {
         spawnDirection_Right.gameObject.GetComponent<PlayerGun>().ShootBullet(BulletType.normalBullet);
+        currentASPD = weaponData.currentNormalASPD.aspd;
+        travelSpeed = weaponData.currentWeaponTravelSpeed.travelSpeed;
         gunAudioPlayer.pitch = UnityEngine.Random.Range(0.8f, 1.3f);
         gunAudioPlayer.Play();
     }
     private void ShootSpreadBullet()
     {
+        currentASPD = weaponData.currentSprdBulletASPD.aspd;
         for (int i = 0; i < weaponData.currentWeaponSprdCount.spreadCount; i++)
         {
             sprdSpawnDirection_Right[i].gameObject.GetComponent<PlayerGun>().ShootBullet(BulletType.spreadBullet);
@@ -280,6 +294,7 @@ public class BulletShooting : ShootingSubject, IPlayerObserver
     }
     private void ShootLaserBullet()
     {
+        currentASPD = weaponData.currentLsrBulletASPD.aspd;
         laserSpawnDirection_Right.gameObject.GetComponent<PlayerGun>().ShootBullet(BulletType.laser);
         gunAudioPlayer.pitch = UnityEngine.Random.Range(0.8f, 1.3f);
         gunAudioPlayer.Play();
@@ -329,23 +344,23 @@ public class BulletShooting : ShootingSubject, IPlayerObserver
         return angle;*/
 
         // Keyboard Aiming
-        if (Input.GetKey(KeyCode.D) && Input.GetKey(KeyCode.W))
+        if (Input.GetKey(KeyCode.RightArrow) && Input.GetKey(KeyCode.UpArrow))
         {
             angle = 45;
         }
-        else if (Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.W))
+        else if (Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.UpArrow))
         {
             angle = 135;
         }
-        else if (Input.GetKey(KeyCode.W))
+        else if (Input.GetKey(KeyCode.UpArrow))
         {
             angle = 90;
         }
-        else if (Input.GetKey(KeyCode.D))
+        else if (Input.GetKey(KeyCode.RightArrow) && playerSubject.GetComponent<PlayerSideScrollStateController>().isDash == false)
         {
             angle = 0;
         }
-        else if (Input.GetKey(KeyCode.A))
+        else if (Input.GetKey(KeyCode.LeftArrow) && playerSubject.GetComponent<PlayerSideScrollStateController>().isDash == false)
         {
             angle = 180;
         }
@@ -421,7 +436,7 @@ public class BulletShooting : ShootingSubject, IPlayerObserver
         if(coolDownStatus == true)
         {
             currentBulletSwitchCoolDownTimer -= Time.deltaTime;
-            sprdBulletKeyIcon.fillAmount = 1 - (currentBulletSwitchCoolDownTimer / switchCoolDown);
+            //sprdBulletKeyIcon.fillAmount = 1 - (currentBulletSwitchCoolDownTimer / switchCoolDown);
             laserBulletKeyIcon.fillAmount = 1 - (currentBulletSwitchCoolDownTimer / switchCoolDown);
             if (currentBulletSwitchCoolDownTimer <= 0)
             {
@@ -430,7 +445,7 @@ public class BulletShooting : ShootingSubject, IPlayerObserver
         }
         else
         {
-            sprdBulletKeyIcon.fillAmount = 1;
+            //sprdBulletKeyIcon.fillAmount = 1;
             laserBulletKeyIcon.fillAmount = 1;
         }
     }

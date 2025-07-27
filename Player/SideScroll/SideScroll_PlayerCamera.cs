@@ -61,6 +61,10 @@ public class SideScroll_PlayerCamera : MonoBehaviour, IPlayerObserver
                 StartCoroutine(CameraShake(1f, minShake, maxShake));
                 StartCoroutine(Blur());
                 return;
+            case (PlayerAction.Dead):
+                StopAllCoroutines();
+                StartCoroutine(CameraShake(1f, minShake, maxShake));
+                return;
         }
     }
     private IEnumerator CameraShake(float shakeDuration, float minShake, float maxShake)

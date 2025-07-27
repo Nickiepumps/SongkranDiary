@@ -5,9 +5,9 @@ using UnityEngine.UI;
 public enum LandmarkType
 {
     RunNGun,
-    Boss
+    Boss,
+    MapTransition
 }
-
 public class LevelLandMarkController : MonoBehaviour, IGameObserver, IPlayerObserver
 {
     [Header("Observer References")]
@@ -15,7 +15,10 @@ public class LevelLandMarkController : MonoBehaviour, IGameObserver, IPlayerObse
     [SerializeField] private GameSubject isometricGameSubject; // Isometric Game subject To Do: find gameSubject object in the scene and reference it when turned into prefab
 
     [Header("Scene Controller Reference")]
-    [SerializeField] private SceneController sceneController;
+    [SerializeField] private SceneController sceneController; // For scene loading and transition
+
+    [Header("Game UI Controller Reference")]
+    [SerializeField] private GameUIController gameUIController; // For ISO scene transtion
     
     [Header("Level Postcard and Notif References")]
     //[SerializeField] private GameObject levelPostcardCanvas; // Level Postcard Canvas
@@ -28,6 +31,7 @@ public class LevelLandMarkController : MonoBehaviour, IGameObserver, IPlayerObse
     [SerializeField] private LandmarkType landmarkType;
     [SerializeField] private string landmarkName;
     [SerializeField] private string sceneName;
+    [SerializeField] private Transform newMapStartPoint;
 
     private void OnEnable()
     {
@@ -75,16 +79,27 @@ public class LevelLandMarkController : MonoBehaviour, IGameObserver, IPlayerObse
                 {
                     if(landmarkType == LandmarkType.RunNGun)
                     {
+                        levelPostcard.isTransitionToNewISOArea = false;
+                        levelPostcard.mapStartPoint = null;
                         levelPostcard.levelTypeText.text = "Run n Gun";
                         enterlevelBtn.onClick.RemoveAllListeners();
                         enterlevelBtn.onClick.AddListener(ChangeScene);
-
                     }
                     else if(landmarkType == LandmarkType.Boss)
                     {
+                        levelPostcard.isTransitionToNewISOArea = false;
+                        levelPostcard.mapStartPoint = null;
                         levelPostcard.levelTypeText.text = "Boss";
                         enterlevelBtn.onClick.RemoveAllListeners();
                         enterlevelBtn.onClick.AddListener(ChangeScene);
+                    }
+                    else if (landmarkType == LandmarkType.MapTransition)
+                    {
+                        levelPostcard.isTransitionToNewISOArea = true;
+                        levelPostcard.mapStartPoint = newMapStartPoint;
+                        levelPostcard.levelTypeText.text = "สถานที่ต่อไป";
+                        enterlevelBtn.onClick.RemoveAllListeners();
+                        enterlevelBtn.onClick.AddListener(ChangeISOMap);
                     }
                     levelPostcard.postcardNameText.text = landmarkName;
                     levelPostcard.sceneName = sceneName;
@@ -108,12 +123,18 @@ public class LevelLandMarkController : MonoBehaviour, IGameObserver, IPlayerObse
     {
         if (landmarkType == LandmarkType.RunNGun)
         {
-            sceneController.ChangeScene("Run_1");
+            sceneController.ChangeScene(sceneName);
         }
         else if(landmarkType == LandmarkType.Boss)
         {
-            sceneController.ChangeScene("Boss_1");
+            sceneController.ChangeScene(sceneName);
         }
-        
+    }
+    private void ChangeISOMap()
+    {
+        if(player != null && player.tag == "Player")
+        {
+            StartCoroutine(gameUIController.StartTransitionISOScene(newMapStartPoint));
+        }
     }
 }

@@ -16,6 +16,8 @@ public class SideScroll_StageClearDataHandler : MonoBehaviour, IGameObserver, IB
     [SerializeField] private GameSubject gameControllerSubject;
     [SerializeField] private BossSubject bossSubject;
 
+    [SerializeField] private LevelDataSO levelDataSO;
+
     public string mapName;
     public bool Side_L1_Run;
     public bool Side_L1_Boss;
@@ -28,6 +30,7 @@ public class SideScroll_StageClearDataHandler : MonoBehaviour, IGameObserver, IB
     public bool ISO_L3;
 
     public GameType gameType;
+    private bool isFoundLevelData = false;
     private void Awake()
     {
         if(instance == null)
@@ -74,7 +77,7 @@ public class SideScroll_StageClearDataHandler : MonoBehaviour, IGameObserver, IB
         StageClearData stageClearData = LoadSideScrollStageClear();
         if(stageClearData != null)
         {
-            mapName = stageClearData.mapName;
+            /*mapName = stageClearData.mapName;
             Side_L1_Run = stageClearData.Side_L1_Run;
             Side_L1_Boss = stageClearData.Side_L1_Boss;
             ISO_L1 = stageClearData.ISO_L1;
@@ -83,11 +86,11 @@ public class SideScroll_StageClearDataHandler : MonoBehaviour, IGameObserver, IB
             ISO_L2 = stageClearData.ISO_L2;
             Side_L3_Run = stageClearData.Side_L3_Run;
             Side_L3_Boss = stageClearData.Side_L3_Boss;
-            ISO_L3 = stageClearData.ISO_L3;
+            ISO_L3 = stageClearData.ISO_L3;*/
         }
         if(gameType != GameType.Isometric)
         {
-            mapName = SceneManager.GetActiveScene().name;
+            //mapName = SceneManager.GetActiveScene().name;
         }
     }
     public void OnGameNotify(IsometricGameState isoGameState)
@@ -98,26 +101,37 @@ public class SideScroll_StageClearDataHandler : MonoBehaviour, IGameObserver, IB
     {
         if(sidescrollGameState == SideScrollGameState.WinRunNGun)
         {
-            switch (mapName)
+            if(levelDataSO.isClear == false)
+            {
+                levelDataSO.isClear = true;
+            }
+            SaveSideScrollStageClear();
+            /*switch (mapName)
             {
                 case "Run_1":
                     Side_L1_Run = true;
                     SaveSideScrollStageClear();
                     break;
-            }
+            }*/
         }
-        
     }
     public void OnBossNotify(BossAction action)
     {
         if(action == BossAction.Die)
-        switch (mapName)
+        {
+            if (levelDataSO.isClear == false)
+            {
+                levelDataSO.isClear = true;
+            }
+            SaveSideScrollStageClear();
+        }
+        /*switch (mapName)
         {
             case "Boss_1":
                 Side_L1_Boss = true;
                 SaveSideScrollStageClear();
                 break;
-        }
+        }*/
     }
     public void SaveSideScrollStageClear()
     {
@@ -126,8 +140,34 @@ public class SideScroll_StageClearDataHandler : MonoBehaviour, IGameObserver, IB
             Directory.CreateDirectory(Application.dataPath);
         }
 
-        StageClearData stageClearData = new StageClearData();
-        stageClearData.mapName = mapName;
+        StageClearData stageClearData = LoadSideScrollStageClear();
+        if(stageClearData == null)
+        {
+          stageClearData = new StageClearData();  
+        }
+        if (stageClearData.levelData == null)
+        {
+            stageClearData.levelData.Add(levelDataSO);
+        }
+        else
+        {
+            for(int i = 0; i < stageClearData.levelData.Count; i++)
+            {
+                if(stageClearData.levelData[i].LevelName == levelDataSO.LevelName)
+                {
+                    isFoundLevelData = true;
+                    stageClearData.levelData[i] = levelDataSO;
+                    break;
+                }
+            }
+            if(isFoundLevelData == false)
+            {
+                Debug.Log("test");
+                stageClearData.levelData.Add(levelDataSO);
+            }
+        }
+
+        /*stageClearData.mapName = mapName;
         stageClearData.Side_L1_Run = Side_L1_Run;
         stageClearData.Side_L1_Boss = Side_L1_Boss;
         stageClearData.ISO_L1 = ISO_L1;
@@ -136,7 +176,7 @@ public class SideScroll_StageClearDataHandler : MonoBehaviour, IGameObserver, IB
         stageClearData.ISO_L2 = ISO_L2;
         stageClearData.Side_L3_Run = Side_L3_Run;
         stageClearData.Side_L3_Boss = Side_L3_Boss;
-        stageClearData.ISO_L3 = ISO_L3;
+        stageClearData.ISO_L3 = ISO_L3;*/
         string stageClearJson = JsonUtility.ToJson(stageClearData);
         File.WriteAllText(Application.dataPath + "/stageClear.json", stageClearJson);
     }

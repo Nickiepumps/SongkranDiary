@@ -1,14 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class SideScroll_RunState : PlayerSideScrollStateMachine
 {
     public SideScroll_RunState(PlayerSideScrollStateController playerSideScroll) : base(playerSideScroll) { }
     Vector2 moveDir;
     bool isRamp = false;
-    Vector2 rampNormal;
     public override void Start()
     {
         playerSideScroll.NotifyPlayerObserver(PlayerAction.Run);
@@ -19,13 +17,13 @@ public class SideScroll_RunState : PlayerSideScrollStateMachine
         if (playerSideScroll.isPlayerOnGround == false)
         {
             playerSideScroll.playerAnimator.SetBool("Jump", true);
-            playerSideScroll.playerCollider.size = playerSideScroll.playerJumpColliderSize;
             playerSideScroll.playerCollider.offset = playerSideScroll.playerJumpColliderOffset;
+            playerSideScroll.playerCollider.size = playerSideScroll.playerJumpColliderSize;
         }
         else
         {
-            playerSideScroll.playerCollider.size = playerSideScroll.playerStandColliderSize;
             playerSideScroll.playerCollider.offset = playerSideScroll.playerStandColliderOffset;
+            playerSideScroll.playerCollider.size = playerSideScroll.playerStandColliderSize;
         }
         if(playerSideScroll.currentCollider != null)
         {
@@ -43,11 +41,7 @@ public class SideScroll_RunState : PlayerSideScrollStateMachine
         {
             playerSideScroll.PlayerSideScrollStateTransition(new SideScroll_IdleState(playerSideScroll));
         }
-        if(Input.GetKeyDown(KeyCode.I) && playerSideScroll.isPlayerOnGround == true)
-        {
-            playerSideScroll.PlayerSideScrollStateTransition(new SideScroll_JumpState(playerSideScroll));
-        }
-        else if(Input.GetKeyDown(KeyCode.Space) && playerSideScroll.isPlayerOnGround == true)
+        else if(Input.GetKeyDown(KeyCode.Z) && playerSideScroll.isPlayerOnGround == true)
         {
             playerSideScroll.PlayerSideScrollStateTransition(new SideScroll_JumpState(playerSideScroll));
         }
@@ -55,7 +49,7 @@ public class SideScroll_RunState : PlayerSideScrollStateMachine
         {
             playerSideScroll.PlayerSideScrollStateTransition(new SideScroll_DashState(playerSideScroll));
         }
-        if (Input.GetKeyDown(KeyCode.S) && playerSideScroll.isPlayerOnGround == true)
+        if (Input.GetKeyDown(KeyCode.DownArrow) && playerSideScroll.isPlayerOnGround == true)
         {
             if (playerSideScroll.GetComponent<BulletAiming>().isAimUp == false)
             {
@@ -82,7 +76,7 @@ public class SideScroll_RunState : PlayerSideScrollStateMachine
         {
             playerSideScroll.playerRB.velocity -= playerSideScroll.gravityVelocity * playerSideScroll.fallMultiplier * Time.deltaTime;
         }
-        if(isRamp == false)
+        if (isRamp == false)
         {
             moveDir = new Vector2(playerSideScroll.xDir, playerSideScroll.playerRB.velocity.y);
             playerSideScroll.playerRB.velocity = moveDir;
@@ -91,6 +85,7 @@ public class SideScroll_RunState : PlayerSideScrollStateMachine
         {
             playerSideScroll.playerRB.velocity = moveDir;
         }
+
     }
     public override void OntriggerEnter(Collider2D pCollider)
     {
@@ -102,7 +97,7 @@ public class SideScroll_RunState : PlayerSideScrollStateMachine
     }
     public override void OnColliderEnter(Collision2D pCollider)
     {
-        if (pCollider.gameObject.tag == "Side_Floor")
+        if (pCollider.gameObject.tag == "Side_Floor" || pCollider.gameObject.tag == "Side_Interactable")
         {
             Vector2 normal = pCollider.GetContact(0).normal;
             if(normal.y <= 1 && normal.y > -1 && normal.y != 0)
@@ -112,17 +107,25 @@ public class SideScroll_RunState : PlayerSideScrollStateMachine
                     playerSideScroll.playerMovementAudioSource.clip = playerSideScroll.playerAudioClipArr[0];
                     playerSideScroll.playerMovementAudioSource.Play();
                 }
+                if (pCollider.collider.usedByEffector == false)
+                {
+                    playerSideScroll.playerCollider.excludeLayers = playerSideScroll.floorLayerMaskExclude;
+                }
+                playerSideScroll.isFallen = false;
+                playerSideScroll.isDash = false;
                 playerSideScroll.isPlayerOnGround = true;
-                playerSideScroll.currentCollider = pCollider.collider;
-                playerSideScroll.playerCollider.size = playerSideScroll.playerStandColliderSize;
+                playerSideScroll.playerCollider.sharedMaterial = null;
+                playerSideScroll.playerRB.sharedMaterial = null;
                 playerSideScroll.playerCollider.offset = playerSideScroll.playerStandColliderOffset;
+                playerSideScroll.playerCollider.size = playerSideScroll.playerStandColliderSize;
+                playerSideScroll.currentCollider = pCollider.collider;
                 playerSideScroll.playerAnimator.SetBool("Jump", false);
             }
         }
     }
     public override void OnColliderStay(Collision2D pCollider)
     {
-        if (pCollider.gameObject.tag == "Side_Floor" && pCollider.collider.usedByEffector == false)
+        if (pCollider.gameObject.tag == "Side_Floor" || pCollider.gameObject.tag == "Side_Interactable" && pCollider.collider.usedByEffector == false)
         {
             Vector2 normal = pCollider.GetContact(0).normal;
             if(normal != Vector2.right && normal.x > 0)
@@ -130,7 +133,6 @@ public class SideScroll_RunState : PlayerSideScrollStateMachine
                 isRamp = true;
                 // Calculate the speed when running uphil using ramp's x normal then add the remaining speed of player's normal speed
                 float rampSpeed = (normal.x * playerSideScroll.xDir) + (playerSideScroll.walkSpeed - (normal.x * playerSideScroll.xDir));
-                Debug.Log(rampSpeed);
                 if (Input.GetAxisRaw("Horizontal") == 1)
                 {
                     moveDir = new Vector2(rampSpeed, -normal.y);
@@ -145,7 +147,6 @@ public class SideScroll_RunState : PlayerSideScrollStateMachine
                 isRamp = true;
                 // Calculate the speed when running uphil using ramp's x normal then add the remaining speed of player's normal speed
                 float rampSpeed = (-normal.x * playerSideScroll.xDir) + (playerSideScroll.walkSpeed - (-normal.x * playerSideScroll.xDir));
-                Debug.Log(rampSpeed);
                 if (Input.GetAxisRaw("Horizontal") == 1)
                 {
                     moveDir = new Vector2(rampSpeed, normal.y);
@@ -159,41 +160,50 @@ public class SideScroll_RunState : PlayerSideScrollStateMachine
             {
                 isRamp = false;
             }
-
             if (normal == Vector2.left)
             {
                 if (Input.GetAxisRaw("Horizontal") == 1)
                 {
-                    playerSideScroll.currentWalkSpeed = 0f;
+                    //playerSideScroll.currentWalkSpeed = 0f;
+                    playerSideScroll.playerCollider.sharedMaterial = playerSideScroll.antislipPhysicMat;
+                    playerSideScroll.playerRB.sharedMaterial = playerSideScroll.antislipPhysicMat;
                 }
                 else
                 {
-                    playerSideScroll.currentWalkSpeed = playerSideScroll.walkSpeed;
+                    //playerSideScroll.currentWalkSpeed = playerSideScroll.walkSpeed;
+                    playerSideScroll.playerCollider.sharedMaterial = null;
+                    playerSideScroll.playerRB.sharedMaterial = null;
                 }
             }
             else if (normal == Vector2.right)
             {
                 if (Input.GetAxisRaw("Horizontal") == -1)
                 {
-                    playerSideScroll.currentWalkSpeed = 0f;
+                    //playerSideScroll.currentWalkSpeed = 0f;
+                    playerSideScroll.playerCollider.sharedMaterial = playerSideScroll.antislipPhysicMat;
+                    playerSideScroll.playerRB.sharedMaterial = playerSideScroll.antislipPhysicMat;
                 }
                 else
                 {
-                    playerSideScroll.currentWalkSpeed = playerSideScroll.walkSpeed;
+                    //playerSideScroll.currentWalkSpeed = playerSideScroll.walkSpeed;
+                    playerSideScroll.playerCollider.sharedMaterial = null;
+                    playerSideScroll.playerRB.sharedMaterial = null;
                 }
             }
         }
     }
     public override void OnColliderExit(Collision2D pCollider)
     {
-        if (pCollider.gameObject.tag == "Side_Floor")
+        if (pCollider.gameObject.tag == "Side_Floor" || pCollider.gameObject.tag == "Side_Interactable")
         {
             isRamp = false;
-            playerSideScroll.currentWalkSpeed = playerSideScroll.walkSpeed;
+            //playerSideScroll.currentWalkSpeed = playerSideScroll.walkSpeed;
             if(pCollider.collider == playerSideScroll.currentCollider)
             {
                 playerSideScroll.isPlayerOnGround = false;
                 playerSideScroll.currentCollider = null;
+                playerSideScroll.playerCollider.sharedMaterial = null;
+                playerSideScroll.playerRB.sharedMaterial = null;
             }
         }
     }
