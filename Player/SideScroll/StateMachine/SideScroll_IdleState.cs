@@ -26,6 +26,8 @@ public class SideScroll_IdleState : PlayerSideScrollStateMachine
             playerSideScroll.playerAnimator.SetBool("Jump", true);
         }
         playerSideScroll.currentWalkSpeed = playerSideScroll.walkSpeed;
+        playerSideScroll.playerCollider.sharedMaterial = null;
+        playerSideScroll.playerRB.sharedMaterial = null;
         playerSideScroll.playerCollider.offset = playerSideScroll.playerStandColliderOffset;
         playerSideScroll.playerCollider.size = playerSideScroll.playerStandColliderSize;
     }
@@ -111,7 +113,7 @@ public class SideScroll_IdleState : PlayerSideScrollStateMachine
         if (pCollider.gameObject.tag == "Side_Floor" && pCollider.collider.usedByEffector == false)
         {
             Vector2 normal = pCollider.GetContact(0).normal;
-            if (normal.x != 1 && normal.x > 0)
+            if (normal.x != -1 && normal.x != 1 )
             {
                 playerSideScroll.playerRB.velocity = new Vector2(playerSideScroll.playerRB.velocity.x - (normal.x * 0.8f), playerSideScroll.playerRB.velocity.y);
             }

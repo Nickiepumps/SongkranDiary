@@ -10,8 +10,8 @@ public class FatKid_BossStateController : BossSubject
     public BossScriptableObject bossScriptableObject;
 
     [Header("Audio Reference")]
-    public AudioClip[] enemyAudioClipArr;
-    public AudioSource enemyAudioSource;
+    //public AudioClip[] enemyAudioClipArr;
+    //public AudioSource enemyAudioSource;
 
     [Header("Boss Animator")]
     public Animator bossAnimator;    
@@ -54,8 +54,8 @@ public class FatKid_BossStateController : BossSubject
             case ("PlayerBullet"):
                 if(isDead == false)
                 {
-                    enemyAudioSource.clip = enemyAudioClipArr[0];
-                    enemyAudioSource.Play();
+                    //enemyAudioSource.clip = enemyAudioClipArr[0];
+                    //enemyAudioSource.Play();
                     NotifyBoss(BossAction.Damaged);
                 }
                 break;

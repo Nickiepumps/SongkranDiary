@@ -55,7 +55,7 @@ public class PlayerObserverController : MonoBehaviour, IGameObserver, IPlayerObs
             sidescrollGameSubject.AddSideScrollGameObserver(this);
             sidescrollIntroWindowSubject.AddSideScrollGameObserver(this); // Find a way to use this line inside GameUIControllerScript
         }
-        if(gameType == GameType.RunNGun)
+        if (gameType == GameType.RunNGun)
         {
             goalSubject.AddSideScrollGameObserver(this);
         }
@@ -101,9 +101,12 @@ public class PlayerObserverController : MonoBehaviour, IGameObserver, IPlayerObs
                 playerSideScrollStateController.isGameStart = true;
                 return;
             case(SideScrollGameState.WinRunNGun):
+                playerSideScrollStateController.enabled = false;
                 playerSideScrollStateController.isWinRunNGun = true;
+                //playerSideScrollStateController.isWin = true;
                 return;
             case (SideScrollGameState.WinBoss):
+                //playerSideScrollStateController.isWin = true;
                 playerSideScrollStateController.enabled = false;
                 playerSideScrollStateController.gameObject.GetComponent<BulletShooting>().enabled = false;
                 return;

@@ -27,6 +27,7 @@ public class SceneController : MonoBehaviour
     {
         Time.timeScale = 1; // Reset timescale to 1 in case the player paused the game
         SceneHandler.destinationSceneName = SceneHandler.currentSceneName;
+        Debug.Log(SceneHandler.destinationSceneName);
         StartCoroutine(StartLoadingScreen());
     }
     private void Awake()

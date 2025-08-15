@@ -6,19 +6,32 @@ public class Main_Menu : MonoBehaviour
 {
     [Header("Windows")]
     [SerializeField] private GameObject mainMenuWindow;
-    [SerializeField] private GameObject tutorialWindow;
+    [SerializeField] private GameObject albumWindow;
     [SerializeField] private GameObject settingWindow;
+    [Header("Buttons")]
+    [SerializeField] private GameObject continueBtn;
+    private void Start()
+    {
+        if(PlayerDataHandler.instance.hasPlayerData == true)
+        {
+            continueBtn.SetActive(true);
+        }
+        else
+        {
+            continueBtn.SetActive(false);
+        }
+    }
     public void OpenMenu()
     {
         mainMenuWindow.SetActive(true);
         settingWindow.SetActive(false);
-        tutorialWindow.SetActive(false);
+        albumWindow.SetActive(false);
     }
-    public void OpenTutorial()
+    public void OpenAlbum()
     {
         mainMenuWindow.SetActive(false);
         settingWindow.SetActive(false);
-        tutorialWindow.SetActive(true);
+        albumWindow.SetActive(true);
     }
     public void OpenSetting()
     {

@@ -10,8 +10,8 @@ public class FatKid_BossDieState : BossStateMachine
     public override void Start()
     {
         fatKidBoss.isDead = true;
-        fatKidBoss.enemyAudioSource.clip = fatKidBoss.enemyAudioClipArr[1];
-        fatKidBoss.enemyAudioSource.Play();
+        /*fatKidBoss.enemyAudioSource.clip = fatKidBoss.enemyAudioClipArr[1];
+        fatKidBoss.enemyAudioSource.Play();*/
         fatKidBoss.NotifyBoss(BossAction.Die);
         fatKidBoss.gameObject.SetActive(false);
     }

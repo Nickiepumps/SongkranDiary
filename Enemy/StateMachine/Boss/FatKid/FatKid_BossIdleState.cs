@@ -44,7 +44,7 @@ public class FatKid_BossIdleState : BossStateMachine
             if (currentAspd <= 0)
             {
                 fatKidBoss.NotifyBoss(BossAction.Shoot);
-                currentAspd = fatKidBoss.bossScriptableObject.aspd; // To do: Fix timing later
+                currentAspd = fatKidBoss.bossScriptableObject.aspd;
             }
             else
             {

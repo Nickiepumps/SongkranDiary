@@ -17,11 +17,11 @@ public class EnemyBomberRunState : EnemyStateMachine
         }
         if (bomberEnemy.enemySpriteRenderer.flipX == false)
         {
-            bomberEnemy.transform.position += new Vector3(-bomberEnemy.walkSpeed, 0, 0) * Time.deltaTime;
+            bomberEnemy.transform.position += new Vector3(bomberEnemy.walkSpeed, 0, 0) * Time.deltaTime;
         }
         else
         {
-            bomberEnemy.transform.position += new Vector3(bomberEnemy.walkSpeed, 0, 0) * Time.deltaTime;
+            bomberEnemy.transform.position += new Vector3(-bomberEnemy.walkSpeed, 0, 0) * Time.deltaTime;
         }
     }
     public override void FixedUpdate()

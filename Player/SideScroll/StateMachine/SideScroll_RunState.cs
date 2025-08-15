@@ -70,11 +70,11 @@ public class SideScroll_RunState : PlayerSideScrollStateMachine
     {
         if (playerSideScroll.playerRB.velocity.y > 0 && playerSideScroll.isJump == true)
         {
-            playerSideScroll.playerRB.velocity += playerSideScroll.gravityVelocity * playerSideScroll.jumpMultiplier * Time.deltaTime;
+            playerSideScroll.playerRB.velocity += playerSideScroll.gravityVelocity * playerSideScroll.jumpMultiplier * Time.fixedDeltaTime;
         }
         if (playerSideScroll.playerRB.velocity.y < 0)
         {
-            playerSideScroll.playerRB.velocity -= playerSideScroll.gravityVelocity * playerSideScroll.fallMultiplier * Time.deltaTime;
+            playerSideScroll.playerRB.velocity -= playerSideScroll.gravityVelocity * playerSideScroll.fallMultiplier * Time.fixedDeltaTime;
         }
         if (isRamp == false)
         {
@@ -128,7 +128,8 @@ public class SideScroll_RunState : PlayerSideScrollStateMachine
         if (pCollider.gameObject.tag == "Side_Floor" || pCollider.gameObject.tag == "Side_Interactable" && pCollider.collider.usedByEffector == false)
         {
             Vector2 normal = pCollider.GetContact(0).normal;
-            if(normal != Vector2.right && normal.x > 0)
+            
+            if (normal != Vector2.right && normal.x > 0)
             {
                 isRamp = true;
                 // Calculate the speed when running uphil using ramp's x normal then add the remaining speed of player's normal speed
@@ -144,8 +145,9 @@ public class SideScroll_RunState : PlayerSideScrollStateMachine
             }
             else if (normal != Vector2.left && normal.x < 0)
             {
+                // To do: fix slow uphill movement
                 isRamp = true;
-                // Calculate the speed when running uphil using ramp's x normal then add the remaining speed of player's normal speed
+                // Calculate the speed when running uphill using ramp's x normal then add the remaining speed of player's normal speed
                 float rampSpeed = (-normal.x * playerSideScroll.xDir) + (playerSideScroll.walkSpeed - (-normal.x * playerSideScroll.xDir));
                 if (Input.GetAxisRaw("Horizontal") == 1)
                 {
@@ -160,7 +162,7 @@ public class SideScroll_RunState : PlayerSideScrollStateMachine
             {
                 isRamp = false;
             }
-            if (normal == Vector2.left)
+            if (normal == Vector2.left && pCollider.collider.usedByEffector == false)
             {
                 if (Input.GetAxisRaw("Horizontal") == 1)
                 {
@@ -175,7 +177,7 @@ public class SideScroll_RunState : PlayerSideScrollStateMachine
                     playerSideScroll.playerRB.sharedMaterial = null;
                 }
             }
-            else if (normal == Vector2.right)
+            else if (normal == Vector2.right && pCollider.collider.usedByEffector == false)
             {
                 if (Input.GetAxisRaw("Horizontal") == -1)
                 {
@@ -202,9 +204,9 @@ public class SideScroll_RunState : PlayerSideScrollStateMachine
             {
                 playerSideScroll.isPlayerOnGround = false;
                 playerSideScroll.currentCollider = null;
-                playerSideScroll.playerCollider.sharedMaterial = null;
-                playerSideScroll.playerRB.sharedMaterial = null;
             }
+            playerSideScroll.playerCollider.sharedMaterial = null;
+            playerSideScroll.playerRB.sharedMaterial = null;
         }
     }
     public override void Exit()

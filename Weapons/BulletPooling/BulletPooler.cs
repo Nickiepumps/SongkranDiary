@@ -78,7 +78,14 @@ public class BulletPooler : MonoBehaviour
             {
                 pooledbullets[i].GetComponent<Bullet>().bulletType = newBulletType;
                 pooledbullets[i].GetComponent<Bullet>().bulletSprite.sprite = currentBulletSprite;
-                pooledbullets[i].GetComponent<Bullet>().bulletSprite.drawMode = SpriteDrawMode.Simple;
+                if(newBulletType == BulletType.laser)
+                {
+                    pooledbullets[i].GetComponent<Bullet>().bulletSprite.drawMode = SpriteDrawMode.Tiled;
+                }
+                else
+                {
+                    pooledbullets[i].GetComponent<Bullet>().bulletSprite.drawMode = SpriteDrawMode.Simple;
+                }
                 pooledbullets[i].GetComponent<Bullet>().transform.GetChild(0).transform.localScale = Vector2.one;
             }
         }

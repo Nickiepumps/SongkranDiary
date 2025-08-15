@@ -57,11 +57,9 @@ public class FatKid_BossObserverController : MonoBehaviour, IBossObserver, IGame
                 }
                 return;
             case (BossAction.Jump):
-                Debug.Log("Boss Jumped");
                 bossSubject.GetComponent<FatKid_BossStateController>().bossRB.AddForce(Vector2.up * 28, ForceMode2D.Impulse);
                 return;
             case (BossAction.Ult):
-                Debug.Log("Boss Ult Observer");
                 return;
             case (BossAction.Damaged):
                 return;

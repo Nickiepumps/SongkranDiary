@@ -64,6 +64,9 @@ public class GameUIController : MonoBehaviour, IGameObserver, IPlayerObserver
     [Header("Side Scroll Outro Window")]
     [SerializeField] private SideScrollIntro sideScrollIntroWindow;
     [Space]
+    [Header("Tutorial Exit Window")]
+    [SerializeField] private GameObject tutorialExitWindow;
+    [Space]
     [Header("Transition Window")]
     [SerializeField] private GameObject transitionWindow;
     [SerializeField] private Animator transitionAnimator;
@@ -78,7 +81,7 @@ public class GameUIController : MonoBehaviour, IGameObserver, IPlayerObserver
             //gameControllerSubject.AddGameObserver(this);
             ISOPlayerSubject.AddPlayerObserver(this);
         }
-        else if(levelType == LevelType.RunNGunLevel)
+        else if(levelType == LevelType.RunNGunLevel || levelType == LevelType.TutorialLevel)
         {
             gameUIControllerSubject.AddGameObserver(this);
             gameUIControllerSubject.AddSideScrollGameObserver(this);
@@ -152,6 +155,9 @@ public class GameUIController : MonoBehaviour, IGameObserver, IPlayerObserver
         {
             case(SideScrollGameState.Play):
                 pauseWindow.SetActive(false);
+                sidescrollGameController.sidescrollPlayer.playerAnimator.enabled = true;
+                sidescrollGameController.sidescrollPlayer.playerBulletShooting.enabled = true;
+                sidescrollGameController.sidescrollPlayer.enabled = true;
                 Time.timeScale = 1; // To Do: Find a better way to pause the game
                 return;
             case (SideScrollGameState.StartRound):
@@ -160,6 +166,13 @@ public class GameUIController : MonoBehaviour, IGameObserver, IPlayerObserver
                 pauseWindow.SetActive(true);
                 pauseWindow.GetComponent<PauseWindow>().DisplayCurrentStatus(levelType);
                 Time.timeScale = 0; // To Do: Find a better way to pause the game
+                return;
+            case (SideScrollGameState.FinishTutorial):
+                //OpenTutorialWindow();
+                sidescrollGameController.sidescrollPlayer.playerAnimator.enabled = false;
+                sidescrollGameController.sidescrollPlayer.playerBulletShooting.enabled = false;
+                sidescrollGameController.sidescrollPlayer.enabled = false;
+                tutorialExitWindow.SetActive(true);
                 return;
             case (SideScrollGameState.WinRunNGun):
                 StartCoroutine(ReachGoal());
@@ -222,6 +235,18 @@ public class GameUIController : MonoBehaviour, IGameObserver, IPlayerObserver
         albumWindow.SetActive(false);
         upgradeWindow.SetActive(true);
         OpenWindow(diaryMainWindow);
+    }
+    public void OpenTutorialWindow()
+    {
+        if(tutorialExitWindow.activeSelf == true)
+        {
+            tutorialExitWindow.SetActive(false);
+            sidescrollGameController.NotifySideScrollGameObserver(SideScrollGameState.Play);
+        }
+        else
+        {
+            tutorialExitWindow.SetActive(true);
+        }
     }
     public void OpenWindow(GameObject windowObj)
     {
@@ -297,6 +322,7 @@ public class GameUIController : MonoBehaviour, IGameObserver, IPlayerObserver
         enemySpawnController.enabled = false;
         scoreBoard.SetActive(true);
         winScoreBoard.SetActive(true);
+        scoreBoardBG.SetActive(true);
         loseScoreBoard.SetActive(false);
         timerText.text = sidescrollGameController.currentTime;
         hpText.text = sidescrollGameController.UpdatePlayerHPCount().ToString();
@@ -317,6 +343,7 @@ public class GameUIController : MonoBehaviour, IGameObserver, IPlayerObserver
         // Show win scoreboard
         scoreBoard.SetActive(true);
         winScoreBoard.SetActive(true);
+        scoreBoardBG.SetActive(true);
         loseScoreBoard.SetActive(false);
         timerText.text = sidescrollGameController.currentTime;
         hpText.text = sidescrollGameController.UpdatePlayerHPCount().ToString();

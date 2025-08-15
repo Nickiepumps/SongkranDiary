@@ -71,6 +71,7 @@ public class PlayerSideScrollStateController : PlayerSubject
     public float xDir;
     public float currentASPD;
     public bool isGameStart = false;
+    public bool isWin = false;
     private float aspd;
     private float floatingTime = 0.5f;
     private float currentFloatTime;
@@ -185,7 +186,7 @@ public class PlayerSideScrollStateController : PlayerSubject
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (isDamaged == false)
+        if (isDamaged == false && isWin == false)
         {
             switch (collision.tag)
             {
@@ -245,10 +246,10 @@ public class PlayerSideScrollStateController : PlayerSubject
     }
     public void PlayerSideScrollStateTransition(PlayerSideScrollStateMachine newState)
     {
-        if(currentState != null)
+        /*if(currentState != null)
         {
             currentState.Exit();
-        }   
+        } */  
         currentState = newState;
         currentState.Start();
     }

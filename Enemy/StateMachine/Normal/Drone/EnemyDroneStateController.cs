@@ -10,15 +10,19 @@ public class EnemyDroneStateController : NormalEnemySubject
     [Header("Enemy State Machine")]
     private EnemyStateMachine enemyCurrentState;
 
+    [Header("Enemy Components")]
+    public Animator droneEnemyAnimator;
+    public SpriteRenderer enemySpriteRenderer;
+    public Rigidbody2D enemyRB;
+    public BoxCollider2D enemyCollider;
+
+
     [Header("Enemy General Properties")]
     [SerializeField] private NormalEnemySO enemyStats;
-    public Rigidbody2D enemyRB;
     public NormalEnemyType normalEnemyType;
-    public Animator droneEnemyAnimator;
     public int currentEnemyHP;
     public float flySpeed;
     public int damage;
-    public SpriteRenderer enemySpriteRenderer;
     public Transform startPoint;
     public float distanceFromPlayer;
 
@@ -38,6 +42,8 @@ public class EnemyDroneStateController : NormalEnemySubject
         }
         isBombDropped = false;
         currentEnemyHP = enemyStats.hp;
+        enemySpriteRenderer.enabled = true;
+        enemyCollider.enabled = true;
         droneBombGameObject.SetActive(true);
         EnemyStateTransition(new EnemyDroneFlyState(this));
     }

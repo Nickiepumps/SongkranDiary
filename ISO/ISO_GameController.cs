@@ -10,14 +10,29 @@ public class ISO_GameController : MonoBehaviour
         StageClearData stageData = SideScroll_StageClearDataHandler.instance.LoadSideScrollStageClear();
         if(stageData != null)
         {
-            for(int i = 0; i < stageData.levelData.Count; i++)
+            for(int i = 0; i < stageData.levelDataSOLists.Count; i++)
             {
-                if(stageData.levelData[i].isClear == true && stageData.levelData[i].isClearFirstTime == true)
+                if(stageData.levelClearStatus[i] == true && stageData.levelFirstClearStatus[i] == true)
                 {
-                    StartCoroutine(StartRemoveBoundaryAnim(stageData.levelData[i].isoLevelBoundary, stageData.levelData[i].nextLevel));
-                    stageData.levelData[i].isClearFirstTime = false;
+                    StartCoroutine(StartRemoveBoundaryAnim(stageData.levelDataSOLists[i].isoLevelBoundary, stageData.levelDataSOLists[i].nextLevel));
+                    stageData.levelFirstClearStatus[i] = false;
                     break;
                 }
+                else if(stageData.levelClearStatus[i] == true && stageData.levelFirstClearStatus[i] == false)
+                {
+                    RemoveBoundary(stageData.levelDataSOLists[i].isoLevelBoundary);
+                }
+            }
+            SideScroll_StageClearDataHandler.instance.UpdateSideScrollStageData(stageData);
+        }
+    }
+    private void RemoveBoundary(GameObject[] boundaryTarget)
+    {
+        if (boundaryTarget != null)
+        {
+            for (int i = 0; i < boundaryTarget.Length; i++)
+            {
+                GameObject.Find(boundaryTarget[i].name).SetActive(false);
             }
         }
     }

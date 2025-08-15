@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,11 +10,13 @@ public class AlbumDisplayController : MonoBehaviour
     public AlbumDisplay[] albumDisplaySlotArr;
 
     [Header("Album Pages")]
+    [SerializeField] private GameObject mainmenu_AlbumPage; // For main menu only
     [SerializeField] private GameObject[] leftAlbumArr;
     [SerializeField] private GameObject[] rightAlbumArr;
     [SerializeField] private GameObject fullImageCanvas;
     [SerializeField] private GameObject fullImageBG;
     [SerializeField] private Image fullImageSprite;
+    [SerializeField] private TMP_Text fullImageDescription;
     private int currentPage = 0;
 
     [Header("Album Button")]
@@ -32,20 +35,9 @@ public class AlbumDisplayController : MonoBehaviour
         AlbumData albumData = AlbumDataHandler.instance.LoadAlbumData();
         if (albumData != null)
         {
-            for (int i = 0; i < albumDisplaySlotArr.Length; i++)
+            for (int i = 0; i < albumData.imageUnlockStatus.Count; i++)
             {
-                albumDisplaySlotArr[i].albumImageSO = albumData.albumImagesSO[i];
-                if (albumData.albumImagesSO[i].unlockStatus == true)
-                {
-                    albumDisplaySlotArr[i].image.sprite = albumData.albumImagesSO[i].image;
-                    albumDisplaySlotArr[i].imageText.text = albumData.albumImagesSO[i].unlockImageText;
-                    albumDisplaySlotArr[i].fullImageButton.gameObject.SetActive(true);
-                }
-                else
-                {
-                    albumDisplaySlotArr[i].fullImageButton.gameObject.SetActive(false);
-                    albumDisplaySlotArr[i].imageText.text = albumData.albumImagesSO[i].lockImageText;
-                }
+                albumDisplaySlotArr[i].isUnlock = albumData.imageUnlockStatus[i];
             }
         }
         albumPreviousPageButton.SetActive(false);
@@ -88,12 +80,17 @@ public class AlbumDisplayController : MonoBehaviour
     public void ShowFullImage(AlbumSO image)
     {
         fullImageSprite.sprite = image.image;
+        fullImageDescription.text = image.imageDescription;
         fullImageCanvas.SetActive(true);
         albumFullImageAnimation.Play("Album_ShowImage");
     }
     public void CloseFullImage()
     {
         StartCoroutine(StartCloseFullImageAnimation());
+    }
+    public void CloseAlbum()
+    {
+        mainmenu_AlbumPage.SetActive(false);   
     }
     public void HideUI()
     {

@@ -5,12 +5,16 @@ using UnityEngine;
 [RequireComponent(typeof(BossHealthObserver))]
 public class BossHealth : MonoBehaviour
 {
-    [SerializeField] private BossScriptableObject bossStats;
+    public BossScriptableObject bossStats;
     [HideInInspector] public int bossMaxHP;
+    [HideInInspector] public int bossMaxArmor;
     public int currentBossHP;
+    public int currentBossArmor;
     void Start()
     {
-        bossMaxHP = bossStats.HP;
+        bossMaxHP = bossStats.hp;
         currentBossHP = bossMaxHP;
+        bossMaxArmor = bossStats.armorHP;
+        currentBossArmor = bossStats.armorHP;
     }
 }

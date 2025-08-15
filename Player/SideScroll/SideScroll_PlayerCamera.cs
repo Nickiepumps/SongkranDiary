@@ -43,8 +43,12 @@ public class SideScroll_PlayerCamera : MonoBehaviour, IPlayerObserver
     }
     private void FixedUpdate()
     {
+        
+    }
+    private void LateUpdate()
+    {
         playerCam.transform.position = Vector3.Lerp(playerCam.transform.position,
-            new Vector3(playerTarget.position.x, camYTarget.position.y, playerCam.transform.position.z), followSpeed * Time.fixedDeltaTime); // Follow player smoothly
+            new Vector3(playerTarget.position.x, camYTarget.position.y, playerCam.transform.position.z), followSpeed * Time.deltaTime); // Follow player smoothly
         playerCam.transform.position = new Vector3(Mathf.Clamp(playerCam.transform.position.x, minCamDistX.transform.position.x, maxCamDistX.transform.position.x),
             camYTarget.transform.position.y, playerCam.transform.position.z); // Camera focus on the player
     }

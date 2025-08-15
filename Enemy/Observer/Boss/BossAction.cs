@@ -6,5 +6,6 @@ public enum BossAction
     Ult,
     Ult2,
     Damaged,
+    Heal,
     Die
 }

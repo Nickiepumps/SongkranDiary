@@ -13,7 +13,7 @@ public class IncomingBulletController : MonoBehaviour
     //[SerializeField] private GameObject bulletPrefab;
     //[SerializeField] private GameObject bulletSpawnPrefab;
     [Header("Properties")]
-    [SerializeField] private float fireCooldown = 10f;
+    public float fireCooldown = 10f;
     [SerializeField] private Transform[] incomingBulletSpawnerArr;
     [SerializeField] private IncomingBulletPatternList incomingBulletPatternList = new IncomingBulletPatternList();
     [HideInInspector] public int startPatternRange;

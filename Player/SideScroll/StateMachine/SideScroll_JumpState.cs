@@ -38,11 +38,11 @@ public class SideScroll_JumpState : PlayerSideScrollStateMachine
     {
         if (playerSideScroll.playerRB.velocity.y > 0 && playerSideScroll.isJump == true)
         {
-            playerSideScroll.playerRB.velocity += playerSideScroll.gravityVelocity * playerSideScroll.jumpMultiplier * Time.deltaTime;
+            playerSideScroll.playerRB.velocity += playerSideScroll.gravityVelocity * playerSideScroll.jumpMultiplier * Time.fixedDeltaTime;
         }
         if (playerSideScroll.playerRB.velocity.y < 0)
         {
-            playerSideScroll.playerRB.velocity -= playerSideScroll.gravityVelocity * playerSideScroll.fallMultiplier * Time.deltaTime;
+            playerSideScroll.playerRB.velocity -= playerSideScroll.gravityVelocity * playerSideScroll.fallMultiplier * Time.fixedDeltaTime;
         }
     }
     public override void OntriggerEnter(Collider2D pCollider)

@@ -6,6 +6,7 @@ public enum LandmarkType
 {
     RunNGun,
     Boss,
+    Tutorial,
     MapTransition
 }
 public class LevelLandMarkController : MonoBehaviour, IGameObserver, IPlayerObserver
@@ -101,6 +102,14 @@ public class LevelLandMarkController : MonoBehaviour, IGameObserver, IPlayerObse
                         enterlevelBtn.onClick.RemoveAllListeners();
                         enterlevelBtn.onClick.AddListener(ChangeISOMap);
                     }
+                    else if (landmarkType == LandmarkType.Tutorial)
+                    {
+                        levelPostcard.isTransitionToNewISOArea = false;
+                        levelPostcard.mapStartPoint = null;
+                        levelPostcard.levelTypeText.text = "เตรียมตัวก่อนเล่น";
+                        enterlevelBtn.onClick.RemoveAllListeners();
+                        enterlevelBtn.onClick.AddListener(ChangeScene);
+                    }
                     levelPostcard.postcardNameText.text = landmarkName;
                     levelPostcard.sceneName = sceneName;
                     levelPostcard.gameObject.SetActive(true);
@@ -126,6 +135,10 @@ public class LevelLandMarkController : MonoBehaviour, IGameObserver, IPlayerObse
             sceneController.ChangeScene(sceneName);
         }
         else if(landmarkType == LandmarkType.Boss)
+        {
+            sceneController.ChangeScene(sceneName);
+        }
+        else if (landmarkType == LandmarkType.Tutorial)
         {
             sceneController.ChangeScene(sceneName);
         }

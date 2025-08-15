@@ -102,30 +102,4 @@ public class PlayerCameraController : MonoBehaviour, IPlayerObserver
                 return;
         }
     }
-    private void CheckMapToFocus(string previousMap)
-    {
-        switch (previousMap)
-        {
-            case "Run_1":
-                if (stageClearData.Side_L1_Run == true)
-                {
-                    currentFocusTarget = bossLevelTarget;
-                    isFocusNextLevel = true;
-                    Debug.Log("Run 1 cleared");
-                }
-                break;
-            case "Boss_1":
-                if (stageClearData.Side_L1_Boss == true)
-                {
-                    Debug.Log("Boss 1 cleared");
-                }
-                break;
-            case "Level1_ISO":
-                if (stageClearData.ISO_L1 == true)
-                {
-                    Debug.Log("ISO 1 cleared");
-                }
-                break;
-        }
-    }
 }

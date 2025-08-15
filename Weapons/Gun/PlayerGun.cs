@@ -22,6 +22,7 @@ public class PlayerGun : MonoBehaviour
             {
                 bullet.GetComponent<Bullet>().bulletDirection = aimPivot.localRotation * Vector2.up;
                 bullet.GetComponent<Bullet>().travelSpeed = bulletShooting.weaponData.currentWeaponTravelSpeed.travelSpeed; // Change bullet's travel speed
+                bullet.transform.position = new Vector2(transform.position.x, Random.Range(transform.position.y - 0.2f, transform.position.y + 0.2f));
             }
             else if(bulletType == BulletType.spreadBullet)
             {
@@ -34,6 +35,7 @@ public class PlayerGun : MonoBehaviour
                     bullet.GetComponent<Bullet>().bulletDirection = transform.localRotation * aimPivot.localRotation * Vector2.left; // Rotate bullet's travel direction to match the gun's rotation
                 }
                 bullet.GetComponent<Bullet>().travelSpeed = bulletShooting.weaponData.currentWeaponSprdCount.travelSpeed; // Change bullet's travel speed
+                bullet.transform.position = new Vector2(transform.position.x, transform.position.y);
             }
             else
             {
@@ -47,8 +49,8 @@ public class PlayerGun : MonoBehaviour
                     bullet.GetComponent<Bullet>().bulletDirection = transform.localRotation * Vector2.up;
                     bullet.GetComponent<Bullet>().laserBoundary = laserBoundary;
                 }
+                bullet.transform.position = new Vector2(transform.position.x, transform.position.y);
             }
-            bullet.transform.position = new Vector2(transform.position.x, Random.Range(transform.position.y - 0.2f, transform.position.y + 0.2f));
             bullet.transform.rotation = transform.rotation;
             bullet.SetActive(true);
         }

@@ -8,12 +8,14 @@ public class BossScriptableObject : ScriptableObject
 {
     [Header("Boss Properties")]
     public BossList bossName; // To Do: Change to something else that can make any boss have unique attack without making another state machine
-    public int HP;
+    public int hp;
+    public int armorHP;
     public int damage;
     public float ultCooldown;
     public float idleTime;
     public float initialIdleTime;
     public float aspd;
+    public int healAmount;
     public float bossNormalMovementSpeed;
     public float bossUltMovementSpeed;
 

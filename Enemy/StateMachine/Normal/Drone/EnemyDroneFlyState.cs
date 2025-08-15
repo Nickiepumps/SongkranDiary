@@ -14,11 +14,11 @@ public class EnemyDroneFlyState : EnemyStateMachine
     {
         if (droneEnemy.enemySpriteRenderer.flipX == false)
         {
-            droneEnemy.transform.position += new Vector3(-droneEnemy.flySpeed, 0, 0) * Time.deltaTime;
+            droneEnemy.transform.position += new Vector3(droneEnemy.flySpeed, 0, 0) * Time.deltaTime;
         }
         else
         {
-            droneEnemy.transform.position += new Vector3(droneEnemy.flySpeed, 0, 0) * Time.deltaTime;
+            droneEnemy.transform.position += new Vector3(-droneEnemy.flySpeed, 0, 0) * Time.deltaTime;
         }
         RaycastHit2D hit = Physics2D.Raycast(droneEnemy.transform.position, Vector2.down, 10f, LayerMask.GetMask("Player"));
         if(hit == true && droneEnemy.isBombDropped == false)

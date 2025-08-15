@@ -4,4 +4,5 @@ using System.Collections.Generic;
 public class AlbumData
 {
     public List<AlbumSO> albumImagesSO = new List<AlbumSO>();
+    public List<bool> imageUnlockStatus = new List<bool>();
 }

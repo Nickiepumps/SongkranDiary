@@ -123,7 +123,7 @@ public class BulletShooting : ShootingSubject, IPlayerObserver
     }
     private void ShootingControl()
     {
-        if (Input.GetKeyDown(KeyCode.F) && coolDownStatus == false)
+        if (Input.GetKeyDown(KeyCode.LeftControl) && coolDownStatus == false)
         {
             currentBulletArrayIndex++;
             if (currentBulletArrayIndex > 2)

@@ -6,8 +6,10 @@ using UnityEngine;
 
 public class PlayerDataHandler : MonoBehaviour
 {
+    [SerializeField] private bool isMainMenu = false;
     [SerializeField] PlayerStateController isoPlayerStateController;
     [SerializeField] PlayerStats playerStats;
+    [HideInInspector] public bool hasPlayerData;
 
     public static PlayerDataHandler instance;
     private void Awake()
@@ -24,8 +26,9 @@ public class PlayerDataHandler : MonoBehaviour
     private void Start()
     {
         PlayerData playerData = LoadPlayerData();
-        if(playerData != null)
+        if(playerData != null && isMainMenu == false)
         {
+            hasPlayerData = true;
             if(isoPlayerStateController != null)
             {
                 isoPlayerStateController.transform.position = playerData.playerISOPos;
@@ -48,6 +51,10 @@ public class PlayerDataHandler : MonoBehaviour
             playerStats.coinAmount = playerData.Coin;
             playerStats.spreadBulletUnlocked = playerData.bulletSpreadUnlocked;
             playerStats.laserBulletUnlocked = playerData.bulletLaserUnlocked;
+        }
+        else if (playerData != null && isMainMenu == true)
+        {
+            hasPlayerData = true;
         }
     }
     public void SavePlayerData()

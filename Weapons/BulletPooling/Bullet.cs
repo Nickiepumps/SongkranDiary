@@ -112,7 +112,7 @@ public class Bullet : MonoBehaviour
                 }
             }
         }*/
-        yield return new WaitForSeconds(0.1f); // Appear only for 0.15 secs
+        yield return new WaitForSeconds(0.3f); // Appear only for 0.15 secs
         //laserHit = null; // Clear all the hit object
         bulletEdgeCollider.enabled = false;
         bulletAnimator.SetBool("isLaser", false);

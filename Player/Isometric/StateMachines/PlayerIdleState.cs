@@ -7,6 +7,7 @@ public class PlayerIdleState : PlayerState
     public PlayerIdleState(PlayerStateController player) : base(player) { }
     public override void Start()
     {
+        player.ISOAnimator.SetBool("IsWalk", false);
         player.playerTalking = false;
         player.playerVelocity = Vector2.zero;
         player.playerRB.velocity = player.playerVelocity;

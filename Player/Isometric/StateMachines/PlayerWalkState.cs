@@ -6,9 +6,14 @@ public class PlayerWalkState : PlayerState
 {
     public PlayerWalkState(PlayerStateController player) : base(player) { }
     private float xDir, yDir;
+    private float keyReleaseTime = 0.1f;
+    private float currentKeyReleaseTime;
+    private bool isUpKeyReleased = false;
+    private bool isDownKeyReleased = false;
     public override void Start()
     {
-        
+        player.ISOAnimator.SetBool("IsWalk", true);
+        currentKeyReleaseTime = keyReleaseTime;
     }
     public override void FixedUpdate()
     {
@@ -40,15 +45,15 @@ public class PlayerWalkState : PlayerState
         }
         else if (Input.GetAxisRaw("Horizontal") == 1 && Input.GetAxisRaw("Vertical") == 1) // Up Right
         {
-            player.ISOPlayerSpriteRenderer.flipX = false;
-            player.ISOAnimator.SetFloat("PosX", 1f);
-            player.ISOAnimator.SetFloat("PosY", 11f);
+            player.ISOPlayerSpriteRenderer.flipX = true;
+            player.ISOAnimator.SetFloat("PosX", -1f);
+            player.ISOAnimator.SetFloat("PosY", 1f);
         }
         else if (Input.GetAxisRaw("Horizontal") == -1 && Input.GetAxisRaw("Vertical") == 1) // Up Left
         {
-            player.ISOPlayerSpriteRenderer.flipX = true;
-            player.ISOAnimator.SetFloat("PosX", 1f);
-            player.ISOAnimator.SetFloat("PosY", 11f);
+            player.ISOPlayerSpriteRenderer.flipX = false;
+            player.ISOAnimator.SetFloat("PosX", -1f);
+            player.ISOAnimator.SetFloat("PosY", 1f);
         }
         else if(Input.GetAxisRaw("Horizontal") == 0 && Input.GetAxisRaw("Vertical") == -1) // Down
         {
@@ -58,27 +63,74 @@ public class PlayerWalkState : PlayerState
         }
         else if (Input.GetAxisRaw("Horizontal") == 1 && Input.GetAxisRaw("Vertical") == -1) // Down Right
         {
-            player.ISOPlayerSpriteRenderer.flipX = false;
-            player.ISOAnimator.SetFloat("PosX", 1f);
+            player.ISOPlayerSpriteRenderer.flipX = true;
+            player.ISOAnimator.SetFloat("PosX", -1f);
             player.ISOAnimator.SetFloat("PosY", -1f);
         }
         else if (Input.GetAxisRaw("Horizontal") == -1 && Input.GetAxisRaw("Vertical") == -1) // Down Left
         {
-            player.ISOPlayerSpriteRenderer.flipX = true;
-            player.ISOAnimator.SetFloat("PosX", 1f);
+            player.ISOPlayerSpriteRenderer.flipX = false;
+            player.ISOAnimator.SetFloat("PosX", -1f);
             player.ISOAnimator.SetFloat("PosY", -1f);
         }
         else if (Input.GetAxisRaw("Horizontal") == 1 && Input.GetAxisRaw("Vertical") == 0) // Right
         {
-            player.ISOPlayerSpriteRenderer.flipX = false;
-            player.ISOAnimator.SetFloat("PosX", 1f);
+            player.ISOPlayerSpriteRenderer.flipX = true;
+            player.ISOAnimator.SetFloat("PosX", -1f);
             player.ISOAnimator.SetFloat("PosY", 0f);
         }
         else if (Input.GetAxisRaw("Horizontal") == -1 && Input.GetAxisRaw("Vertical") == 0) // Left
         {
-            player.ISOPlayerSpriteRenderer.flipX = true;
-            player.ISOAnimator.SetFloat("PosX", 1f);
+            player.ISOPlayerSpriteRenderer.flipX = false;
+            player.ISOAnimator.SetFloat("PosX", -1f);
             player.ISOAnimator.SetFloat("PosY", 0f);
+        }
+        #endregion
+
+        #region DoubleKeyRelease (To Do: Fix the flicker sprite later)
+        if (Input.GetKeyUp(KeyCode.UpArrow))
+        {
+            isUpKeyReleased = true;
+        }
+        else if (Input.GetKeyUp(KeyCode.DownArrow))
+        {
+            isDownKeyReleased = true;
+        }
+        if (isUpKeyReleased == true)
+        {
+            currentKeyReleaseTime -= Time.deltaTime;
+            if (currentKeyReleaseTime >= 0f && Input.GetKeyUp(KeyCode.RightArrow))
+            {
+                player.ISOPlayerSpriteRenderer.flipX = true;
+                player.ISOAnimator.SetFloat("PosX", -1f);
+                player.ISOAnimator.SetFloat("PosY", 1f);
+                isUpKeyReleased = false;
+            }
+            else if (currentKeyReleaseTime >= 0f && Input.GetKeyUp(KeyCode.LeftArrow))
+            {
+                player.ISOPlayerSpriteRenderer.flipX = false;
+                player.ISOAnimator.SetFloat("PosX", -1f);
+                player.ISOAnimator.SetFloat("PosY", 1f);
+                isUpKeyReleased = false;
+            }
+        }
+        else if(isDownKeyReleased == true)
+        {
+            currentKeyReleaseTime -= Time.deltaTime;
+            if (currentKeyReleaseTime >= 0f && Input.GetKeyUp(KeyCode.RightArrow))
+            {
+                player.ISOPlayerSpriteRenderer.flipX = true;
+                player.ISOAnimator.SetFloat("PosX", -1f);
+                player.ISOAnimator.SetFloat("PosY", -1f);
+                isDownKeyReleased = false;
+            }
+            else if (currentKeyReleaseTime >= 0f && Input.GetKeyUp(KeyCode.LeftArrow))
+            {
+                player.ISOPlayerSpriteRenderer.flipX = false;
+                player.ISOAnimator.SetFloat("PosX", -1f);
+                player.ISOAnimator.SetFloat("PosY", -1f);
+                isDownKeyReleased = false;
+            }
         }
         #endregion
     }

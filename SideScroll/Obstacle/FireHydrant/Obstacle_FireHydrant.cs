@@ -22,11 +22,12 @@ public class Obstacle_FireHydrant : MonoBehaviour
     [SerializeField] private float waterInitialCooldownTime = 3f; // Cooldown time when first start the game
     private float currentHoldTime, currentCooldownTime;
     private float originalWaterYScale;
-    private bool isShoot = false;
+    public bool isShoot = false;
+    [SerializeField] private Obstacle_FireHydrant followTarget;
     private void OnEnable()
     {
         waterAnimator.enabled = true;
-        currentCooldownTime = waterCooldownTime;
+        currentCooldownTime = waterInitialCooldownTime;
     }
     private void OnDisable()
     {
@@ -36,7 +37,7 @@ public class Obstacle_FireHydrant : MonoBehaviour
     {
         //originalWaterYScale = water.transform.localScale.y;
         waterTrigger.enabled = false;
-        currentCooldownTime = waterCooldownTime;
+        currentCooldownTime = waterInitialCooldownTime;
         //currentHoldTime = waterHoldTime;
         waterAnimator.SetBool("WaterIdle", true);
     }
@@ -44,21 +45,46 @@ public class Obstacle_FireHydrant : MonoBehaviour
     {
         if(isShootingIndefinitely == false)
         {
-            currentCooldownTime -= Time.deltaTime;
-            if (currentCooldownTime <= 1 && currentCooldownTime > 0)
+            if(followTarget == null)
             {
-                waterAnimator.SetBool("WaterWarning", true);
-                waterAnimator.SetBool("WaterIdle", false);
-                waterAnimator.SetBool("WaterShoot", false);
+                currentCooldownTime -= Time.deltaTime;
+                if (currentCooldownTime <= 1 && currentCooldownTime > 0)
+                {
+                    waterAnimator.SetBool("WaterWarning", true);
+                    waterAnimator.SetBool("WaterIdle", false);
+                    waterAnimator.SetBool("WaterShoot", false);
+                }
+                if (currentCooldownTime <= 0 && isShoot == false)
+                {
+                    StartCoroutine(WaterShootAnim());
+                    currentCooldownTime = waterCooldownTime;
+                }
             }
-            if(currentCooldownTime <= 0 && isShoot == false)
+            else
             {
-                StartCoroutine(WaterShootAnim());
+                if(followTarget.isShoot == true)
+                {
+                    currentCooldownTime -= Time.deltaTime;
+                    if (currentCooldownTime <= 1.5f && currentCooldownTime > 0)
+                    {
+                        waterAnimator.SetBool("WaterWarning", true);
+                        waterAnimator.SetBool("WaterIdle", false);
+                        waterAnimator.SetBool("WaterShoot", false);
+                    }
+                    if (currentCooldownTime <= 1 && isShoot == false)
+                    {
+                        StartCoroutine(WaterShootAnim());
+                        currentCooldownTime = waterCooldownTime;
+                    }
+                }
             }
+            
         }
         else
         {
-            //WaterShoot();
+            isShoot = true;
+            waterTrigger.enabled = true;
+            waterAnimator.SetBool("ShootInfinitely", true);
         }
     }
     private IEnumerator WaterShootAnim()
@@ -74,7 +100,6 @@ public class Obstacle_FireHydrant : MonoBehaviour
         waterAnimator.SetBool("WaterIdle", true);
         waterAnimator.SetBool("WaterWarning", false);
         waterAnimator.SetBool("WaterShoot", false);
-        currentCooldownTime = waterCooldownTime;
     }
     private void WaterShoot()
     {

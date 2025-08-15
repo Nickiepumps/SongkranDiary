@@ -5,7 +5,7 @@ public abstract class SideScroll_TriggerEvent : MonoBehaviour
     /// Start bullet raining when the player enter this trigger
     /// </summary>
     /// <param name="controller"></param>
-    public void Trigger_RainingBullet(IncomingBulletController controller, bool rainingStatus, int startPatternRange, int endPatternRange)
+    public void Trigger_RainingBullet(IncomingBulletController controller, bool rainingStatus, int startPatternRange, int endPatternRange, float newSpawnTime)
     {
         if(rainingStatus == true)
         {
@@ -13,6 +13,7 @@ public abstract class SideScroll_TriggerEvent : MonoBehaviour
             controller.startRainingBullet = true;
             controller.startPatternRange = startPatternRange;
             controller.endPatternRange = endPatternRange;
+            controller.fireCooldown = newSpawnTime;
         }
         else
         {
